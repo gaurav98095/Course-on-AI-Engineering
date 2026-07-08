@@ -181,7 +181,7 @@ t= 16.0s  requests=  14  errors=  0  p50=  55.9s   ||   gpu_util= 90%  gpu_mem= 
 
 (Ballpark — your own numbers are the real ones.) Read the two halves side by side: **`gpu_util` sits near 90% almost the whole time, at every concurrency level** — it barely moves between \\(C=2\\) and \\(C=16\\), while the API layer's `p50` climbs from 7 seconds to nearly a minute. The card *swears* it's consistently busy. But look at our own throughput numbers: aggregate tokens/sec at \\(C=16\\) is the same as at \\(C=1\\). Busy is not the same as productive.
 
-Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly \\(2 \times 8\text{B} = 16\\) GFLOPs. At ~30 tokens/sec that's ~**0.5 TFLOP/s** of actual work — on a card rated for ~**181 TFLOP/s** of bf16 compute.
+Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly \\(2 \times 8\text{B} = 16\\) GFLOPs. At ~30 tokens/sec that's ~**0.5 TFLOP/s** of actual work — on a card rated for **362 TFLOP/s** of bf16 compute (Lecture 04's table — this is the same L40S, dense FP16, straight off NVIDIA's datasheet).
 
 **We are using well under 1% of the machine we're paying for.**
 

@@ -226,7 +226,7 @@ curl localhost:8000/metrics
 
 ## Measure It
 
-Same five questions as Lecture 01's baseline, but now through HTTP. Ballpark on one L40S, bf16, batch 1:
+The same baseline questions as Lecture 01, but now asked through HTTP instead of a direct script call. Ballpark on one L40S, bf16, batch 1:
 
 | Metric | Lecture 01 (direct) | Lecture 02 (HTTP) | What it says |
 | --- | --- | --- | --- |

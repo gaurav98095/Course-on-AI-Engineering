@@ -174,16 +174,16 @@ The core loop tries `tokens = 1, 2, 8, ... 2048` — batch 1 is pure decode, 204
 
 ```text
  tokens   AI (F/B)   time ms   TFLOP/s    GB/s        regime
-      1        1.0     0.021      3.9      3877  memory-bound
-      2        2.0     0.021      7.8      3877  memory-bound
-      8        8.0     0.024     27.3      3414  memory-bound
-     32       32.0     0.041     64.1      2003  memory-bound
-    128      128.0     0.098    107.5       839  memory-bound
-    512      507.9     0.183    229.8       452 compute-bound
-   2048     1988.2     0.564    297.5       150 compute-bound
+      1        1.0     0.043       0.8      780  memory-bound
+      2        2.0     0.043       1.6      780  memory-bound
+      8        8.0     0.043       6.2      780  memory-bound
+     32       31.5     0.044      24.6      780  memory-bound
+    128      120.5     0.046      94.0      780  memory-bound
+    512      409.6     0.055     310.0      757 compute-bound
+   2048     1024.0     0.222     310.0      303 compute-bound
 ```
 
-(Ballpark, L40S, `d`≈4096.) Watch **AI** climb with `tokens`, exactly linearly — that's the FLOPs-per-byte formula from the math page, not a coincidence. And watch the **regime** column flip right around your measured ridge point.
+(Ballpark, L40S, `d`≈4096, using Step 1's own achieved ceilings — 310 TFLOP/s, 780 GB/s.) Two things to notice, and both are the roofline model made visible in one table. First, **GB/s is pinned at ~780 for every memory-bound row** — the belt runs at exactly one speed regardless of how much work is queued behind it. Second, once `tokens` crosses the ridge, **TFLOP/s pins at 310 instead** — the chefs are now the limit, and no amount of extra data waiting in the belt speeds them up. Watch **AI** climb with `tokens` — almost exactly linearly while `tokens` is small (\\(t \ll d\\), the approximation from the math page), visibly bending below that line once `tokens` approaches `d` (512, 2048) as the correction term stops being negligible. And watch the **regime** column flip right around your measured ridge point.
 
 ## Measure It
 

@@ -14,7 +14,7 @@ Look and feel: clean, text-first pages with a narrow reading column, each lectur
 
 Platform arc: Lightning AI Studios for weeks 1–8 (fast iteration), AWS/EKS for the scale module — the same corporate progression a real team follows.
 
-Course model registry (keep consistent across lectures): generation `Qwen/Qwen3-VL-8B-Instruct`; text embeddings `BAAI/bge-small-en-v1.5`; image–text embeddings `google/siglip2-base-patch16-384`; vector store FAISS. If a lecture swaps a model, it says so explicitly and explains why.
+Course model registry (keep consistent across lectures): generation `Qwen/Qwen3-VL-8B-Instruct`; text embeddings `BAAI/bge-small-en-v1.5`; image–text embeddings `google/siglip2-base-patch16-224`; vector store FAISS. If a lecture swaps a model, it says so explicitly and explains why.
 
 ## Folder map
 
