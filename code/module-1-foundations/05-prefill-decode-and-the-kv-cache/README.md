@@ -41,4 +41,4 @@ The no-cache run is deliberately short (`N_TOKENS = 60`) — without caching, ge
 
 ---
 
-Previous: [`../04-the-gpu-architecture-and-roofline/`](../04-the-gpu-architecture-and-roofline/) · This is the last lecture published in Module 1 so far — more lectures land here as the course continues.
+Previous: [`../04-the-gpu-architecture-and-roofline/`](../04-the-gpu-architecture-and-roofline/) · Next: [`../06-profiling-where-the-time-actually-goes/`](../06-profiling-where-the-time-actually-goes/) — watching a profiler confirm (or correct) everything this module has claimed so far.

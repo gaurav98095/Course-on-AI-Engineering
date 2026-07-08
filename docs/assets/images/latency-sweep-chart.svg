@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .axis  { stroke:#5B6663; stroke-width:1.5; }
+    .grid  { stroke:#E7E5DF; stroke-width:1; }
+    .line  { stroke:#4F46E5; stroke-width:2.5; fill:none; }
+    .dash  { stroke:#9AA5A1; stroke-width:1.5; stroke-dasharray:5 4; fill:none; }
+    .pt    { fill:#4F46E5; }
+    .bad   { stroke:#B3261E; stroke-width:2.5; }
+    .lbl   { font-size:12.5px; fill:#1C2321; text-anchor:middle; }
+    .lblm  { font-size:11px; fill:#5B6663; text-anchor:middle; }
+    .axisl { font-size:13px; fill:#1C2321; }
+    .tag   { font-size:11.5px; font-weight:600; fill:#4F46E5; }
+    .badtag{ font-size:11.5px; font-weight:600; fill:#B3261E; }
+    .box   { fill:#EEF0FE; stroke:#4F46E5; stroke-width:1; rx:8; }
+  </style>
+
+  <!-- axes -->
+  <line class="axis" x1="90" y1="380" x2="740" y2="380"/>
+  <line class="axis" x1="90" y1="380" x2="90" y2="30"/>
+  <text class="axisl" x="415" y="415" text-anchor="middle">Concurrency (C) — virtual users</text>
+  <text class="axisl" x="34" y="205" text-anchor="middle" transform="rotate(-90 34 205)">p50 latency (seconds)</text>
+
+  <!-- gridlines -->
+  <g class="grid">
+    <line x1="90" y1="312" x2="740" y2="312"/>
+    <line x1="90" y1="244" x2="740" y2="244"/>
+    <line x1="90" y1="176" x2="740" y2="176"/>
+    <line x1="90" y1="108" x2="740" y2="108"/>
+  </g>
+  <text class="lblm" x="80" y="384" text-anchor="end">0</text>
+  <text class="lblm" x="80" y="316" text-anchor="end">30s</text>
+  <text class="lblm" x="80" y="248" text-anchor="end">60s</text>
+  <text class="lblm" x="80" y="180" text-anchor="end">90s</text>
+  <text class="lblm" x="80" y="112" text-anchor="end">120s</text>
+
+  <!-- timeout ceiling -->
+  <line class="dash" x1="90" y1="108" x2="740" y2="108"/>
+  <text class="tag" x="700" y="100" text-anchor="end">120s timeout</text>
+
+  <!-- x categories: C = 1, 2, 4, 8, 16, 32 -->
+  <text class="lbl" x="130" y="398">1</text>
+  <text class="lbl" x="230" y="398">2</text>
+  <text class="lbl" x="330" y="398">4</text>
+  <text class="lbl" x="430" y="398">8</text>
+  <text class="lbl" x="530" y="398">16</text>
+  <text class="lbl" x="650" y="398">32</text>
+
+  <!-- the straight ramp: p50 = C x 7s, values 7,14,28,56,110 -->
+  <polyline class="line" points="130,364 230,348 330,317 430,253 530,131"/>
+  <circle class="pt" cx="130" cy="364" r="5"/>
+  <circle class="pt" cx="230" cy="348" r="5"/>
+  <circle class="pt" cx="330" cy="317" r="5"/>
+  <circle class="pt" cx="430" cy="253" r="5"/>
+  <circle class="pt" cx="530" cy="131" r="5"/>
+
+  <text class="lblm" x="130" y="352">7s</text>
+  <text class="lblm" x="230" y="336">14s</text>
+  <text class="lblm" x="330" y="305">28s</text>
+  <text class="lblm" x="430" y="241">56s</text>
+  <text class="lblm" x="530" y="119">110s</text>
+
+  <!-- the cliff: dashed red line breaking past the timeout, X marks for errors -->
+  <line class="bad" x1="530" y1="131" x2="650" y2="60" stroke-dasharray="3 4"/>
+  <path class="bad" d="M638,48 L662,72 M662,48 L638,72"/>
+  <text class="badtag" x="650" y="38" text-anchor="middle">38 of 49 requests</text>
+  <text class="badtag" x="650" y="52" text-anchor="middle">never return</text>
+
+  <!-- throughput callout box -->
+  <rect class="box" x="470" y="330" width="250" height="60"/>
+  <text class="lbl" x="595" y="352" style="font-weight:600">Throughput at every C: flat</text>
+  <text class="lblm" x="595" y="370">~8.5 requests/min — C=1 or C=16, same number</text>
+
+  <text class="lblm" x="330" y="60" text-anchor="middle" style="font-style:italic">latency ≈ C × 7s — a straight line, exactly as Little's law predicts</text>
+</svg>

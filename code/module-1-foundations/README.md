@@ -9,11 +9,12 @@ One folder per lecture. Each lecture folder is **fully self-contained** — data
 | [`03-load-test-it-until-it-breaks/`](03-load-test-it-until-it-breaks/) | [03](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/03-load-test-it-until-it-breaks.html) | + a closed-loop load generator |
 | [`04-the-gpu-architecture-and-roofline/`](04-the-gpu-architecture-and-roofline/) | [04](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/04-the-gpu-architecture-and-roofline.html) | + a standalone GPU roofline benchmark |
 | [`05-prefill-decode-and-the-kv-cache/`](05-prefill-decode-and-the-kv-cache/) | [05](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/05-prefill-decode-and-the-kv-cache.html) | + a KV cache on/off speed demo |
+| [`06-profiling-where-the-time-actually-goes/`](06-profiling-where-the-time-actually-goes/) | [06](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/06-profiling-where-the-time-actually-goes.html) | + a `torch.profiler` request breakdown |
 
 Each folder is a **copy-forward** of the previous one — same convention the whole course uses, applied per lecture within the module (see [`../README.md`](../README.md) for the module-level version). Diff any two folders to see exactly what that lecture changed:
 
 ```bash
-diff -rq 04-the-gpu-architecture-and-roofline 05-prefill-decode-and-the-kv-cache
+diff -rq 05-prefill-decode-and-the-kv-cache 06-profiling-where-the-time-actually-goes
 ```
 
-More lectures land here as Module 1 continues (profiling with nsys/ncu).
+**Module 1 is complete.** Module 2 (quantization, FlashAttention, PagedAttention, serving engines, Triton kernels) begins with Lecture 07, in a new `code/module-2-vertical-wins/` folder that copy-forwards from this module's final lecture.

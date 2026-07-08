@@ -73,6 +73,11 @@ Watch what the KV cache actually holds: for every layer, for every token ever pr
 | Head dimension (\(D\)) | 128 | `config.json` |
 | Precision | 2 bytes (bf16) | how we serve it |
 
+<figure>
+  <img src="../assets/images/ram-dimm-macro.jpg" alt="Close-up of a DDR4 SO-DIMM RAM module's memory chips">
+  <figcaption>Every byte the cache formula counts lives somewhere physical like this — just HBM soldered onto a GPU board instead of a DIMM slotted into a laptop. <em>Photo: D-Kuru, Wikimedia Commons, CC BY-SA 4.0</em></figcaption>
+</figure>
+
 ## The Build
 
 ⚡ This lecture's folder, `code/module-1-foundations/05-prefill-decode-and-the-kv-cache/`, is a copy-forward of Lecture 04's folder with one new file: `kv_cache.py`.
@@ -209,4 +214,4 @@ Every generation request is two workloads wearing one name. Prefill reads the wh
 
 ---
 
-[← Previous: Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model](04-the-gpu-architecture-and-roofline.md) · [Course Home](../index.md)
+[← Previous: Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model](04-the-gpu-architecture-and-roofline.md) · [Course Home](../index.md) · [Next: Lecture 06 — Profiling: Where the Time Actually Goes →](06-profiling-where-the-time-actually-goes.md)

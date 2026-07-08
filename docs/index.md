@@ -69,15 +69,18 @@ Ship a real multimodal RAG on stock code, deploy it, and load-test it until it b
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/06-profiling-where-the-time-actually-goes.html">
       <span class="num">06</span>
       <span>
         <span class="t">Profiling: Where the Time Actually Goes</span>
-        <span class="d" style="display:block">nsys and ncu on our own endpoint: attach names to every millisecond from the benchmark.</span>
+        <span class="d" style="display:block">torch.profiler, nsys, and ncu on our own endpoint: attach names to every millisecond, and check the roofline against the vendor's own counters.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
 </ol>
+
+**Module 1 is complete.** Module 2 begins below.
 
 ## Module 2 · Vertical wins — make it 10× faster
 
@@ -299,6 +302,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 03 — Queues, Percentiles, and Why p95 Explodes](math/03-queues-and-percentiles.md) — Little's law from scratch, M/M/1, the 1/(1−ρ) hockey stick, and how load tests lie.
 - [Math Deep Dive 04 — Deriving the Roofline Model](math/04-roofline-model.md) — the min(compute, AI×bandwidth) formula, arithmetic intensity of a GEMM, and why batching is the same lever as more tokens.
 - [Math Deep Dive 05 — Deriving the KV Cache Formula](math/05-kv-cache-math.md) — counting key/value vectors, why GQA shrinks the cache 4×, and the (tokens × batch) budget every serving system fights over.
+- [Math Deep Dive 06 — Amdahl's Law and Where to Spend an Hour](math/06-amdahls-law.md) — the exact formula behind "optimize the biggest bar in the profile, not your favorite line of code."
 
 ## What you will be able to do
 

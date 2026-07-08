@@ -1,4 +1,4 @@
-# Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model
+# Lecture 05 — Prefill, Decode, and the KV Cache
 # Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
 torch>=2.4
 transformers>=4.57

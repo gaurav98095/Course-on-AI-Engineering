@@ -78,6 +78,18 @@ That crossing has a price, and the price is what the roofline model measures.
 
 Notice something: the ridge point doesn't simply grow with the fancier card. A100 has **more** bandwidth than L40S but a **lower** ridge point, because its compute grew less than its bandwidth did. Which GPU is "better" for decode depends on the shape of *your* workload — this table is a preview of a real capacity decision, not just trivia.
 
+Here is the plot that table is quietly describing — the roofline itself, with decode and prefill placed on it:
+
+<figure>
+  <img src="../assets/images/roofline-diagram.svg" alt="Log-log roofline plot: a diagonal memory-bound slope meets a flat compute-bound ceiling at the ridge point; decode sits low on the diagonal, prefill sits on the flat ceiling">
+  <figcaption>Two straight lines on log-log axes. Everything left of the ridge point is bandwidth's problem; everything right of it is the chip's problem. Decode and prefill live on opposite sides.</figcaption>
+</figure>
+
+<figure>
+  <img src="../assets/images/server-room.jpg" alt="A data center server room filled with racks of networking and compute equipment">
+  <figcaption>Somewhere behind your Lightning AI Studio's browser tab is a room exactly like this one — racks of GPUs, each with its own belt and its own chefs. <em>Photo: Wikimedia Commons, public domain</em></figcaption>
+</figure>
+
 ## The Build
 
 ⚡ This lecture's folder, `code/module-1-foundations/04-the-gpu-architecture-and-roofline/`, is a copy-forward of Lecture 03's folder with one new file: `roofline.py`. It needs no new dependencies.

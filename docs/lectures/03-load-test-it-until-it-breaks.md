@@ -40,6 +40,11 @@ Today we simulate those forty agents — on purpose, with instruments attached �
 
 > **Our service is a shop with one till.** Checkout takes ~7 seconds per customer, no matter how long the line is. So the shop's *throughput* is fixed — one customer per 7 seconds, forever — and every extra person in line pays the full line's wait. The till doesn't break. **The queue is the breakage.**
 
+<figure>
+  <img src="../assets/images/checkout-line.jpg" alt="A line of shoppers waiting at a single supermarket checkout register">
+  <figcaption>One till, one speed, a growing line — every concurrent user in this lecture is one more shopper joining it. <em>Photo: Wikimedia Commons, CC0</em></figcaption>
+</figure>
+
 Three quantities, one relationship — worth memorizing before the math page makes it precise:
 
 | Name | Symbol | At our shop |
@@ -146,6 +151,11 @@ Three stories in one table:
 **Latency is a straight ramp.** p50 ≈ \(C \times 7\) s, exactly as the mental model predicted. At 16 concurrent users, two minutes per answer.
 
 **Then the cliff.** At 32, requests start outliving the server's 120 s timeout. They don't come back slow — they **don't come back**. Latency problems become availability problems at a hard edge, not a slope.
+
+<figure>
+  <img src="../assets/images/latency-sweep-chart.svg" alt="Chart: p50 latency climbing in a straight line from 7s to 110s as concurrency rises from 1 to 16, then breaking into errors past the 120s timeout at concurrency 32, while throughput stays flat at 8.5 requests per minute throughout">
+  <figcaption>Same data as the table, easier to feel: one straight line climbing, one flat line underneath it — until the line climbs straight off the chart.</figcaption>
+</figure>
 
 > Forty support agents at 9:00 means p50 near **five minutes** and a third of requests erroring. The launch email was a denial-of-service attack we sent ourselves.
 
