@@ -1,0 +1,11 @@
+# Lecture 02 — Deploy It on a GPU
+# Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
+torch>=2.4
+transformers>=4.57
+accelerate
+sentence-transformers>=3.0
+faiss-cpu
+pymupdf
+pillow
+requests
+litserve

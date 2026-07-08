@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+
+# Jekyll (local preview builds)
+docs/_site/
+docs/.jekyll-cache/
+Gemfile.lock
+
+# Editors
+.vscode/
+.idea/
+
+# Local Claude settings
+.claude/settings.local.json
+
+# Generated RAG corpus (rebuild with ingest.py)
+code/**/corpus/

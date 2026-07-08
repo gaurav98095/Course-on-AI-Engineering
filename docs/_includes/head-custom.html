@@ -1,0 +1,36 @@
+<!-- MathJax 3, wired for kramdown: Jekyll turns $$...$$ into
+     <script type="math/tex"> tags, so we register a renderAction
+     that feeds those tags to MathJax. -->
+<script>
+  window.MathJax = {
+    options: {
+      renderActions: {
+        findScript: [10, function (doc) {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/);
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+            const text = document.createTextNode('');
+            node.parentNode.replaceChild(text, node);
+            math.start = { node: text, delim: '', n: 0 };
+            math.end = { node: text, delim: '', n: 0 };
+            doc.math.push(math);
+          }
+        }, '']
+      }
+    }
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<!-- Mermaid: renders ```mermaid code blocks as diagrams -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  document.querySelectorAll('pre code.language-mermaid, div.language-mermaid pre code').forEach((el) => {
+    const container = el.closest('div.language-mermaid') || el.closest('pre');
+    const graph = document.createElement('pre');
+    graph.className = 'mermaid';
+    graph.textContent = el.textContent;
+    container.replaceWith(graph);
+  });
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>

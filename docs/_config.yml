@@ -1,0 +1,8 @@
+title: Course on AI Engineering
+description: Lecture notes and on-screen material for the AI Engineering YouTube course
+markdown: kramdown
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true

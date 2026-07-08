@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 470" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4F46E5"/>
+    </marker>
+  </defs>
+  <style>
+    .lane  { fill:#F4F4F9; stroke:#E7E5DF; rx:14; }
+    .box   { fill:#FFFFFF; stroke:#4F46E5; stroke-width:1.5; rx:10; }
+    .soft  { fill:#EEF0FE; stroke:#4F46E5; stroke-width:1.5; rx:10; }
+    .t     { font-size:14px; font-weight:600; fill:#1C2321; text-anchor:middle; }
+    .s     { font-size:11px; fill:#5B6663; text-anchor:middle; }
+    .lanet { font-size:11px; font-weight:600; fill:#4F46E5; letter-spacing:2px; }
+    .wire  { stroke:#4F46E5; stroke-width:1.6; fill:none; marker-end:url(#arr); }
+  </style>
+
+  <!-- OFFLINE lane -->
+  <rect class="lane" x="10" y="10" width="840" height="200" rx="14"/>
+  <text class="lanet" x="30" y="36">OFFLINE · INGEST (RUNS ONCE)</text>
+
+  <rect class="box" x="30" y="80" width="130" height="70"/>
+  <text class="t" x="95" y="110">PDF manual</text>
+  <text class="s" x="95" y="128">pages + figures</text>
+
+  <rect class="box" x="220" y="52" width="150" height="56"/>
+  <text class="t" x="295" y="76">Text chunks</text>
+  <text class="s" x="295" y="92">~700 chars each</text>
+
+  <rect class="box" x="220" y="128" width="150" height="56"/>
+  <text class="t" x="295" y="152">Figures</text>
+  <text class="s" x="295" y="168">PNG ≥ 220 px</text>
+
+  <rect class="soft" x="430" y="52" width="170" height="56"/>
+  <text class="t" x="515" y="76">BGE encoder</text>
+  <text class="s" x="515" y="92">text → 384-d vector</text>
+
+  <rect class="soft" x="430" y="128" width="170" height="56"/>
+  <text class="t" x="515" y="152">SigLIP 2 encoder</text>
+  <text class="s" x="515" y="168">image → 768-d vector</text>
+
+  <rect class="box" x="660" y="52" width="170" height="56"/>
+  <text class="t" x="745" y="76">Text index</text>
+  <text class="s" x="745" y="92">FAISS, cosine</text>
+
+  <rect class="box" x="660" y="128" width="170" height="56"/>
+  <text class="t" x="745" y="152">Image index</text>
+  <text class="s" x="745" y="168">FAISS, cosine</text>
+
+  <path class="wire" d="M160,100 L220,84"/>
+  <path class="wire" d="M160,130 L220,152"/>
+  <path class="wire" d="M370,80 L430,80"/>
+  <path class="wire" d="M370,156 L430,156"/>
+  <path class="wire" d="M600,80 L660,80"/>
+  <path class="wire" d="M600,156 L660,156"/>
+
+  <!-- ONLINE lane -->
+  <rect class="lane" x="10" y="230" width="840" height="230" rx="14"/>
+  <text class="lanet" x="30" y="256">ONLINE · EVERY REQUEST</text>
+
+  <rect class="box" x="30" y="300" width="130" height="70"/>
+  <text class="t" x="95" y="330">Question</text>
+  <text class="s" x="95" y="348">text, or an image</text>
+
+  <rect class="soft" x="220" y="272" width="150" height="56"/>
+  <text class="t" x="295" y="296">Embed query</text>
+  <text class="s" x="295" y="312">BGE + SigLIP 2</text>
+
+  <rect class="box" x="430" y="272" width="170" height="56"/>
+  <text class="t" x="515" y="296">Top-k search</text>
+  <text class="s" x="515" y="312">4 chunks + 2 figures</text>
+
+  <rect class="soft" x="220" y="376" width="380" height="56"/>
+  <text class="t" x="410" y="400">Prompt assembly</text>
+  <text class="s" x="410" y="416">system rules + excerpts + real images + question</text>
+
+  <rect class="box" x="660" y="345" width="170" height="86"/>
+  <text class="t" x="745" y="380">Qwen3-VL-8B</text>
+  <text class="s" x="745" y="398">reads text and figures,</text>
+  <text class="s" x="745" y="413">answers with citations</text>
+
+  <path class="wire" d="M160,325 L220,306"/>
+  <path class="wire" d="M370,300 L430,300"/>
+  <path class="wire" d="M515,328 C515,352 470,362 445,376"/>
+  <path class="wire" d="M600,404 L660,398"/>
+  <!-- indexes feed the online search -->
+  <path class="wire" stroke-dasharray="5 4" d="M745,184 L745,240 C745,268 640,262 604,288"/>
+</svg>

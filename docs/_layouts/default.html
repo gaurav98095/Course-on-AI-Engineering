@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title | default: site.title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFAF7; --ink:#1C2321; --muted:#5B6663; --faint:#9AA5A1;
+    --accent:#4F46E5; --accent-soft:#EEF0FE; --line:#E7E5DF; --codebg:#F2F1EC;
+    --maxw:720px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+       font-family:'Source Serif 4',Georgia,serif; font-size:19px; line-height:1.8;
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
+
+  /* scroll progress bar */
+  .bar{position:fixed; top:0; left:0; height:3px; width:0; background:var(--accent); z-index:50}
+
+  /* site header (kicker) and footer */
+  .site-head{padding:2.4rem 0 0}
+  .site-head a{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px;
+               letter-spacing:.14em; text-transform:uppercase;
+               color:var(--accent); text-decoration:none}
+  .site-foot{padding:4rem 0 6rem; text-align:center;
+             font-family:'JetBrains Mono',monospace; font-size:12.5px;
+             letter-spacing:.06em; color:var(--faint)}
+
+  main{padding:1rem 0 3rem; counter-reset:section}
+
+  /* headings */
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; font-weight:600;
+           line-height:1.14; letter-spacing:-.015em}
+  h1{font-size:clamp(34px,6vw,52px); margin:1.5rem 0 1.3rem}
+  h2{font-size:clamp(24px,4.2vw,32px); margin:3.4rem 0 1rem; padding-top:2.6rem;
+     border-top:1px solid var(--line)}
+  /* numbered sections: the lecture's spine */
+  h2::before{counter-increment:section; content:counter(section,decimal-leading-zero);
+             display:block; font-family:'JetBrains Mono',monospace; font-weight:500;
+             font-size:14px; letter-spacing:.12em; color:var(--accent); margin-bottom:.5rem}
+  h3{font-size:21px; margin:2.2rem 0 .6rem}
+
+  p{margin:0 0 1.3rem}
+  a{color:var(--ink); text-decoration:underline; text-decoration-color:var(--accent);
+    text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--accent)}
+  strong{font-weight:600}
+  em{font-style:italic}
+  hr{height:1px; background:var(--line); border:0; margin:3rem 0}
+
+  /* the one-sentence summary under the title = large muted lede, no box */
+  h1 + blockquote{border:0; padding:0; margin:0 0 2.4rem; background:none}
+  h1 + blockquote p{font-size:21px; line-height:1.65; color:var(--muted); font-style:italic}
+
+  /* callout blockquotes: soft card, not a bare rule */
+  blockquote{margin:2rem 0; padding:1rem 1.4rem;
+             background:var(--accent-soft); border-radius:12px;
+             border-left:3px solid var(--accent)}
+  blockquote p{margin:.35rem 0}
+
+  /* lists */
+  ul,ol{padding-left:1.4rem; margin:0 0 1.3rem}
+  li{margin:.4rem 0}
+  li::marker{color:var(--accent)}
+
+  /* tables */
+  table{border-collapse:collapse; margin:1.9rem 0; width:100%;
+        display:block; overflow-x:auto;
+        font-family:'Space Grotesk',sans-serif; font-size:15.5px; line-height:1.55}
+  th{font-weight:600; font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+     text-align:left; color:var(--accent);
+     border-bottom:2px solid var(--ink); padding:.5rem 1rem .45rem 0}
+  td{border-bottom:1px solid var(--line); padding:.6rem 1rem .6rem 0; vertical-align:top}
+
+  /* code */
+  code{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.82em;
+       background:var(--codebg); padding:.14em .38em; border-radius:5px}
+  pre{background:var(--codebg); border:1px solid var(--line); border-radius:12px;
+      padding:1.1rem 1.3rem; overflow-x:auto; margin:1.9rem 0; line-height:1.65}
+  pre code{background:none; border:0; padding:0; font-size:14.5px}
+  .highlight .c,.highlight .c1,.highlight .cm{color:var(--faint); font-style:italic}
+  .highlight .k,.highlight .kn,.highlight .kd,.highlight .ow{color:var(--accent); font-weight:500}
+  .highlight .s,.highlight .s1,.highlight .s2,.highlight .sd{color:#8A5A00}
+  .highlight .mi,.highlight .mf{color:#6D5BA6}
+
+  /* figures */
+  figure{margin:2.5rem auto; text-align:center}
+  figure img{max-width:100%; border-radius:12px}
+  figure.portrait img{max-width:290px}
+  figcaption{margin-top:.65rem; font-family:'Space Grotesk',sans-serif;
+             font-size:13.5px; color:var(--faint); line-height:1.6}
+  p img{max-width:100%; border-radius:12px}
+  .mermaid{margin:2.3rem 0; text-align:center}
+
+  /* "Remember" chips: the takeaway that closes each section */
+  .remember{font-family:'Space Grotesk',sans-serif; font-size:16.5px; line-height:1.6;
+            background:#fff; border:1.5px dashed var(--accent); border-radius:12px;
+            padding:.85rem 1.25rem; margin:2rem 0}
+  .remember::before{content:"Remember"; display:block;
+            font-family:'JetBrains Mono',monospace; font-size:11.5px;
+            letter-spacing:.14em; text-transform:uppercase;
+            color:var(--accent); margin-bottom:.35rem}
+
+  /* lecture list on the course home */
+  .lectures{list-style:none; padding:0; margin:1.8rem 0}
+  .lectures li{margin:0 0 14px}
+  .lectures a{display:flex; align-items:center; gap:1.2rem; padding:1.05rem 1.35rem;
+              background:#fff; border:1px solid var(--line); border-radius:14px;
+              text-decoration:none; transition:border-color .18s ease, transform .18s ease}
+  .lectures a:hover{border-color:var(--accent); transform:translateX(4px); color:inherit}
+  .lectures .num{font-family:'JetBrains Mono',monospace; font-weight:500; font-size:15px;
+                 letter-spacing:.06em; color:var(--accent); flex-shrink:0}
+  .lectures .t{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px;
+               line-height:1.3}
+  .lectures .d{font-size:15px; color:var(--muted); margin-top:.2rem; line-height:1.55}
+  .lectures .go{margin-left:auto; flex-shrink:0; color:var(--accent);
+                font-family:'Space Grotesk',sans-serif; font-size:20px;
+                transition:transform .18s ease}
+  .lectures a:hover .go{transform:translateX(4px)}
+  .lectures .soon{opacity:.55}
+  .lectures .soon:hover{border-color:var(--line); transform:none}
+
+  /* collapsible details blocks */
+  details{margin:1.9rem 0; border:1px solid var(--line); background:#fff;
+          border-radius:12px; padding:1rem 1.3rem}
+  summary{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px;
+          color:var(--accent); cursor:pointer}
+
+  /* lecture navigation footer: the last paragraph of the page */
+  main > p:last-child{text-align:center; font-family:'Space Grotesk',sans-serif;
+                      font-weight:500; font-size:16.5px; margin-top:2.6rem}
+  main > p:last-child a{text-decoration:none; color:var(--accent)}
+
+  /* reveal on scroll */
+  .reveal{opacity:0; transform:translateY(14px);
+          transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1; transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1; transform:none; transition:none}}
+</style>
+{% include head-custom.html %}
+</head>
+<body>
+<div class="bar" id="bar"></div>
+
+<div class="site-head wrap">
+  <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+</div>
+
+<main class="wrap">
+{{ content }}
+</main>
+
+<footer class="site-foot">measure &rarr; optimize &rarr; ship &rarr; repeat</footer>
+
+<script>
+  // scroll progress bar
+  const bar = document.getElementById('bar');
+  addEventListener('scroll', () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  }, {passive: true});
+
+  // gentle reveal-on-scroll for section-level elements
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, {rootMargin: '0px 0px -8% 0px'});
+  document.querySelectorAll('main h2, main figure, main table, main pre, main blockquote')
+    .forEach(el => { el.classList.add('reveal'); io.observe(el); });
+</script>
+</body>
+</html>
