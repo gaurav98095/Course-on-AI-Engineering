@@ -198,11 +198,11 @@ Same five questions as Lecture 01's baseline, but now through HTTP. Ballpark on 
 
 No new derivation today — just the equation that names the parts, because from now on every latency number we measure decomposes as:
 
-$$
+\[
 T_{\text{request}} \;=\; T_{\text{network}} \;+\; T_{\text{queue}} \;+\; T_{\text{retrieve}} \;+\; T_{\text{prefill}} \;+\; T_{\text{decode}}
-$$
+\]
 
-Today we measured: network ≈ 0.05 s, queue = 0 (one polite caller), retrieve ≈ 0.04 s, prefill + decode ≈ 9 s. Every optimization in this course attacks exactly one term — and next lecture, $T_{\text{queue}}$ stops being zero and tries to eat the whole equation. That story has beautiful math (Little's law, why p95 explodes), and it gets its own deep-dive page next time.
+Today we measured: network ≈ 0.05 s, queue = 0 (one polite caller), retrieve ≈ 0.04 s, prefill + decode ≈ 9 s. Every optimization in this course attacks exactly one term — and next lecture, \(T_{\text{queue}}\) stops being zero and tries to eat the whole equation. That story has beautiful math (Little's law, why p95 explodes), and it gets its own deep-dive page next time.
 
 ## Where It Breaks
 
@@ -231,7 +231,7 @@ We put a phone number on the model: `setup` loads once, `decode_request` defines
 
 > **What should you remember?**
 > - Load in `setup`, never in `predict` — cold start is paid once, not per request.
-> - $T_{\text{request}} = T_{\text{net}} + T_{\text{queue}} + T_{\text{retrieve}} + T_{\text{prefill}} + T_{\text{decode}}$: know which term you're measuring.
+> - \(T_{\text{request}} = T_{\text{net}} + T_{\text{queue}} + T_{\text{retrieve}} + T_{\text{prefill}} + T_{\text{decode}}\): know which term you're measuring.
 > - Deploying changed who can call, not how much can be served: concurrency is still 1.
 
 ## Resources

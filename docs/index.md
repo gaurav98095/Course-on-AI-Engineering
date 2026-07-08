@@ -49,12 +49,13 @@ Ship a real multimodal RAG on stock code, deploy it, and load-test it until it b
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/04-the-gpu-architecture-and-roofline.html">
       <span class="num">04</span>
       <span>
         <span class="t">The GPU: Architecture, HBM, and the Roofline Model</span>
-        <span class="d" style="display:block">SMs, HBM, and one plot that predicts whether any workload is compute-bound or memory-bound.</span>
+        <span class="d" style="display:block">SMs, HBM, and one plot that predicts — and explains Lecture 03's &lt;1% GPU utilization — whether any workload is compute-bound or memory-bound.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -295,6 +296,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 
 - [Math Deep Dive 01 — The Geometry of Retrieval](math/01-geometry-of-retrieval.md) — dot products, cosine similarity, contrastive training, and why one vector space can hold both images and text.
 - [Math Deep Dive 03 — Queues, Percentiles, and Why p95 Explodes](math/03-queues-and-percentiles.md) — Little's law from scratch, M/M/1, the 1/(1−ρ) hockey stick, and how load tests lie.
+- [Math Deep Dive 04 — Deriving the Roofline Model](math/04-roofline-model.md) — the min(compute, AI×bandwidth) formula, arithmetic intensity of a GEMM, and why batching is the same lever as more tokens.
 
 ## What you will be able to do
 

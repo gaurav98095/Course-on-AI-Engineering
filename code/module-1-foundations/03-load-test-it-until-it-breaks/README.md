@@ -56,4 +56,4 @@ watch -n 1 nvidia-smi
 
 ---
 
-Previous: [`../02-deploy-it-on-a-gpu/`](../02-deploy-it-on-a-gpu/) · This is the last lecture published in Module 1 so far — more lectures land here as the course continues.
+Previous: [`../02-deploy-it-on-a-gpu/`](../02-deploy-it-on-a-gpu/) · Next: [`../04-the-gpu-architecture-and-roofline/`](../04-the-gpu-architecture-and-roofline/) — explaining the <1% GPU utilization number this lecture just measured.

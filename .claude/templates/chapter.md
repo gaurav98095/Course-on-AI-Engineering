@@ -7,7 +7,11 @@ title: "Lecture {{lecture_number}} — {{chapter_title}}"
 
 > **In one sentence:** {{one_sentence_why_it_matters}}
 
-<!-- Use plain bold blockquotes, never GitHub [!summary]/[!tip] alerts — those render as literal text on GitHub Pages. -->
+<!-- Use plain bold blockquotes, never GitHub [!summary]/[!tip] alerts — those render as literal text on GitHub Pages.
+     MATH DELIMITERS: always write inline math as \(...\) and display math as \[...\] — never $...$ or $$...$$.
+     Kramdown's $-based math parsing is unreliable (it inconsistently converts, or silently leaves LaTeX as literal
+     text), and this site's prose also quotes real dollar amounts ("~$1/hr"), so a $-based delimiter is unsafe.
+     \(\)/\[\] are passed through untouched by kramdown and are MathJax's default delimiters — no config needed. -->
 
 ## Learning Objectives
 
@@ -83,9 +87,9 @@ title: "Lecture {{lecture_number}} — {{chapter_title}}"
 
 {{math_intuition_and_final_formula_only}}
 
-$$
+\[
 {{key_equation}}
-$$
+\]
 
 {{worked_running_example}}
 

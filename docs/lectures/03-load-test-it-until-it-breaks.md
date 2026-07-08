@@ -44,9 +44,9 @@ Three quantities, one relationship — worth memorizing before the math page mak
 
 | Name | Symbol | At our shop |
 | --- | --- | --- |
-| Service time | $S$ | ~7 s per answer |
-| Throughput ceiling | $1/S$ | ~8.5 answers/min, *no matter what* |
-| Latency at concurrency $C$ | $\approx C \times S$ | 10 people in line → 70 s each |
+| Service time | \(S\) | ~7 s per answer |
+| Throughput ceiling | \(1/S\) | ~8.5 answers/min, *no matter what* |
+| Latency at concurrency \(C\) | \(\approx C \times S\) | 10 people in line → 70 s each |
 
 Latency curves bend; throughput ceilings don't. When you see flat throughput and climbing latency, you're not "slowing down" — you're queueing.
 {: .remember}
@@ -61,7 +61,7 @@ Same environments as before — server in the Studio, and one honesty rule for l
 | ⚡ Lightning Studio, terminal 2 | `load_test.py` — the swarm (same machine: we're measuring the *server*, not the internet) |
 | 💻 Your laptop | Optional: rerun the swarm over the public URL later and compare |
 
-The generator is **closed-loop**: each virtual user asks, waits for the full answer, then immediately asks again. $C$ users means at most $C$ requests in flight — a faithful model of $C$ impatient support agents.
+The generator is **closed-loop**: each virtual user asks, waits for the full answer, then immediately asks again. \(C\) users means at most \(C\) requests in flight — a faithful model of \(C\) impatient support agents.
 
 ## The Build
 
@@ -92,7 +92,7 @@ async def user(client, url, deadline, latencies, errors):
             errors.append(type(e).__name__)
 ```
 
-`asyncio.gather` launches $C$ of these; at the end we sort the latencies and read off percentiles. Note `max_new_tokens=200` — shorter answers than the baseline, so each sweep level fits in 3 minutes.
+`asyncio.gather` launches \(C\) of these; at the end we sort the latencies and read off percentiles. Note `max_new_tokens=200` — shorter answers than the baseline, so each sweep level fits in 3 minutes.
 
 ### Step 2 — Sanity at concurrency 1
 
@@ -143,7 +143,7 @@ Three stories in one table:
 
 **Throughput is a flat line.** ~8.5 requests/min at every level. That is the till's speed, and no amount of demand changes it.
 
-**Latency is a straight ramp.** p50 ≈ $C \times 7$ s, exactly as the mental model predicted. At 16 concurrent users, two minutes per answer.
+**Latency is a straight ramp.** p50 ≈ \(C \times 7\) s, exactly as the mental model predicted. At 16 concurrent users, two minutes per answer.
 
 **Then the cliff.** At 32, requests start outliving the server's 120 s timeout. They don't come back slow — they **don't come back**. Latency problems become availability problems at a hard edge, not a slope.
 
@@ -157,9 +157,9 @@ While the sweep runs, ⚡ *in a third terminal:*
 watch -n 1 nvidia-smi
 ```
 
-`GPU-Util: 100%`. The card *swears* it's maxed out. But look at our own numbers: aggregate tokens/sec at $C=16$ is the same as at $C=1$. Busy is not the same as productive.
+`GPU-Util: 100%`. The card *swears* it's maxed out. But look at our own numbers: aggregate tokens/sec at \(C=16\) is the same as at \(C=1\). Busy is not the same as productive.
 
-Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly $2 \times 8\text{B} = 16$ GFLOPs. At ~30 tokens/sec that's ~**0.5 TFLOP/s** of actual work — on a card rated for ~**181 TFLOP/s** of bf16 compute.
+Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly \(2 \times 8\text{B} = 16\) GFLOPs. At ~30 tokens/sec that's ~**0.5 TFLOP/s** of actual work — on a card rated for ~**181 TFLOP/s** of bf16 compute.
 
 **We are using well under 1% of the machine we're paying for.**
 
@@ -176,7 +176,7 @@ This lecture's artifact *is* the sweep table — save it; the whole course repor
 | --- | --- | --- |
 | Throughput ceiling | ~8.5 req/min ≈ 510 answers/hr | One operator |
 | p50 @ C=16 | ~110 s | Unusable |
-| First errors | C≈18 (when $C \times S$ crosses the 120 s timeout) | The cliff |
+| First errors | C≈18 (when \(C \times S\) crosses the 120 s timeout) | The cliff |
 | GPU compute actually used | < 1% of rated bf16 FLOPs | The scandal |
 | Cost per answer | ~\$0.002 (at ~\$1/hr ÷ 510/hr) — **at every C** | Queueing never made it cheaper |
 
@@ -184,17 +184,17 @@ This lecture's artifact *is* the sweep table — save it; the whole course repor
 
 Everything in that table obeys one law you can derive on a napkin. **Little's law**: in any stable system, the average number of requests inside it, the arrival rate, and the time each request spends inside are locked together:
 
-$$
+\[
 L \;=\; \lambda \, W
-$$
+\]
 
-Our closed loop pins $L = C$ (each user always has exactly one request in flight) and the server pins throughput at $\lambda = 1/S$. Solve for the wait:
+Our closed loop pins \(L = C\) (each user always has exactly one request in flight) and the server pins throughput at \(\lambda = 1/S\). Solve for the wait:
 
-$$
+\[
 W \;=\; \frac{L}{\lambda} \;=\; C \times S
-$$
+\]
 
-— which is precisely the straight ramp in our table: $16 \times 7 \approx 110$ s. One worked number, zero mystery left.
+— which is precisely the straight ramp in our table: \(16 \times 7 \approx 110\) s. One worked number, zero mystery left.
 
 The *open* world — real users arriving whenever they want, not waiting politely — is crueler: waits explode *before* you reach the ceiling, and p95 explodes fastest.
 
@@ -213,8 +213,8 @@ Today the *system* broke on schedule. What can break silently is the **measureme
 
 ## Exercises
 
-1. **Shrink the answers.** Rerun the sweep with `max_new_tokens=50` in `load_test.py`. Predict the new ceiling from $1/S$ *before* you run — then check.
-2. **Predict the cliff.** With your measured $S$ and the 120 s timeout, compute the concurrency where errors must begin. Verify with a targeted `--concurrency` run.
+1. **Shrink the answers.** Rerun the sweep with `max_new_tokens=50` in `load_test.py`. Predict the new ceiling from \(1/S\) *before* you run — then check.
+2. **Predict the cliff.** With your measured \(S\) and the 120 s timeout, compute the concurrency where errors must begin. Verify with a targeted `--concurrency` run.
 3. **Cost per answer.** Using your Studio's hourly price, compute \$/answer at C = 1, 8, 16. Explain in one sentence why it barely moves — and what, therefore, is the *only* way to make answers cheaper.
 4. **The internet tax.** 💻 From your laptop, rerun `--concurrency 4` against the public URL. Compare p50 with the in-Studio run: how many milliseconds is the network worth compared to the queue?
 5. **Draw it.** Plot p50 vs concurrency from your sweep (any tool, even a notebook). Mark the timeout as a horizontal line. You've just drawn your first capacity plan.
@@ -224,7 +224,7 @@ Today the *system* broke on schedule. What can break silently is the **measureme
 We built a swarm, calibrated it at C=1, and marched it up to C=32. Throughput never moved — ~8.5 answers/min, the single-operator ceiling. Latency climbed the straight ramp Little's law demands, then fell off the timeout cliff into errors. And under it all, `nvidia-smi` claimed 100% while the GPU used less than 1% of its arithmetic — busy hauling weights, not computing. The system didn't fail; it queued. Fixing *that* is Module 2.
 
 > **What should you remember?**
-> - Flat throughput + linear latency = queueing. $L = \lambda W$ explains every number in the sweep.
+> - Flat throughput + linear latency = queueing. \(L = \lambda W\) explains every number in the sweep.
 > - Timeouts turn slow into down at a hard edge; someone chooses where.
 > - "100% GPU util" ≠ compute: decode at batch 1 uses <1% of the ALUs. The 100× we're about to chase is real.
 
@@ -236,4 +236,4 @@ We built a swarm, calibrated it at C=1, and marched it up to C=32. Throughput ne
 
 ---
 
-[← Previous: Lecture 02 — Deploy It on a GPU](02-deploy-it-on-a-gpu.md) · [Course Home](../index.md)
+[← Previous: Lecture 02 — Deploy It on a GPU](02-deploy-it-on-a-gpu.md) · [Course Home](../index.md) · [Next: Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model →](04-the-gpu-architecture-and-roofline.md)

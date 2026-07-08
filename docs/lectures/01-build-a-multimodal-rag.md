@@ -284,19 +284,19 @@ Everything retrieval did today reduces to one question: *how similar are two vec
 
 The intuition: an embedding model maps meaning to **direction**. Texts about stalls point one way, texts about instruments another. Similar meaning, similar direction — and the measure of "similar direction" is the angle.
 
-$$
+\[
 \cos\theta \;=\; \frac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{b}\rVert}
 \qquad\xrightarrow{\;\lVert\mathbf{a}\rVert=\lVert\mathbf{b}\rVert=1\;}\qquad
 \cos\theta \;=\; \mathbf{a}\cdot\mathbf{b}
-$$
+\]
 
-One worked number, small enough to check by hand. Take three unit vectors in 2-D: a question $q=(0.6,\,0.8)$, chunk $c_1=(0.8,\,0.6)$, chunk $c_2=(-0.6,\,0.8)$.
+One worked number, small enough to check by hand. Take three unit vectors in 2-D: a question \(q=(0.6,\,0.8)\), chunk \(c_1=(0.8,\,0.6)\), chunk \(c_2=(-0.6,\,0.8)\).
 
-$$
+\[
 q\cdot c_1 = 0.48+0.48 = 0.96 \qquad q\cdot c_2 = -0.36+0.64 = 0.28
-$$
+\]
 
-$c_1$ wins, 0.96 to 0.28 — two multiplications and an add per pair. FAISS just does this against every card in the catalog, very fast.
+\(c_1\) wins, 0.96 to 0.28 — two multiplications and an add per pair. FAISS just does this against every card in the catalog, very fast.
 
 > **Want the full derivation?** Why normalization makes dot = cosine, how contrastive training *creates* these spaces, why images and captions can share one, and what recall@k really measures:
 > [Math Deep Dive 01 — The Geometry of Retrieval →](../math/01-geometry-of-retrieval.md)

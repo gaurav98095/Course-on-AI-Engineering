@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 460" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .axis  { stroke:#5B6663; stroke-width:1.5; }
+    .grid  { stroke:#E7E5DF; stroke-width:1; }
+    .slope { stroke:#4F46E5; stroke-width:2.5; fill:none; }
+    .ceil  { stroke:#4F46E5; stroke-width:2.5; fill:none; stroke-dasharray:0; }
+    .ridge { stroke:#9AA5A1; stroke-width:1.5; stroke-dasharray:4 4; }
+    .lbl   { font-size:13px; fill:#1C2321; }
+    .lblm  { font-size:11.5px; fill:#5B6663; }
+    .tag   { font-size:12.5px; font-weight:600; fill:#4F46E5; }
+    .pt    { fill:#1C2321; }
+    .ptlbl { font-size:12.5px; font-weight:600; fill:#1C2321; }
+  </style>
+
+  <!-- axes -->
+  <line class="axis" x1="90" y1="380" x2="740" y2="380"/>
+  <line class="axis" x1="90" y1="380" x2="90" y2="30"/>
+  <text class="lbl" x="415" y="415" text-anchor="middle">Arithmetic intensity — FLOPs moved per byte (log scale)</text>
+  <text class="lbl" x="34" y="205" text-anchor="middle" transform="rotate(-90 34 205)">Achieved TFLOP/s (log scale)</text>
+
+  <!-- faint log-grid -->
+  <g class="grid">
+    <line x1="220" y1="30" x2="220" y2="380"/>
+    <line x1="350" y1="30" x2="350" y2="380"/>
+    <line x1="480" y1="30" x2="480" y2="380"/>
+    <line x1="610" y1="30" x2="610" y2="380"/>
+    <line x1="90" y1="300" x2="740" y2="300"/>
+    <line x1="90" y1="220" x2="740" y2="220"/>
+    <line x1="90" y1="140" x2="740" y2="140"/>
+    <line x1="90" y1="60"  x2="740" y2="60"/>
+  </g>
+
+  <!-- memory-bound slope (bandwidth ceiling): rises until it hits the compute ceiling -->
+  <path class="slope" d="M90,380 L430,60"/>
+  <!-- compute-bound ceiling: flat once you're right of the ridge -->
+  <path class="ceil" d="M430,60 L740,60"/>
+
+  <!-- ridge point marker -->
+  <line class="ridge" x1="430" y1="30" x2="430" y2="380"/>
+  <text class="tag" x="430" y="22" text-anchor="middle">ridge point</text>
+
+  <!-- region labels -->
+  <text class="lblm" x="180" y="330">memory-bound region</text>
+  <text class="lblm" x="180" y="345">(bandwidth sets the ceiling)</text>
+  <text class="lblm" x="580" y="90">compute-bound region</text>
+  <text class="lblm" x="580" y="105">(FLOP/s sets the ceiling)</text>
+
+  <!-- decode point: low AI, sitting right on the memory-bound slope -->
+  <circle class="pt" cx="150" cy="322" r="6"/>
+  <text class="ptlbl" x="164" y="318">decode</text>
+  <text class="lblm" x="164" y="333">batch 1 · one token at a time</text>
+  <text class="lblm" x="164" y="346">re-reads every weight per token</text>
+
+  <!-- prefill point: high AI, sitting on the compute ceiling -->
+  <circle class="pt" cx="590" cy="60" r="6"/>
+  <text class="ptlbl" x="604" y="56">prefill</text>
+  <text class="lblm" x="604" y="71">hundreds–thousands of tokens</text>
+  <text class="lblm" x="604" y="84">reuses each weight many times</text>
+
+  <!-- axis origin -->
+  <text class="lblm" x="90" y="398" text-anchor="middle">low</text>
+  <text class="lblm" x="740" y="398" text-anchor="middle">high</text>
+</svg>

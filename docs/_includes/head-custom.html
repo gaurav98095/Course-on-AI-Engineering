@@ -1,6 +1,13 @@
-<!-- MathJax 3, wired for kramdown: Jekyll turns $$...$$ into
-     <script type="math/tex"> tags, so we register a renderAction
-     that feeds those tags to MathJax. -->
+<!-- MathJax 3. All math in this site's markdown is written as \(...\) (inline)
+     and \[...\] (display) directly — never $...$ or $$...$$. Kramdown has no
+     opinion about backslash-paren/bracket sequences, so it passes them through
+     untouched; MathJax's TeX package recognizes both by default, no config
+     needed. (We deliberately avoid $...$ as an inline delimiter: this site's
+     prose also quotes real dollar amounts, e.g. "~$1/hr", and a $-delimiter
+     would misfire on those.)
+     The renderAction below is a harmless fallback in case kramdown ever emits
+     its own <script type="math/tex"> tags (its behavior for $$ is inconsistent
+     across parsers) — it's dead code as long as every equation uses \(\)/\[\]. -->
 <script>
   window.MathJax = {
     options: {
