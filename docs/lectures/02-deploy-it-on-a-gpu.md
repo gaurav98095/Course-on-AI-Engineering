@@ -198,11 +198,11 @@ Same five questions as Lecture 01's baseline, but now through HTTP. Ballpark on 
 
 No new derivation today — just the equation that names the parts, because from now on every latency number we measure decomposes as:
 
-\[
+\\[
 T_{\text{request}} \;=\; T_{\text{network}} \;+\; T_{\text{queue}} \;+\; T_{\text{retrieve}} \;+\; T_{\text{prefill}} \;+\; T_{\text{decode}}
-\]
+\\]
 
-Today we measured: network ≈ 0.05 s, queue = 0 (one polite caller), retrieve ≈ 0.04 s, prefill + decode ≈ 9 s. Every optimization in this course attacks exactly one term — and next lecture, \(T_{\text{queue}}\) stops being zero and tries to eat the whole equation. That story has beautiful math (Little's law, why p95 explodes), and it gets its own deep-dive page next time.
+Today we measured: network ≈ 0.05 s, queue = 0 (one polite caller), retrieve ≈ 0.04 s, prefill + decode ≈ 9 s. Every optimization in this course attacks exactly one term — and next lecture, \\(T_{\text{queue}}\\) stops being zero and tries to eat the whole equation. That story has beautiful math (Little's law, why p95 explodes), and it gets its own deep-dive page next time.
 
 ## Where It Breaks
 
@@ -223,7 +223,7 @@ A service's weakest points are rarely the model: they're the door (auth), the li
 2. **Schema power.** The endpoint already accepts `max_new_tokens`. Call with 50 vs 400 and compare `seconds` — you just built a cost knob into your API.
 3. **Measure the network honestly.** Run `client.py` from your laptop against the public URL and compare `overhead` with the in-Studio value. Where did the extra go?
 4. **Two callers, one operator.** Open two terminals, fire `client.py` in both simultaneously, and note both wall times. Write the second number down — Lecture 03 explains it exactly.
-5. **Parse your logs.** After 10 requests, pipe the server output through `grep '\[req\]'` and compute mean tok/s with `awk`. Congratulations: you built your first metrics pipeline.
+5. **Parse your logs.** After 10 requests, pipe the server output through `grep '\\[req\\]'` and compute mean tok/s with `awk`. Congratulations: you built your first metrics pipeline.
 
 ## Summary
 
@@ -231,7 +231,7 @@ We put a phone number on the model: `setup` loads once, `decode_request` defines
 
 > **What should you remember?**
 > - Load in `setup`, never in `predict` — cold start is paid once, not per request.
-> - \(T_{\text{request}} = T_{\text{net}} + T_{\text{queue}} + T_{\text{retrieve}} + T_{\text{prefill}} + T_{\text{decode}}\): know which term you're measuring.
+> - \\(T_{\text{request}} = T_{\text{net}} + T_{\text{queue}} + T_{\text{retrieve}} + T_{\text{prefill}} + T_{\text{decode}}\\): know which term you're measuring.
 > - Deploying changed who can call, not how much can be served: concurrency is still 1.
 
 ## Resources

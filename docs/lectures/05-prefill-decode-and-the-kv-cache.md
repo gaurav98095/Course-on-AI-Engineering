@@ -44,8 +44,8 @@ Two workloads, one model, radically different shapes:
 
 | | Prefill | Decode |
 | --- | --- | --- |
-| Input | The whole prompt, \(t\) tokens | One token |
-| Parallelism | All \(t\) tokens processed together | Strictly sequential, one at a time |
+| Input | The whole prompt, \\(t\\) tokens | One token |
+| Parallelism | All \\(t\\) tokens processed together | Strictly sequential, one at a time |
 | Roofline regime (Lecture 04) | Compute-bound (high arithmetic intensity) | Memory-bound (arithmetic intensity ≈ 1) |
 | What it produces | The **first** output token, plus a full KV cache | One new token, plus one new cache entry |
 | Felt as | TTFT — time to first token | TPOT — time per output token |
@@ -68,9 +68,9 @@ Watch what the KV cache actually holds: for every layer, for every token ever pr
 
 | Symbol | Course model's real value | Source |
 | --- | --- | --- |
-| Layers (\(L\)) | 36 | `config.json` |
-| KV heads (\(H\)) | 8 (of 32 query heads) | `config.json` — this model uses GQA |
-| Head dimension (\(D\)) | 128 | `config.json` |
+| Layers (\\(L\\)) | 36 | `config.json` |
+| KV heads (\\(H\\)) | 8 (of 32 query heads) | `config.json` — this model uses GQA |
+| Head dimension (\\(D\\)) | 128 | `config.json` |
 | Precision | 2 bytes (bf16) | how we serve it |
 
 <figure>
@@ -172,11 +172,11 @@ The reason this lecture exists — put a real number on something Lecture 01 mea
 
 The intuition: every token, at every layer, leaves behind exactly one key vector and one value vector. Stack them all up and count the bytes:
 
-\[
+\\[
 \text{cache bytes} = 2 \times L \times H \times D \times t \times b \times s
-\]
+\\]
 
-One worked number: our course model, one token, one layer isn't even the full story — do the whole model at once. \(L{=}36\), \(H{=}8\), \(D{=}128\), batch \(b{=}1\), bf16 \(s{=}2\): per-token cache is \(2 \times 36 \times 8 \times 128 \times 2 = 147{,}456\) bytes — **144 KiB for a single token**, before it has said anything.
+One worked number: our course model, one token, one layer isn't even the full story — do the whole model at once. \\(L{=}36\\), \\(H{=}8\\), \\(D{=}128\\), batch \\(b{=}1\\), bf16 \\(s{=}2\\): per-token cache is \\(2 \times 36 \times 8 \times 128 \times 2 = 147{,}456\\) bytes — **144 KiB for a single token**, before it has said anything.
 
 > **Want the full derivation?** Why the formula is linear in every one of its five variables, what GQA already bought us for free, and where the KV cache math breaks down at extreme context lengths:
 > [Math Deep Dive 05 — Deriving the KV Cache Formula →](../math/05-kv-cache-math.md)
@@ -195,7 +195,7 @@ One worked number: our course model, one token, one layer isn't even the full st
 2. **Predict before you measure.** Using the formula, compute the theoretical cache size for a 500-token conversation at batch 4, before running anything. Then adapt `kv_cache.py` to check it.
 3. **Multiply query heads instead.** Recompute the cache-size table using `num_attention_heads=32` in place of `num_key_value_heads=8` — the number a model *without* GQA would need. How much bigger is every row?
 4. **Where does 288 GiB actually break?** Find the largest single GPU on the market today (check its datasheet) and compute the maximum batch × context product our course model's KV cache could fit on it alone, no other memory used.
-5. **Connect it to Lecture 03.** Using TPOT ≈ 30 ms/token, recompute Lecture 03's service time \(S\) from first principles: how many decode steps does a 200-token answer need, and does the total match what `load_test.py` measured?
+5. **Connect it to Lecture 03.** Using TPOT ≈ 30 ms/token, recompute Lecture 03's service time \\(S\\) from first principles: how many decode steps does a 200-token answer need, and does the total match what `load_test.py` measured?
 
 ## Summary
 

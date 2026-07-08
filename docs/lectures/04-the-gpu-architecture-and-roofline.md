@@ -200,12 +200,12 @@ The number this lecture exists to produce:
 
 The intuition: every matmul does some FLOPs and moves some bytes. Their ratio — arithmetic intensity — is the *only* number that matters for deciding which ceiling applies:
 
-\[
+\\[
 \text{AI} = \frac{\text{FLOPs}}{\text{bytes moved}}, \qquad
 \text{achievable TFLOP/s} = \min\bigl(\text{peak compute},\ \text{AI} \times \text{peak bandwidth}\bigr)
-\]
+\\]
 
-One worked number: a single linear layer, hidden size \(d=4096\), one token. FLOPs \(= 2d^2 \approx 33.6\)M; bytes (fp16 weight, dominant term) \(= 2d^2 \approx 33.6\)MB. **AI = 2d² / 2d² = 1** FLOP/byte, independent of \(d\) entirely — decode is memory-bound at *any* model size, by construction.
+One worked number: a single linear layer, hidden size \\(d=4096\\), one token. FLOPs \\(= 2d^2 \approx 33.6\\)M; bytes (fp16 weight, dominant term) \\(= 2d^2 \approx 33.6\\)MB. **AI = 2d² / 2d² = 1** FLOP/byte, independent of \\(d\\) entirely — decode is memory-bound at *any* model size, by construction.
 
 > **Want the full derivation?** Why the `min()` formula falls out of two straight lines on a log-log plot, the general formula for a GEMM's arithmetic intensity, why more batch is the same lever as more tokens, and where the roofline model's assumptions break (memory-compute overlap, multiple memory tiers):
 > [Math Deep Dive 04 — Deriving the Roofline Model →](../math/04-roofline-model.md)
@@ -221,8 +221,8 @@ One worked number: a single linear layer, hidden size \(d=4096\), one token. FLO
 ## Exercises
 
 1. **Find your card's real ridge point.** Run `roofline.py` and compare the achieved numbers against this lecture's table for your GPU. How close to the datasheet peak did you get, and why might it be lower?
-2. **Predict before you measure.** Using \(d\) from your own `roofline.py` run, calculate by hand the AI at tokens = 4, 16, 64. Then check against the printed sweep.
-3. **Cross the ridge on purpose.** Find the exact token count where your GPU's own sweep flips from memory-bound to compute-bound. Does it match \(\text{tokens} \approx \text{ridge point}\)?
+2. **Predict before you measure.** Using \\(d\\) from your own `roofline.py` run, calculate by hand the AI at tokens = 4, 16, 64. Then check against the printed sweep.
+3. **Cross the ridge on purpose.** Find the exact token count where your GPU's own sweep flips from memory-bound to compute-bound. Does it match \\(\text{tokens} \approx \text{ridge point}\\)?
 4. **Bandwidth vs compute upgrade.** Using the GPU table, if you could double *either* your card's bandwidth or its compute — but not both — which would speed up decode more? Which would speed up prefill more?
 5. **Back to Lecture 03.** Using today's ~1 FLOP/byte number for decode, recompute the "<1% GPU compute used" claim from Lecture 03's sweep, from scratch, using only arithmetic intensity and your measured ceilings.
 

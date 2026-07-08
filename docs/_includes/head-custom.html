@@ -1,13 +1,15 @@
-<!-- MathJax 3. All math in this site's markdown is written as \(...\) (inline)
-     and \[...\] (display) directly — never $...$ or $$...$$. Kramdown has no
-     opinion about backslash-paren/bracket sequences, so it passes them through
-     untouched; MathJax's TeX package recognizes both by default, no config
-     needed. (We deliberately avoid $...$ as an inline delimiter: this site's
-     prose also quotes real dollar amounts, e.g. "~$1/hr", and a $-delimiter
-     would misfire on those.)
+<!-- MathJax 3. All math in this site's markdown SOURCE is written with a DOUBLED
+     backslash — \\(...\\) inline, \\[...\\] display — never $...$/$$...$$, and
+     never a single \(/\[. Reason: kramdown treats parens/brackets as escapable
+     punctuation and silently strips a lone backslash in front of them (e.g.
+     "\(x\)" becomes "(x)" in the rendered HTML — no error, just broken math).
+     Doubling the backslash makes kramdown's escape processor consume "\\" and
+     emit one literal "\", so \(/\[ survive intact into the HTML MathJax sees.
+     MathJax's TeX package recognizes \(\)/\[\] by default, no config needed.
+     (We deliberately avoid $...$ as an inline delimiter too: this site's prose
+     quotes real dollar amounts, e.g. "~$1/hr", and a $-delimiter would misfire.)
      The renderAction below is a harmless fallback in case kramdown ever emits
-     its own <script type="math/tex"> tags (its behavior for $$ is inconsistent
-     across parsers) — it's dead code as long as every equation uses \(\)/\[\]. -->
+     its own <script type="math/tex"> tags — dead code under normal operation. -->
 <script>
   window.MathJax = {
     options: {

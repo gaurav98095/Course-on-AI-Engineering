@@ -8,10 +8,13 @@ title: "Lecture {{lecture_number}} — {{chapter_title}}"
 > **In one sentence:** {{one_sentence_why_it_matters}}
 
 <!-- Use plain bold blockquotes, never GitHub [!summary]/[!tip] alerts — those render as literal text on GitHub Pages.
-     MATH DELIMITERS: always write inline math as \(...\) and display math as \[...\] — never $...$ or $$...$$.
-     Kramdown's $-based math parsing is unreliable (it inconsistently converts, or silently leaves LaTeX as literal
-     text), and this site's prose also quotes real dollar amounts ("~$1/hr"), so a $-based delimiter is unsafe.
-     \(\)/\[\] are passed through untouched by kramdown and are MathJax's default delimiters — no config needed. -->
+     MATH DELIMITERS: in the markdown SOURCE, write inline math as \\(...\\) and display math as \\[...\\] —
+     DOUBLE backslash, not single. Never $...$ or $$...$$ (real dollar amounts appear in this site's prose).
+     Never a single \( or \[ either — kramdown silently strips a lone backslash before parens/brackets (they're
+     escapable punctuation to it), which breaks MathJax with no visible error in the source. Doubling the
+     backslash makes kramdown's escape processor consume \\ and emit one literal \, leaving \(/\[ intact in the
+     rendered HTML, which MathJax then renders by default. This bug is invisible in the markdown source — verify
+     by checking a rendered page, not by re-reading what you wrote. -->
 
 ## Learning Objectives
 
@@ -87,9 +90,9 @@ title: "Lecture {{lecture_number}} — {{chapter_title}}"
 
 {{math_intuition_and_final_formula_only}}
 
-\[
+\\[
 {{key_equation}}
-\]
+\\]
 
 {{worked_running_example}}
 

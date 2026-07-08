@@ -7,6 +7,11 @@ title: "Math Deep Dive — {{math_title}}"
 
 > **Supports:** [Lecture {{lecture_number}} — {{lecture_title}}](../lectures/{{lecture_file}}). Read the lecture first; this page assumes its story and mental model.
 
+<!-- MATH DELIMITERS: in the markdown SOURCE, write inline math as \\(...\\) and display math as \\[...\\] —
+     DOUBLE backslash, not single, and never $...$/$$...$$. See CLAUDE.md and templates/chapter.md for why:
+     kramdown silently strips a lone backslash before parens/brackets, breaking MathJax with no visible error
+     in the source. Verify by rendering, not by re-reading the markdown. -->
+
 ## The Idea in One Picture
 
 {{intuition_recap_short}}

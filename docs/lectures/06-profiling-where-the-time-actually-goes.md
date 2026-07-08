@@ -196,11 +196,11 @@ Today's real quantitative lesson isn't a new formula — it's a rule about where
 
 If retrieval is 0.4% of a request, then no matter how hard you optimize it — cut it to literally zero — the *whole request* speeds up by at most 0.4%. This isn't a rule of thumb; it's an exact identity called **Amdahl's Law**, and our own profile table is its worked example.
 
-\[
+\\[
 \text{speedup} = \frac{1}{(1-p) + \dfrac{p}{s}}
-\]
+\\]
 
-where \(p\) is the fraction of time spent in the part you're speeding up, and \(s\) is how much faster you make *that part*. Plug in retrieval's \(p = 0.004\) and even an infinite speedup (\(s \to \infty\)) caps the whole request's speedup at \(1/(1-0.004) \approx 1.004\) — 0.4%, exactly matching the intuition.
+where \\(p\\) is the fraction of time spent in the part you're speeding up, and \\(s\\) is how much faster you make *that part*. Plug in retrieval's \\(p = 0.004\\) and even an infinite speedup (\\(s \to \infty\\)) caps the whole request's speedup at \\(1/(1-0.004) \approx 1.004\\) — 0.4%, exactly matching the intuition.
 
 > **Want the full derivation?** Proving the formula, why it means "optimize the biggest bar in the table, not your favorite line of code," and where it breaks (when a "small" component secretly gates everything else):
 > [Math Deep Dive 06 — Amdahl's Law and Where to Spend an Hour →](../math/06-amdahls-law.md)
@@ -221,7 +221,7 @@ where \(p\) is the fraction of time spent in the part you're speeding up, and \(
 2. **Profile a longer answer.** Rerun `profile_request.py` with `MAX_NEW_TOKENS = 400`. Does retrieval's percentage of total time go up or down? Explain using Lecture 05's TTFT/TPOT split.
 3. **Confirm the roofline for prefill too.** Run `ncu` against a long-prompt `rag.py` call instead of `kv_cache.py`'s short one. Does compute throughput % rise, as Lecture 04 predicts?
 4. **Find your own gap.** If you have `nsys`, look at the CUDA API Summary section for the single largest contributor. Is it a compute kernel, or overhead (memcpy, kernel launch)? What would Amdahl's Law say about optimizing it?
-5. **Two-line Amdahl check.** Using this lecture's profile table, estimate \(p\) for `aten::matmul` and compute the maximum possible speedup from *completely eliminating* every other operator. Does the number surprise you?
+5. **Two-line Amdahl check.** Using this lecture's profile table, estimate \\(p\\) for `aten::matmul` and compute the maximum possible speedup from *completely eliminating* every other operator. Does the number surprise you?
 
 ## Summary
 
