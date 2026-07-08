@@ -46,4 +46,4 @@ Then, optionally, if `nsys`/`ncu` are available on your Studio — see the lectu
 
 ---
 
-Previous: [`../05-prefill-decode-and-the-kv-cache/`](../05-prefill-decode-and-the-kv-cache/) · This is the last lecture in Module 1 — Module 2 (quantization, FlashAttention, serving engines) begins next.
+Previous: [`../05-prefill-decode-and-the-kv-cache/`](../05-prefill-decode-and-the-kv-cache/) · This is the last lecture in Module 1. Module 2 begins at [`../../module-2-vertical-wins/07-quantization-i-number-formats/`](../../module-2-vertical-wins/07-quantization-i-number-formats/).

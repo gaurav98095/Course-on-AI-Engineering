@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 420" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .lbl   { font-size:13px; font-weight:600; fill:#1C2321; }
+    .s     { font-size:11px; fill:#5B6663; }
+    .sign  { fill:#9AA5A1; }
+    .exp   { fill:#4F46E5; }
+    .man   { fill:#7C87F0; }
+    .cell  { stroke:#FBFAF7; stroke-width:1.5; }
+    .txt   { font-size:10px; fill:#FFFFFF; text-anchor:middle; font-weight:600; }
+    .cnt   { font-size:11px; fill:#5B6663; }
+  </style>
+
+  <!-- legend -->
+  <rect class="cell sign" x="30" y="10" width="16" height="16"/>
+  <text class="s" x="52" y="22">sign</text>
+  <rect class="cell exp" x="110" y="10" width="16" height="16"/>
+  <text class="s" x="132" y="22">exponent (range)</text>
+  <rect class="cell man" x="280" y="10" width="16" height="16"/>
+  <text class="s" x="302" y="22">mantissa (precision)</text>
+
+  <!-- FP32 : 1 + 8 + 23 = 32 bits, scale: 1 unit = ~2.2px so 32 units = 700px -->
+  <text class="lbl" x="30" y="55">FP32</text>
+  <text class="cnt" x="740" y="55" text-anchor="end">32 bits — the reference</text>
+  <rect class="cell sign" x="30" y="62" width="20" height="26"/>
+  <rect class="cell exp"  x="50" y="62" width="160" height="26"/>
+  <rect class="cell man"  x="210" y="62" width="460" height="26"/>
+  <text class="txt" x="40"  y="79">S</text>
+  <text class="txt" x="130" y="79">exponent · 8</text>
+  <text class="txt" x="440" y="79">mantissa · 23</text>
+
+  <!-- BF16 : 1 + 8 + 7 = 16 bits -->
+  <text class="lbl" x="30" y="112">BF16</text>
+  <text class="cnt" x="740" y="112" text-anchor="end">16 bits — FP32's range, less precision</text>
+  <rect class="cell sign" x="30" y="119" width="20" height="26"/>
+  <rect class="cell exp"  x="50" y="119" width="160" height="26"/>
+  <rect class="cell man"  x="210" y="119" width="140" height="26"/>
+  <text class="txt" x="40"  y="136">S</text>
+  <text class="txt" x="130" y="136">exponent · 8</text>
+  <text class="txt" x="280" y="136">mantissa · 7</text>
+
+  <!-- FP16 : 1 + 5 + 10 = 16 bits -->
+  <text class="lbl" x="30" y="169">FP16</text>
+  <text class="cnt" x="740" y="169" text-anchor="end">16 bits — more precision, narrow range</text>
+  <rect class="cell sign" x="30" y="176" width="20" height="26"/>
+  <rect class="cell exp"  x="50" y="176" width="100" height="26"/>
+  <rect class="cell man"  x="150" y="176" width="200" height="26"/>
+  <text class="txt" x="40"  y="193">S</text>
+  <text class="txt" x="100" y="193">exp · 5</text>
+  <text class="txt" x="250" y="193">mantissa · 10</text>
+
+  <!-- FP8 E4M3 : 1 + 4 + 3 = 8 bits -->
+  <text class="lbl" x="30" y="226">FP8 (E4M3)</text>
+  <text class="cnt" x="740" y="226" text-anchor="end">8 bits — H100-class tensor cores</text>
+  <rect class="cell sign" x="30" y="233" width="20" height="26"/>
+  <rect class="cell exp"  x="50" y="233" width="80" height="26"/>
+  <rect class="cell man"  x="130" y="233" width="60" height="26"/>
+  <text class="txt" x="40"  y="250">S</text>
+  <text class="txt" x="90"  y="250">exp·4</text>
+  <text class="txt" x="160" y="250">m·3</text>
+
+  <!-- INT8 : 8 bits, no exponent, one shared scale per tensor -->
+  <text class="lbl" x="30" y="283">INT8</text>
+  <text class="cnt" x="740" y="283" text-anchor="end">8 bits — one scale per tensor, no exponent</text>
+  <rect class="cell man" x="30" y="290" width="180" height="26"/>
+  <text class="txt" x="120" y="307">8-bit integer</text>
+  <text class="s" x="220" y="307">× one shared scale (fp16/fp32) for the whole tensor</text>
+
+  <!-- INT4 : 4 bits -->
+  <text class="lbl" x="30" y="340">INT4</text>
+  <text class="cnt" x="740" y="340" text-anchor="end">4 bits — 16 possible values per weight</text>
+  <rect class="cell man" x="30" y="347" width="90" height="26"/>
+  <text class="txt" x="75" y="364">4-bit int</text>
+  <text class="s" x="135" y="364">× one shared scale, often per small block of weights (Lecture 08)</text>
+
+  <text class="s" x="30" y="405" style="font-style:italic">Same 700-pixel = 32-bit ruler throughout: every format's actual width is drawn to scale.</text>
+</svg>

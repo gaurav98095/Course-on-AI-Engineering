@@ -241,4 +241,4 @@ We picked up the profiler where Gilbreth picked up the stopwatch — not to gues
 
 ---
 
-[← Previous: Lecture 05 — Prefill, Decode, and the KV Cache](05-prefill-decode-and-the-kv-cache.md) · [Course Home](../index.md)
+[← Previous: Lecture 05 — Prefill, Decode, and the KV Cache](05-prefill-decode-and-the-kv-cache.md) · [Course Home](../index.md) · [Next: Lecture 07 — Quantization I: Number Formats →](07-quantization-i-number-formats.md)

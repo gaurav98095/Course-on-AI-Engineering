@@ -6,11 +6,14 @@ Two levels of folders, both **self-contained**: clone the repo, `cd` into the le
 code/
   module-1-foundations/
     01-build-a-multimodal-rag/       <- start here
+    01b-gpu-vitals/
     02-deploy-it-on-a-gpu/
     03-load-test-it-until-it-breaks/
-    ...
-  module-2-vertical-wins/            (coming)
-    07-quantization-i/
+    04-the-gpu-architecture-and-roofline/
+    05-prefill-decode-and-the-kv-cache/
+    06-profiling-where-the-time-actually-goes/
+  module-2-vertical-wins/
+    07-quantization-i-number-formats/
     ...
   module-3-scale/                    (coming)
     20-serving-multimodal-models/
@@ -19,8 +22,8 @@ code/
 
 | Module folder | Lectures | The system's state |
 | --- | --- | --- |
-| `module-1-foundations/` | 01–06 | Stock Hugging Face code: build the multimodal RAG, serve it with LitServe, load-test it, measure the baseline |
-| `module-2-vertical-wins/` *(coming)* | 07–19 | 10× faster: quantization, FlashAttention, vLLM/SGLang, Triton kernels |
+| `module-1-foundations/` | 01–06 (+ 01b) | Stock Hugging Face code: build the multimodal RAG, serve it with LitServe, load-test it, measure the baseline; GPU vitals and a `/metrics` route woven throughout |
+| `module-2-vertical-wins/` | 07–19 | 10× faster: quantization, FlashAttention, vLLM/SGLang, Triton kernels |
 | `module-3-scale/` *(coming)* | 20–28 | Ships for 1L+ users: Docker, EKS, autoscaling, SLOs |
 
 ## The copy-forward convention

@@ -98,12 +98,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
 
 <ol class="lectures">
   <li>
-    <a class="soon">
+    <a href="lectures/07-quantization-i-number-formats.html">
       <span class="num">07</span>
       <span>
         <span class="t">Quantization I — Number Formats</span>
-        <span class="d" style="display:block">FP16, FP8, INT8, INT4: what precision buys, what it costs, and why weight-only is the free lunch.</span>
+        <span class="d" style="display:block">BF16, FP16, FP8, INT8, INT4: what precision buys, what it costs — and why quantized memory is free but quantized speed isn't.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -314,6 +315,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 04 — Deriving the Roofline Model](math/04-roofline-model.md) — the min(compute, AI×bandwidth) formula, arithmetic intensity of a GEMM, and why batching is the same lever as more tokens.
 - [Math Deep Dive 05 — Deriving the KV Cache Formula](math/05-kv-cache-math.md) — counting key/value vectors, why GQA shrinks the cache 4×, and the (tokens × batch) budget every serving system fights over.
 - [Math Deep Dive 06 — Amdahl's Law and Where to Spend an Hour](math/06-amdahls-law.md) — the exact formula behind "optimize the biggest bar in the profile, not your favorite line of code."
+- [Math Deep Dive 07 — Why Quantized Speed Isn't Free the Way Quantized Memory Is](math/07-quantization-speed-gap.md) — the dequantization-overhead formula that explains why int8 often doesn't speed up decode while int4 usually does.
 
 ## What you will be able to do
 
