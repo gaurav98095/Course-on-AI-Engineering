@@ -50,4 +50,4 @@ python quantize_and_measure.py --mode int4
 
 ---
 
-Previous: [`../../module-1-foundations/06-profiling-where-the-time-actually-goes/`](../../module-1-foundations/06-profiling-where-the-time-actually-goes/) · This is the first lecture in Module 2 — more lectures land here as the course continues.
+Previous: [`../../module-1-foundations/06-profiling-where-the-time-actually-goes/`](../../module-1-foundations/06-profiling-where-the-time-actually-goes/) · Next: [`../08-quantization-ii-gptq-and-awq/`](../08-quantization-ii-gptq-and-awq/) — calibrated quantization with real kernels, closing the speed and quality gaps this lecture left open.

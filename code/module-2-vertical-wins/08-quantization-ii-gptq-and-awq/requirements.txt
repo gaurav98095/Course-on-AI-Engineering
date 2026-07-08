@@ -1,0 +1,19 @@
+# Lecture 08 — Quantization II: GPTQ & AWQ in Practice
+# Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
+# torch.profiler ships with torch itself — no extra package needed.
+# nsys/ncu (NVIDIA Nsight Systems/Compute) are separate CLI tools; see
+# Lecture 06's README for install/availability notes.
+torch>=2.4
+transformers>=4.57
+accelerate
+sentence-transformers>=3.0
+faiss-cpu
+pymupdf
+pillow
+requests
+litserve
+pynvml        # /metrics + gpu_vitals.py, from Lecture 01b/02
+matplotlib    # plot_vitals.py, from Lecture 01b
+httpx         # async load testing, from Lecture 03
+bitsandbytes  # int8/int4 weight-only quantization, from Lecture 07
+gptqmodel     # calibrated GPTQ/AWQ quantization with real kernels

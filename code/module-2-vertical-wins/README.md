@@ -5,11 +5,12 @@ One folder per lecture, same convention as Module 1: each is **fully self-contai
 | Folder | Lecture | What it adds |
 | --- | --- | --- |
 | [`07-quantization-i-number-formats/`](07-quantization-i-number-formats/) | [07](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/07-quantization-i-number-formats.html) | Number formats (bit-level demo), int8/int4 loading via `bitsandbytes`, real memory + speed measurement |
+| [`08-quantization-ii-gptq-and-awq/`](08-quantization-ii-gptq-and-awq/) | [08](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/08-quantization-ii-gptq-and-awq.html) | Calibrated GPTQ/AWQ quantization via `GPTQModel`, real kernel speedup, a quality spot check |
 
 Diff any two folders — including across the Module 1/2 boundary — to see exactly what a lecture changed:
 
 ```bash
-diff -rq ../module-1-foundations/06-profiling-where-the-time-actually-goes 07-quantization-i-number-formats
+diff -rq 07-quantization-i-number-formats 08-quantization-ii-gptq-and-awq
 ```
 
-More lectures land here as Module 2 continues (GPTQ/AWQ, FlashAttention, PagedAttention, GQA/MQA/MLA, RoPE/ALiBi/YaRN, continuous batching, vLLM/SGLang, TensorRT-LLM, speculative decoding, prefix/chunked prefill, Triton kernels, torch.compile/CUDA graphs — Lectures 08–19).
+More lectures land here as Module 2 continues (FlashAttention, PagedAttention, GQA/MQA/MLA, RoPE/ALiBi/YaRN, continuous batching, vLLM/SGLang, TensorRT-LLM, speculative decoding, prefix/chunked prefill, Triton kernels, torch.compile/CUDA graphs — Lectures 09–19).

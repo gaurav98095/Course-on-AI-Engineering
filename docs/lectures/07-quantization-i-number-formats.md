@@ -215,4 +215,4 @@ We finally named the format we'd been trusting blindly: bf16, chosen because it 
 
 ---
 
-[← Previous: Lecture 06 — Profiling: Where the Time Actually Goes](06-profiling-where-the-time-actually-goes.md) · [Course Home](../index.md)
+[← Previous: Lecture 06 — Profiling: Where the Time Actually Goes](06-profiling-where-the-time-actually-goes.md) · [Course Home](../index.md) · [Next: Lecture 08 — Quantization II: GPTQ & AWQ in Practice →](08-quantization-ii-gptq-and-awq.md)

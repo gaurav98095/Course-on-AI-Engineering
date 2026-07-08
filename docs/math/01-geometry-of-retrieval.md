@@ -85,7 +85,7 @@ Same geometry, very different pressure on the gradients — \\(\tau\\) controls 
 
 \\[
 \mathcal{L}_{ij} = \log\!\left(1 + e^{\,z_{ij}\,(-t\, s_{ij} + b)}\right),
-\qquad z_{ij} = \begin{cases} +1 & i = j\\ -1 & i \neq j\end{cases}
+\qquad z_{ij} = \begin{cases} +1 & i = j\\\\ -1 & i \neq j\end{cases}
 \\]
 
 Each pair is now a standalone yes/no question — "do these two belong together?" — so the loss no longer needs every other example in the batch to normalize against. That makes training scale gracefully, and it is why the SigLIP family gives such strong open checkpoints for us to build on.

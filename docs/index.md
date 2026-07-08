@@ -108,12 +108,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/08-quantization-ii-gptq-and-awq.html">
       <span class="num">08</span>
       <span>
         <span class="t">Quantization II — GPTQ &amp; AWQ in Practice</span>
-        <span class="d" style="display:block">Quantize the course model, re-run the benchmark, and prove quality held with an eval.</span>
+        <span class="d" style="display:block">Calibrated quantization with real kernels: the speedup Lecture 07 promised, plus a quality check to prove the answers survived.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -316,6 +317,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 05 — Deriving the KV Cache Formula](math/05-kv-cache-math.md) — counting key/value vectors, why GQA shrinks the cache 4×, and the (tokens × batch) budget every serving system fights over.
 - [Math Deep Dive 06 — Amdahl's Law and Where to Spend an Hour](math/06-amdahls-law.md) — the exact formula behind "optimize the biggest bar in the profile, not your favorite line of code."
 - [Math Deep Dive 07 — Why Quantized Speed Isn't Free the Way Quantized Memory Is](math/07-quantization-speed-gap.md) — the dequantization-overhead formula that explains why int8 often doesn't speed up decode while int4 usually does.
+- [Math Deep Dive 08 — The Compensation Formula Behind GPTQ](math/08-gptq-compensation.md) — deriving the layer-wise reconstruction-error objective and the closed-form update that lets later weights compensate for earlier rounding, with a full worked 2-weight example.
 
 ## What you will be able to do
 
