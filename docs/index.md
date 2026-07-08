@@ -59,12 +59,13 @@ Ship a real multimodal RAG on stock code, deploy it, and load-test it until it b
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/05-prefill-decode-and-the-kv-cache.html">
       <span class="num">05</span>
       <span>
         <span class="t">Prefill, Decode, and the KV Cache</span>
         <span class="d" style="display:block">Why the first token and every token after it are two different workloads — and the cache math that rules serving.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -297,6 +298,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 01 — The Geometry of Retrieval](math/01-geometry-of-retrieval.md) — dot products, cosine similarity, contrastive training, and why one vector space can hold both images and text.
 - [Math Deep Dive 03 — Queues, Percentiles, and Why p95 Explodes](math/03-queues-and-percentiles.md) — Little's law from scratch, M/M/1, the 1/(1−ρ) hockey stick, and how load tests lie.
 - [Math Deep Dive 04 — Deriving the Roofline Model](math/04-roofline-model.md) — the min(compute, AI×bandwidth) formula, arithmetic intensity of a GEMM, and why batching is the same lever as more tokens.
+- [Math Deep Dive 05 — Deriving the KV Cache Formula](math/05-kv-cache-math.md) — counting key/value vectors, why GQA shrinks the cache 4×, and the (tokens × batch) budget every serving system fights over.
 
 ## What you will be able to do
 

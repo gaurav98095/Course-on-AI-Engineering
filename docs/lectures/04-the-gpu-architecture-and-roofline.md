@@ -231,4 +231,4 @@ We opened the GPU: HBM feeding L2 feeding SMs, chefs and a conveyor belt. Arithm
 
 ---
 
-[← Previous: Lecture 03 — Load-Test It Until It Breaks](03-load-test-it-until-it-breaks.md) · [Course Home](../index.md)
+[← Previous: Lecture 03 — Load-Test It Until It Breaks](03-load-test-it-until-it-breaks.md) · [Course Home](../index.md) · [Next: Lecture 05 — Prefill, Decode, and the KV Cache →](05-prefill-decode-and-the-kv-cache.md)

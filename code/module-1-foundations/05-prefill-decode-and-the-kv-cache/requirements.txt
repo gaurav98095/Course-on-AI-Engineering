@@ -1,0 +1,12 @@
+# Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model
+# Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
+torch>=2.4
+transformers>=4.57
+accelerate
+sentence-transformers>=3.0
+faiss-cpu
+pymupdf
+pillow
+requests
+litserve
+httpx

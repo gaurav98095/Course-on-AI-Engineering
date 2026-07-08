@@ -8,11 +8,12 @@ One folder per lecture. Each lecture folder is **fully self-contained** — data
 | [`02-deploy-it-on-a-gpu/`](02-deploy-it-on-a-gpu/) | [02](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/02-deploy-it-on-a-gpu.html) | + a LitServe HTTP endpoint |
 | [`03-load-test-it-until-it-breaks/`](03-load-test-it-until-it-breaks/) | [03](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/03-load-test-it-until-it-breaks.html) | + a closed-loop load generator |
 | [`04-the-gpu-architecture-and-roofline/`](04-the-gpu-architecture-and-roofline/) | [04](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/04-the-gpu-architecture-and-roofline.html) | + a standalone GPU roofline benchmark |
+| [`05-prefill-decode-and-the-kv-cache/`](05-prefill-decode-and-the-kv-cache/) | [05](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/05-prefill-decode-and-the-kv-cache.html) | + a KV cache on/off speed demo |
 
 Each folder is a **copy-forward** of the previous one — same convention the whole course uses, applied per lecture within the module (see [`../README.md`](../README.md) for the module-level version). Diff any two folders to see exactly what that lecture changed:
 
 ```bash
-diff -rq 03-load-test-it-until-it-breaks 04-the-gpu-architecture-and-roofline
+diff -rq 04-the-gpu-architecture-and-roofline 05-prefill-decode-and-the-kv-cache
 ```
 
-More lectures land here as Module 1 continues (KV cache math, profiling).
+More lectures land here as Module 1 continues (profiling with nsys/ncu).

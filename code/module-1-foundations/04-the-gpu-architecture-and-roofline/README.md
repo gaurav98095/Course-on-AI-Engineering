@@ -41,4 +41,4 @@ Takes under a minute — no model weights downloaded, no indexing required.
 
 ---
 
-Previous: [`../03-load-test-it-until-it-breaks/`](../03-load-test-it-until-it-breaks/) · This is the last lecture published in Module 1 so far — more lectures land here as the course continues.
+Previous: [`../03-load-test-it-until-it-breaks/`](../03-load-test-it-until-it-breaks/) · Next: [`../05-prefill-decode-and-the-kv-cache/`](../05-prefill-decode-and-the-kv-cache/) — placing prefill and decode as two literal points on this lecture's roofline.
