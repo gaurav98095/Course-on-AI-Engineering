@@ -11,13 +11,13 @@ title: "Lecture 03 — Load-Test It Until It Breaks"
 
 - Build a closed-loop load generator and read its output like an engineer: throughput, p50/p95/p99, error rate.
 - Explain why latency grows linearly with concurrency while throughput stays pinned at a ceiling.
-- Catch `nvidia-smi` lying about "100% GPU utilization" — and state how much of the GPU we're actually using.
+- Watch the API layer and the GPU layer live, side by side, and catch `nvidia-smi` lying about "100% GPU utilization" — while `/metrics` shows the API layer clearly struggling and the GPU layer barely moving.
 
 ## Prerequisites
 
 | Concept | Needed? | Notes |
 | --- | --- | --- |
-| Lectures 01–02 | Yes | The endpoint from `serve.py` must be running |
+| Lectures 01b–02 | Yes | The endpoint from `serve.py` must be running, with its `/metrics` route |
 | async Python | Light | We read `asyncio` code; we don't write it from scratch |
 | Statistics | No | Percentiles are defined when they appear |
 
@@ -64,13 +64,14 @@ Same environments as before — server in the Studio, and one honesty rule for l
 | --- | --- |
 | ⚡ Lightning Studio, terminal 1 | `serve.py` — the victim |
 | ⚡ Lightning Studio, terminal 2 | `load_test.py` — the swarm (same machine: we're measuring the *server*, not the internet) |
+| ⚡ Lightning Studio, terminal 3 | `live_dashboard.py` — watching both the API layer and the GPU layer while the swarm runs |
 | 💻 Your laptop | Optional: rerun the swarm over the public URL later and compare |
 
 The generator is **closed-loop**: each virtual user asks, waits for the full answer, then immediately asks again. \\(C\\) users means at most \\(C\\) requests in flight — a faithful model of \\(C\\) impatient support agents.
 
 ## The Build
 
-This lecture's folder, `code/module-1-foundations/03-load-test-it-until-it-breaks/`, is a copy-forward of Lecture 02's folder with one new file: `load_test.py`.
+This lecture's folder, `code/module-1-foundations/03-load-test-it-until-it-breaks/`, is a copy-forward of Lecture 02's folder with two new files: `load_test.py` and `live_dashboard.py`.
 
 ```bash
 git clone https://github.com/gaurav98095/Course-on-AI-Engineering.git   # skip if already cloned
@@ -161,13 +162,24 @@ Three stories in one table:
 
 ### Step 5 — Now catch the GPU lying
 
-While the sweep runs, ⚡ *in a third terminal:*
+Lecture 02's `/metrics` route already combines both sides of the split it taught you to see — API-layer counters and GPU vitals, in one response. While the sweep runs, ⚡ *in a third terminal*, watch both at once:
 
 ```bash
-watch -n 1 nvidia-smi
+python live_dashboard.py
 ```
 
-`GPU-Util: 100%`. The card *swears* it's maxed out. But look at our own numbers: aggregate tokens/sec at \\(C=16\\) is the same as at \\(C=1\\). Busy is not the same as productive.
+```text
+polling http://localhost:8000/metrics every 1.0s -> dashboard.csv (Ctrl-C to stop)
+
+      t  API layer                         ||  GPU layer
+t=  1.0s  requests=   2  errors=  0  p50=   7.1s   ||   gpu_util= 91%  gpu_mem=  17820MiB
+t=  2.0s  requests=   2  errors=  0  p50=   7.1s   ||   gpu_util= 88%  gpu_mem=  17820MiB
+t=  3.0s  requests=   3  errors=  0  p50=   7.3s   ||   gpu_util= 92%  gpu_mem=  17904MiB
+...
+t= 16.0s  requests=  14  errors=  0  p50=  55.9s   ||   gpu_util= 90%  gpu_mem=  18012MiB
+```
+
+(Ballpark — your own numbers are the real ones.) Read the two halves side by side: **`gpu_util` sits near 90% almost the whole time, at every concurrency level** — it barely moves between \\(C=2\\) and \\(C=16\\), while the API layer's `p50` climbs from 7 seconds to nearly a minute. The card *swears* it's consistently busy. But look at our own throughput numbers: aggregate tokens/sec at \\(C=16\\) is the same as at \\(C=1\\). Busy is not the same as productive.
 
 Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly \\(2 \times 8\text{B} = 16\\) GFLOPs. At ~30 tokens/sec that's ~**0.5 TFLOP/s** of actual work — on a card rated for ~**181 TFLOP/s** of bf16 compute.
 
@@ -228,6 +240,7 @@ Today the *system* broke on schedule. What can break silently is the **measureme
 3. **Cost per answer.** Using your Studio's hourly price, compute \$/answer at C = 1, 8, 16. Explain in one sentence why it barely moves — and what, therefore, is the *only* way to make answers cheaper.
 4. **The internet tax.** 💻 From your laptop, rerun `--concurrency 4` against the public URL. Compare p50 with the in-Studio run: how many milliseconds is the network worth compared to the queue?
 5. **Draw it.** Plot p50 vs concurrency from your sweep (any tool, even a notebook). Mark the timeout as a horizontal line. You've just drawn your first capacity plan.
+6. **Log the correlation.** Rerun the sweep with `live_dashboard.py` writing to `dashboard.csv`. Plot `latency_p50_s` against `gpu_util_pct` on the same time axis — does GPU utilization ever spike the way latency does, or does it stay nearly flat the whole time? That flatness *is* Lecture 02's "two systems" argument, made visible.
 
 ## Summary
 

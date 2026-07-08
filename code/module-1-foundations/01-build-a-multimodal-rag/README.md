@@ -100,4 +100,4 @@ FAA handbook chapters: US Government work, public domain. Sample photo: public d
 
 ---
 
-Next: [`../02-deploy-it-on-a-gpu/`](../02-deploy-it-on-a-gpu/) — this same system, wrapped in an HTTP endpoint.
+Next: [`../01b-gpu-vitals/`](../01b-gpu-vitals/) — watching this same system's GPU continuously, before we deploy it.

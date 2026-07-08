@@ -1,6 +1,6 @@
 # Lecture 03 — Load-Test It Until It Breaks
 
-Self-contained: this folder is a **copy-forward** of `02-deploy-it-on-a-gpu/` plus a load generator. Clone the repo, `cd` here, and everything runs.
+Self-contained: this folder is a **copy-forward** of `02-deploy-it-on-a-gpu/` plus a load generator and a combined live dashboard. Clone the repo, `cd` here, and everything runs.
 
 Full walkthrough: [Lecture 03 on the course site](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/03-load-test-it-until-it-breaks.html)
 
@@ -10,6 +10,7 @@ Full walkthrough: [Lecture 03 on the course site](https://gaurav98095.github.io/
 | --- | --- |
 | ⚡ Lightning Studio, terminal 1 | `serve.py` — the victim |
 | ⚡ Lightning Studio, terminal 2 | `load_test.py` — the swarm (same machine, so we measure the server, not the internet) |
+| ⚡ Lightning Studio, terminal 3 | `live_dashboard.py` — watching the API layer and the GPU layer at once |
 | 💻 Your laptop | Optional: rerun the swarm over the public URL and compare |
 
 ## What's new versus Lecture 02
@@ -17,8 +18,9 @@ Full walkthrough: [Lecture 03 on the course site](https://gaurav98095.github.io/
 | File | What it is |
 | --- | --- |
 | `load_test.py` | Closed-loop async load generator — sweep concurrency, read p50/p95/p99, watch it break |
+| `live_dashboard.py` | Polls Lecture 02's `/metrics` route on an interval and prints API-layer counters alongside GPU vitals, side by side, live |
 
-(Everything else is copied forward unchanged so this folder runs on its own.)
+(Everything else — including `gpu_vitals.py`/`plot_vitals.py` from Lecture 01b and `serve.py`'s `/metrics` route from Lecture 02 — is copied forward unchanged so this folder runs on its own.)
 
 ## Step by step from zero
 
@@ -42,17 +44,18 @@ python load_test.py --concurrency 1        # sanity check first
 python load_test.py --sweep 1 2 4 8 16 32  # watch it break
 ```
 
-⚡ Terminal 3 — watch the GPU lie about being busy:
+⚡ Terminal 3 — watch both systems at once, live:
 
 ```bash
-watch -n 1 nvidia-smi
+python live_dashboard.py
 ```
 
 ## Troubleshooting
 
 - **Everything errors immediately**: is `serve.py` actually running and past its ~90 s cold start? Check `curl localhost:8000/health` first.
 - **Sweep takes forever**: lower `--duration` (default 180 s per level) for a quicker, noisier read.
-- Everything from Lectures 01–02's troubleshooting applies here too.
+- **`live_dashboard.py` connection refused**: same cause as above — `serve.py` isn't up yet, or crashed under load. Check terminal 1.
+- Everything from Lectures 01/01b/02's troubleshooting applies here too.
 
 ---
 

@@ -5,7 +5,8 @@ One folder per lecture. Each lecture folder is **fully self-contained** — data
 | Folder | Lecture | What it adds |
 | --- | --- | --- |
 | [`01-build-a-multimodal-rag/`](01-build-a-multimodal-rag/) | [01](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/01-build-a-multimodal-rag.html) | The system: ingest, embed, index, retrieve, generate |
-| [`02-deploy-it-on-a-gpu/`](02-deploy-it-on-a-gpu/) | [02](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/02-deploy-it-on-a-gpu.html) | + a LitServe HTTP endpoint |
+| [`01b-gpu-vitals/`](01b-gpu-vitals/) | [01b](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/01b-gpu-vitals.html) | + continuous GPU monitoring (`gpu_vitals.py`, `plot_vitals.py`) |
+| [`02-deploy-it-on-a-gpu/`](02-deploy-it-on-a-gpu/) | [02](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/02-deploy-it-on-a-gpu.html) | + a LitServe HTTP endpoint with a `/metrics` route |
 | [`03-load-test-it-until-it-breaks/`](03-load-test-it-until-it-breaks/) | [03](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/03-load-test-it-until-it-breaks.html) | + a closed-loop load generator |
 | [`04-the-gpu-architecture-and-roofline/`](04-the-gpu-architecture-and-roofline/) | [04](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/04-the-gpu-architecture-and-roofline.html) | + a standalone GPU roofline benchmark |
 | [`05-prefill-decode-and-the-kv-cache/`](05-prefill-decode-and-the-kv-cache/) | [05](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/05-prefill-decode-and-the-kv-cache.html) | + a KV cache on/off speed demo |

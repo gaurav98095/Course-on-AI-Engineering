@@ -341,4 +341,4 @@ We built the whole thing: a PDF manual became text chunks and figures; BGE and S
 
 ---
 
-[Course Home](../index.md) · [Next: Lecture 02 — Deploy It on a GPU →](02-deploy-it-on-a-gpu.md)
+[Course Home](../index.md) · [Next: Lecture 01b — GPU Vitals: Watching What You Built →](01b-gpu-vitals.md)

@@ -29,11 +29,21 @@ Ship a real multimodal RAG on stock code, deploy it, and load-test it until it b
     </a>
   </li>
   <li>
+    <a href="lectures/01b-gpu-vitals.html">
+      <span class="num">01b</span>
+      <span>
+        <span class="t">GPU Vitals: Watching What You Built</span>
+        <span class="d" style="display:block">Stop glancing at nvidia-smi once — watch utilization, memory, power, and temperature continuously, before we deploy anything.</span>
+      </span>
+      <span class="go">→</span>
+    </a>
+  </li>
+  <li>
     <a href="lectures/02-deploy-it-on-a-gpu.html">
       <span class="num">02</span>
       <span>
         <span class="t">Deploy It on a GPU</span>
-        <span class="d" style="display:block">From script to service: a LitServe endpoint with a schema, health check, public URL, and per-request logs.</span>
+        <span class="d" style="display:block">From script to service: a LitServe endpoint with a schema, health check, public URL, a /metrics route — and one process quietly playing two different roles.</span>
       </span>
       <span class="go">→</span>
     </a>
@@ -299,6 +309,7 @@ Apply the toolkit to multimodal, embedding and MoE models, finetune your own emb
 Each hands-on lecture links to a separate page with the full derivations — every symbol defined, every step justified.
 
 - [Math Deep Dive 01 — The Geometry of Retrieval](math/01-geometry-of-retrieval.md) — dot products, cosine similarity, contrastive training, and why one vector space can hold both images and text.
+- [Math Deep Dive 01b — Sampling Rate and Smoothing a Live Signal](math/01b-sampling-and-smoothing.md) — why a 1-second poll can miss a 30ms spike entirely, and the exponential moving average formula real dashboards use to smooth noisy signals.
 - [Math Deep Dive 03 — Queues, Percentiles, and Why p95 Explodes](math/03-queues-and-percentiles.md) — Little's law from scratch, M/M/1, the 1/(1−ρ) hockey stick, and how load tests lie.
 - [Math Deep Dive 04 — Deriving the Roofline Model](math/04-roofline-model.md) — the min(compute, AI×bandwidth) formula, arithmetic intensity of a GEMM, and why batching is the same lever as more tokens.
 - [Math Deep Dive 05 — Deriving the KV Cache Formula](math/05-kv-cache-math.md) — counting key/value vectors, why GQA shrinks the cache 4×, and the (tokens × batch) budget every serving system fights over.

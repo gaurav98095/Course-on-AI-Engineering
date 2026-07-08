@@ -5,19 +5,21 @@ title: "Lecture 02 — Deploy It on a GPU"
 
 # Lecture 02 — Deploy It on a GPU
 
-> **In one sentence:** We turn last lecture's script into a running service — an HTTP endpoint with a schema, a health check, and per-request logs — because a model nobody can call is a model that doesn't exist.
+> **In one sentence:** We turn last lecture's script into a running service — an HTTP endpoint with a schema, a health check, per-request logs, and a metrics route — and catch it quietly conflating two systems (an API layer and a GPU layer) that production keeps apart.
 
 ## Learning Objectives
 
 - Wrap the multimodal RAG in a LitServe endpoint where the model loads once and answers forever.
 - Trace the anatomy of one request — network, queue, retrieve, prefill, decode — and know which part you're measuring.
 - Expose the endpoint to the internet from a Lightning Studio, call it like a user, and read your first request logs.
+- Add a real `/metrics` endpoint, and see why it exposes two genuinely different systems living in one process today.
 
 ## Prerequisites
 
 | Concept | Needed? | Notes |
 | --- | --- | --- |
 | Lecture 01 | Yes | The RAG must be built and `corpus/` indexed on your Studio |
+| Lecture 01b | Light | We reuse its GPU-vitals code inside today's `/metrics` endpoint |
 | HTTP basics | Light | You've seen a POST request and JSON before |
 | GPUs | No | Still renting; internals arrive in Lecture 04 |
 
@@ -83,7 +85,7 @@ Everything from Lecture 01 is unchanged underneath — `serve.py` just picks up 
 
 ## The Build
 
-This lecture's folder, `code/module-1-foundations/02-deploy-it-on-a-gpu/`, is a copy-forward of Lecture 01's folder with two new files: `serve.py` and `client.py`.
+This lecture's folder, `code/module-1-foundations/02-deploy-it-on-a-gpu/`, is a copy-forward of Lecture 01b's folder (so `gpu_vitals.py` rides along) with two new files: `serve.py` and `client.py`.
 
 ```bash
 git clone https://github.com/gaurav98095/Course-on-AI-Engineering.git   # skip if already cloned
@@ -181,6 +183,47 @@ Back in the server terminal, every request left one line:
 
 One line, four numbers, and the whole story of this course is already in them: retrieval is **milliseconds**, generation is **seconds** — the GPU spends its life in `generate`. This log line is observability v0; Prometheus dashboards (Lecture 27) are this same line, grown up.
 
+### Step 6 — Expose real metrics, not just logs
+
+A log line is for a human, watching one line at a time. A **metrics endpoint** is for a machine — a dashboard, an autoscaler, an alert — to *scrape* on a schedule and aggregate. `serve.py` now tracks a few counters in `setup`, updates them in `predict`, and serves them at `/metrics`:
+
+```python
+def setup(self, device):
+    self.retriever = Retriever()
+    self.generator = Generator()
+    self.request_count = 0
+    self.error_count = 0
+    self.total_new_tokens = 0
+    self.latencies_s = []              # last 100, for a crude p50
+    pynvml.nvmlInit()                  # same call as Lecture 01b's gpu_vitals.py
+    self.gpu_handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+```
+
+The route itself blends two kinds of numbers on purpose — watch closely, this is the setup for the next section:
+
+```python
+def metrics():
+    util = pynvml.nvmlDeviceGetUtilizationRates(api.gpu_handle)
+    mem = pynvml.nvmlDeviceGetMemoryInfo(api.gpu_handle)
+    return {
+        "requests_total": api.request_count, "errors_total": api.error_count,
+        "latency_p50_s": ...,                       # API-layer: a load balancer cares about this
+        "gpu_util_pct": util.gpu, "gpu_mem_used_mib": ...,   # GPU-layer: a fleet dashboard cares about this
+    }
+```
+
+```bash
+curl localhost:8000/metrics
+```
+
+```json
+{"requests_total": 4, "errors_total": 0, "tokens_generated_total": 812,
+ "latency_p50_s": 8.7, "in_flight_estimate": 0,
+ "gpu_util_pct": 12, "gpu_mem_used_mib": 17240}
+```
+
+> If your installed LitServe version doesn't expose `server.app`, check the folder's README — the fallback is a second tiny FastAPI/Uvicorn process reading the same counters, which is uglier but always works.
+
 ## Measure It
 
 Same five questions as Lecture 01's baseline, but now through HTTP. Ballpark on one L40S, bf16, batch 1:
@@ -193,6 +236,31 @@ Same five questions as Lecture 01's baseline, but now through HTTP. Ballpark on 
 | Concurrent callers | 1 (by definition) | **still 1** | The switchboard has one operator |
 
 > Deploying changed *who can call* — it changed nothing about *how much can be served*. HTTP added ~0.5% overhead; the other 99.5% is still the model.
+
+## One Process, Two Systems
+
+Look again at the `/metrics` output from Step 6. It's answering two completely different questions in one JSON blob:
+
+> **`requests_total`, `latency_p50_s`, `errors_total`** — these describe the **API layer**: is the *service* healthy? Would a load balancer route traffic here? This is CPU-cheap bookkeeping that has nothing to do with matrix multiplication.
+>
+> **`gpu_util_pct`, `gpu_mem_used_mib`** — these describe the **model-serving layer**: is the *GPU* healthy? Is it about to OOM? This is expensive, hardware-bound state that has nothing to do with HTTP.
+
+Today, `serve.py` is **one Python process** doing both jobs — the same `predict` method that parses your JSON also runs 8 billion parameters of matrix multiplication. That was the right simplification for Lectures 01–02: one file, one mental model, nothing to configure. But it quietly hides a mismatch that gets expensive to ignore at scale.
+
+| | API layer | Model-serving layer |
+| --- | --- | --- |
+| Bottleneck | Network, CPU, JSON parsing | GPU compute and memory (Lecture 04) |
+| Cost to run | Cents — any small CPU instance | Dollars/hour — a whole GPU, idle or not |
+| How it scales | Horizontally, cheaply — spin up 50 more pods | Vertically and expensively — each replica needs its own GPU |
+| Failure mode | Slow JSON parsing, connection floods | OOM, thermal throttling, cold starts (~90 s, Step 2) |
+| Restart cost | Milliseconds | The ~90 second cold start you just watched |
+
+A production system almost never puts both in one process. A **gateway** (API layer) — stateless, cheap, trivially replicated — sits in front of a small pool of **model workers** (GPU layer), each one expensive and precious, routed to by the gateway. Our `RAGAPI.predict` doing both jobs at once is a teaching simplification, not a production pattern — and it's exactly what breaks first when Lecture 03 puts this system under real load.
+
+> This split has a name and a payoff: **prefill/decode disaggregation** (Lecture 24) takes the same idea one step further and splits the *GPU* layer itself in two. **Kubernetes** (Lecture 26) is where the gateway/worker split becomes real infrastructure, with each side autoscaling on its own metrics — the API layer on request rate, the GPU layer on the very `gpu_util_pct` number Step 6 just started exposing.
+
+Conflating two systems with different bottlenecks, different costs, and different failure modes into one process is a fine way to learn. It's a poor way to run one at scale — remember this table; Module 3 is largely about correcting it.
+{: .remember}
 
 ## The Math, One Level Deeper
 
@@ -223,23 +291,25 @@ A service's weakest points are rarely the model: they're the door (auth), the li
 2. **Schema power.** The endpoint already accepts `max_new_tokens`. Call with 50 vs 400 and compare `seconds` — you just built a cost knob into your API.
 3. **Measure the network honestly.** Run `client.py` from your laptop against the public URL and compare `overhead` with the in-Studio value. Where did the extra go?
 4. **Two callers, one operator.** Open two terminals, fire `client.py` in both simultaneously, and note both wall times. Write the second number down — Lecture 03 explains it exactly.
-5. **Parse your logs.** After 10 requests, pipe the server output through `grep '\\[req\\]'` and compute mean tok/s with `awk`. Congratulations: you built your first metrics pipeline.
+5. **Watch `/metrics` move.** Fire five requests, `curl localhost:8000/metrics` after each one, and confirm `requests_total` and `tokens_generated_total` climb correctly. Now break something on purpose (send a malformed request) and confirm `errors_total` moves too.
+6. **Draw the split.** On paper, sketch today's one-process `serve.py` as two boxes instead of one — a gateway box and a GPU-worker box — and label which of `/metrics`' seven fields belongs on each side of the line. You just designed the shape Lecture 26 builds for real.
 
 ## Summary
 
-We put a phone number on the model: `setup` loads once, `decode_request` defines the schema, `predict` does timed work, `encode_response` answers in JSON. A health check says "alive", a public URL makes it real, and one log line per request tells the truth: retrieval is milliseconds, generation is seconds, HTTP is nothing — and there is still exactly **one operator at the switchboard**.
+We put a phone number on the model: `setup` loads once, `decode_request` defines the schema, `predict` does timed work, `encode_response` answers in JSON. A health check says "alive", a public URL makes it real, a log line tells a human the truth, and a `/metrics` route tells a machine the same truth in a form it can scrape. Reading that route closely showed something we'd been hiding since Lecture 01: one process, quietly playing two roles — a cheap, stateless API layer and an expensive, stateful GPU layer — that production architectures deliberately keep apart.
 
 > **What should you remember?**
 > - Load in `setup`, never in `predict` — cold start is paid once, not per request.
 > - \\(T_{\text{request}} = T_{\text{net}} + T_{\text{queue}} + T_{\text{retrieve}} + T_{\text{prefill}} + T_{\text{decode}}\\): know which term you're measuring.
-> - Deploying changed who can call, not how much can be served: concurrency is still 1.
+> - The API layer and the GPU layer have different bottlenecks, costs, and failure modes — one process today, two systems by Module 3.
 
 ## Resources
 
 - LitServe documentation — `lightning.ai/docs/litserve` (the `LitAPI` lifecycle we used).
 - The Twelve-Factor App — factor VI (processes) and IX (disposability) are `setup` and cold starts in older clothes.
 - Lightning AI docs: exposing Studio ports.
+- The Prometheus exposition format — the de facto standard `/metrics` shape our JSON version is a simplified preview of; Lecture 27 uses it properly.
 
 ---
 
-[← Previous: Lecture 01 — Build a Multimodal RAG](01-build-a-multimodal-rag.md) · [Course Home](../index.md) · [Next: Lecture 03 — Load-Test It Until It Breaks →](03-load-test-it-until-it-breaks.md)
+[← Previous: Lecture 01b — GPU Vitals: Watching What You Built](01b-gpu-vitals.md) · [Course Home](../index.md) · [Next: Lecture 03 — Load-Test It Until It Breaks →](03-load-test-it-until-it-breaks.md)
