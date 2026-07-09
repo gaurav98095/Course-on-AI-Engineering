@@ -7,6 +7,8 @@ title: "Lecture 10 — PagedAttention & the KV Cache Pool"
 
 > **In one sentence:** We stop pre-reserving KV cache memory for the worst case and start allocating it in small blocks, on demand — the single idea that let vLLM cut real memory waste from 60–80% to under 4%, and turn that into a multi-fold throughput jump on the same hardware.
 
+**Last time:** Lecture 05 gave us the exact bytes-per-token formula for the KV cache, but never said how a system decides how much memory to reserve before it knows how long a request will run. **This time:** we stop reserving for the worst case and allocate in small blocks, on demand.
+
 ## Prerequisites
 
 | Concept | Needed? | Notes |

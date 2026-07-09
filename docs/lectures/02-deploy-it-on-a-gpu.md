@@ -7,6 +7,8 @@ title: "Lecture 02 — Deploy It on a GPU"
 
 > **In one sentence:** We turn last lecture's script into a running service — an HTTP endpoint with a schema, a health check, per-request logs, and a metrics route — and catch it quietly conflating two systems (an API layer and a GPU layer) that production keeps apart.
 
+**Last time:** Lecture 01's RAG only ran when you personally typed a command in a terminal — nobody else could reach it. **This time:** we put a phone number on it, so anyone with a URL can call it.
+
 ## Learning Objectives
 
 - Wrap the multimodal RAG in a LitServe endpoint where the model loads once and answers forever.

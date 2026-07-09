@@ -7,6 +7,8 @@ title: "Lecture 11 — GQA, MQA, MLA: Cheaper Attention Heads"
 
 > **In one sentence:** We open the head-sharing trick Lecture 05 used without explaining — 32 query heads, only 8 KV heads — and meet the design space it belongs to: MQA's extreme version, and MLA's genuinely different alternative.
 
+**Last time:** Lecture 05 told us our model uses GQA and that this bought a 4× smaller cache, without ever explaining how or why. **This time:** we open the head-sharing mechanism itself and meet the wider design space it belongs to.
+
 ## Prerequisites
 
 | Concept | Needed? | Notes |

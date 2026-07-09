@@ -7,6 +7,8 @@ title: "Lecture 05 — Prefill, Decode, and the KV Cache"
 
 > **In one sentence:** We name the two halves of every generation request — the one-time burst that reads your prompt and the token-by-token drip that writes the answer — and build the running notebook, the KV cache, that makes the drip fast.
 
+**Last time:** Lecture 04 explained compute-bound versus memory-bound in general, but never said why our own system's first token and every token after it behave so differently. **This time:** we split a request into its two real workloads and derive the cache that makes the second one fast.
+
 ## Learning Objectives
 
 - Explain why prefill and decode are two different workloads, and map each onto the roofline model from Lecture 04.

@@ -7,6 +7,8 @@ title: "Lecture 03 — Load-Test It Until It Breaks"
 
 > **In one sentence:** We point a swarm of virtual users at our endpoint and watch it drown in slow motion — because the numbers it breaks at, and the *way* it breaks, decide everything we build for the next nine weeks.
 
+**Last time:** Lecture 02 proved the service answers one caller correctly — it never tested what happens with more than one. **This time:** we throw concurrent users at it on purpose and watch exactly how, and where, it falls over.
+
 ## Learning Objectives
 
 - Build a closed-loop load generator and read its output like an engineer: throughput, p50/p95/p99, error rate.

@@ -7,6 +7,8 @@ title: "Lecture 07 — Quantization I: Number Formats"
 
 > **In one sentence:** We open the box on the number format we've been silently trusting since Lecture 01 — bf16 — meet its narrower cousins, and quantize our course model to int8 and int4 with zero calibration to see exactly what shrinks for free and what doesn't.
 
+**Last time:** Every lecture so far ran the model in bf16 without ever asking why, or what a smaller format would cost us. **This time:** we open the number format itself and quantize the model for the first time.
+
 ## Learning Objectives
 
 - Name the number formats used in ML inference — FP32, FP16, BF16, FP8, INT8, INT4 — and what each one trades range for precision for size.

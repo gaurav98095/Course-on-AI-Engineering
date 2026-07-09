@@ -7,6 +7,8 @@ title: "Lecture 09 — FlashAttention"
 
 > **In one sentence:** We open up the one operation Lecture 06's profiler already showed eating ~19% of every request — attention — and find that a fused, tiled kernel produces the exact same numbers while writing dramatically less to HBM, the same roofline lever Lecture 04 taught us to look for.
 
+**Last time:** Lecture 06's profiler showed attention eating ~19% of every request; we noted it and moved on without ever opening it. **This time:** we open it, and find a kernel that does the identical math with far less memory traffic.
+
 ## Prerequisites
 
 | Concept | Needed? | Notes |

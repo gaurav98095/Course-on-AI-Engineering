@@ -7,6 +7,8 @@ title: "Lecture 08b — Build the Eval Harness"
 
 > **In one sentence:** We build the tool this course has been promising since Lecture 01 — a real, reusable score for "is the answer still correct" — and use it to produce the first actual quality comparison between bf16, GPTQ, and AWQ, instead of one more eyeballed spot check.
 
+**Last time:** Lecture 08 checked quality with one question, read by eye, and called it a spot check. **This time:** we build a harness that scores retrieval and answer quality automatically, across a whole question set.
+
 ## Prerequisites
 
 | Concept | Needed? | Notes |

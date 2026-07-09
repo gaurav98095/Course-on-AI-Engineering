@@ -7,6 +7,8 @@ title: "Lecture 01b — GPU Vitals: Watching What You Built"
 
 > **In one sentence:** We stop glancing at `nvidia-smi` once and start watching it continuously — because "the GPU has ~48 GB, mostly free" is a snapshot, and every lecture from here on needs a movie.
 
+**Last time:** Lecture 01 checked `nvidia-smi` once, before renting the GPU, then never looked again for the rest of the build. **This time:** we watch it continuously instead, so we actually know what "normal" looks like before anything changes.
+
 ## Learning Objectives
 
 - Name the GPU vitals that matter while serving a model — utilization, memory, power, temperature, clock — and what each one actually tells you.

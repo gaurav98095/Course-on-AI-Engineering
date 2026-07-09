@@ -7,6 +7,8 @@ title: "Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model"
 
 > **In one sentence:** We open the GPU up, name its parts, and derive one plot — the roofline — that predicts, from arithmetic alone, why decode was slow and prefill was fast in every measurement we've taken so far.
 
+**Last time:** Lecture 03 found the GPU pinned at "100% utilization" while our own math said it was doing under 1% of its real work — a contradiction we measured but never explained. **This time:** we open the GPU up and build the model that explains exactly why both numbers were true at once.
+
 ## Learning Objectives
 
 - Name the GPU's parts — SMs, Tensor Cores, HBM, L2 cache — and state which of them decode actually uses.

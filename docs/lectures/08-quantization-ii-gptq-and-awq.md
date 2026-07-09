@@ -7,6 +7,8 @@ title: "Lecture 08 — Quantization II: GPTQ & AWQ in Practice"
 
 > **In one sentence:** We quantize the course model again — this time with calibration data and purpose-built kernels instead of Lecture 07's blind rounding — chasing the speedup the roofline model promised, and building the habit of checking whether the answers are still correct instead of assuming it.
 
+**Last time:** Lecture 07's quantization rounded every weight the same blind way, and memory dropped exactly as promised — but nothing checked whether the weights that mattered most survived. **This time:** GPTQ and AWQ round using real calibration data, and we check quality instead of assuming it.
+
 ## Learning Objectives
 
 - Explain what GPTQ and AWQ each look at before deciding how to round a weight, and why that beats round-to-nearest.

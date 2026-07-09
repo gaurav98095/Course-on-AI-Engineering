@@ -7,6 +7,8 @@ title: "Lecture 06 — Profiling: Where the Time Actually Goes"
 
 > **In one sentence:** We stop reasoning about our own system from formulas and instead point a profiler at it — attaching a real name and a real millisecond count to every part of the request we've been theorizing about since Lecture 01.
 
+**Last time:** Every lecture since 01 reasoned about where time goes from formulas — roofline, cache math — but none of them actually watched the GPU do it, millisecond by millisecond. **This time:** we point a real profiler at our own system and check those formulas against a real timeline.
+
 ## Story
 
 Around 1910, a young manager named Frank Gilbreth walked onto a bricklaying site with a stopwatch and did something nobody had done before: he timed *every individual motion* a bricklayer made.
