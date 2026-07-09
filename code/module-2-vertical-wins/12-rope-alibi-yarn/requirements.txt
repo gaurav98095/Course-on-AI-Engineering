@@ -1,0 +1,33 @@
+# Lecture 12 — RoPE, ALiBi, YaRN: Positional Encodings
+# Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
+# positional_encodings.py needs NO GPU at all — pure numpy on small
+# vectors, runs anywhere numpy is installed (already a transitive
+# dependency of torch/transformers/faiss below, listed explicitly here
+# since this one script needs nothing else).
+numpy
+# attention_head_designs.py needs NO GPU at all — pure tensor-shape
+# mechanics and arithmetic, runs anywhere torch is installed.
+# paged_kv_simulator.py needs NO GPU at all — it's a bookkeeping simulation
+# plus one config.json download, runs anywhere transformers is installed.
+# flash_attention.py and attn_backend_compare.py's sdpa/eager modes need
+# NO new package — torch.nn.functional.scaled_dot_product_attention ships
+# inside torch itself and picks a fused kernel automatically.
+# attn_backend_compare.py --impl flash_attention_2 is the one exception:
+# it needs the standalone flash-attn package, commented out below because
+# it compiles from source and can take 10-20+ minutes — see this folder's
+# README before installing it.
+torch>=2.4
+transformers>=4.57
+accelerate
+sentence-transformers>=3.0
+faiss-cpu
+pymupdf
+pillow
+requests
+litserve
+nvidia-ml-py  # (installs the pynvml module) — /metrics + gpu_vitals.py, from Lecture 01b/02
+matplotlib    # plot_vitals.py, from Lecture 01b
+httpx         # async load testing, from Lecture 03
+bitsandbytes  # int8/int4 weight-only quantization, from Lecture 07
+gptqmodel     # calibrated GPTQ/AWQ quantization with real kernels
+# flash-attn  # only for --impl flash_attention_2 — pip install flash-attn --no-build-isolation

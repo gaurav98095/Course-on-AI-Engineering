@@ -44,4 +44,4 @@ python attention_head_designs.py    # no GPU, no download needed at all
 
 ---
 
-Previous: [`../10-pagedattention-kv-cache-pool/`](../10-pagedattention-kv-cache-pool/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../10-pagedattention-kv-cache-pool/`](../10-pagedattention-kv-cache-pool/) · Next: [`../12-rope-alibi-yarn/`](../12-rope-alibi-yarn/)

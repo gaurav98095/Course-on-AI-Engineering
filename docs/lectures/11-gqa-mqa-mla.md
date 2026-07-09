@@ -186,4 +186,4 @@ Lecture 05's "GQA already bought this course a 4× smaller cache" finally has a 
 
 ---
 
-[← Previous: Lecture 10 — PagedAttention & the KV Cache Pool](10-pagedattention-kv-cache-pool.md) · [Course Home](../index.md)
+[← Previous: Lecture 10 — PagedAttention & the KV Cache Pool](10-pagedattention-kv-cache-pool.md) · [Course Home](../index.md) · [Next: Lecture 12 — RoPE, ALiBi, YaRN: Positional Encodings →](12-rope-alibi-yarn.md)
