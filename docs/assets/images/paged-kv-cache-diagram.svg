@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 380" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .panel  { fill:#F4F4F9; stroke:#E7E5DF; stroke-width:1.5; rx:16; }
+    .logi   { fill:#FFFFFF; stroke:#4F46E5; stroke-width:1.5; rx:6; }
+    .phys   { fill:#EEF0FE; stroke:#4F46E5; stroke-width:1.5; rx:6; }
+    .free   { fill:#FFFFFF; stroke:#B9C0BD; stroke-width:1.2; stroke-dasharray:3,3; rx:6; }
+    .shared { fill:#FEF3C7; stroke:#B45309; stroke-width:1.5; rx:6; }
+    .t      { font-size:14px; font-weight:700; fill:#1C2321; text-anchor:middle; }
+    .s      { font-size:11px; fill:#5B6663; text-anchor:middle; }
+    .w      { font-size:10.5px; font-weight:600; fill:#4F46E5; text-anchor:middle; }
+    .arrow  { stroke:#4F46E5; stroke-width:1.3; fill:none; marker-end:url(#arr); }
+    .arrowA { stroke:#B45309; stroke-width:1.3; fill:none; marker-end:url(#arrr); }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B45309"/>
+    </marker>
+  </defs>
+
+  <rect class="panel" x="20" y="20" width="740" height="340"/>
+  <text class="t" x="390" y="46">Two sequences, one shared prefix</text>
+
+  <!-- Logical sequence A -->
+  <text class="s" x="120" y="76">Sequence A (logical blocks)</text>
+  <rect class="logi" x="50" y="84" width="60" height="34"/><text class="s" x="80" y="105">0</text>
+  <rect class="logi" x="115" y="84" width="60" height="34"/><text class="s" x="145" y="105">1</text>
+  <rect class="logi" x="180" y="84" width="60" height="34"/><text class="s" x="210" y="105">2</text>
+
+  <!-- Logical sequence B -->
+  <text class="s" x="580" y="76">Sequence B (logical blocks)</text>
+  <rect class="logi" x="510" y="84" width="60" height="34"/><text class="s" x="540" y="105">0</text>
+  <rect class="logi" x="575" y="84" width="60" height="34"/><text class="s" x="605" y="105">1</text>
+  <rect class="logi" x="640" y="84" width="60" height="34"/><text class="s" x="670" y="105">2</text>
+
+  <text class="w" x="390" y="76">block table (logical -&gt; physical)</text>
+
+  <!-- Physical blocks row -->
+  <text class="s" x="390" y="160">Physical block pool (not contiguous, not per-sequence)</text>
+  <rect class="shared" x="330" y="172" width="120" height="40"/>
+  <text class="s" x="390" y="196">block 4 — shared system prompt</text>
+
+  <rect class="phys" x="130" y="172" width="90" height="40"/>
+  <text class="s" x="175" y="196">block 7 — A</text>
+
+  <rect class="phys" x="230" y="172" width="90" height="40"/>
+  <text class="s" x="275" y="196">block 2 — A</text>
+
+  <rect class="phys" x="560" y="172" width="90" height="40"/>
+  <text class="s" x="605" y="196">block 9 — B</text>
+
+  <rect class="free" x="460" y="172" width="90" height="40"/>
+  <text class="s" x="505" y="196">block 5 — free</text>
+
+  <rect class="free" x="650" y="172" width="90" height="40"/>
+  <text class="s" x="695" y="196">block 1 — free</text>
+
+  <!-- arrows: A's block 0 and B's block 0 both point to the shared block -->
+  <path class="arrowA" d="M80,118 C150,150 300,150 380,172"/>
+  <path class="arrowA" d="M540,118 C480,150 440,150 400,172"/>
+  <text class="w" x="390" y="150">both sequences' block 0 points here — stored once</text>
+
+  <!-- A's remaining blocks -->
+  <path class="arrow" d="M145,118 C160,140 175,150 175,172"/>
+  <path class="arrow" d="M210,118 C240,140 275,150 275,172"/>
+
+  <!-- B's remaining blocks -->
+  <path class="arrow" d="M605,118 C605,140 605,150 605,172"/>
+  <path class="arrow" d="M670,118 C650,150 505,155 505,172"/>
+
+  <text class="s" x="390" y="240">A logical block table is per-sequence and tiny. Physical blocks live wherever there's room,</text>
+  <text class="s" x="390" y="256">scattered across the pool — exactly like an OS page table maps virtual pages to physical frames.</text>
+
+  <text class="s" x="390" y="300">Naive allocation: each sequence reserves one contiguous chunk sized for the</text>
+  <text class="s" x="390" y="316">worst case up front — most of it never gets used, and nothing can ever be shared.</text>
+  <text class="s" x="390" y="340">Paging fixes both problems with the same one idea: allocate small, allocate late, allocate anywhere.</text>
+</svg>

@@ -55,4 +55,4 @@ python attn_backend_compare.py --impl flash_attention_2
 
 ---
 
-Previous: [`../08b-build-the-eval-harness/`](../08b-build-the-eval-harness/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../08b-build-the-eval-harness/`](../08b-build-the-eval-harness/) · Next: [`../10-pagedattention-kv-cache-pool/`](../10-pagedattention-kv-cache-pool/)

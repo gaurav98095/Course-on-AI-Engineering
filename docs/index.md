@@ -138,12 +138,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/10-pagedattention-kv-cache-pool.html">
       <span class="num">10</span>
       <span>
         <span class="t">PagedAttention &amp; the KV Cache Pool</span>
         <span class="d" style="display:block">Virtual memory for the KV cache: how vLLM stopped wasting 60% of your VRAM — plus quantizing the cache itself, the same lever from Lecture 07 applied to a different tensor.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -331,6 +332,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 08 — The Compensation Formula Behind GPTQ](math/08-gptq-compensation.md) — deriving the layer-wise reconstruction-error objective and the closed-form update that lets later weights compensate for earlier rounding, with a full worked 2-weight example.
 - [Math Deep Dive 08b — How Many Eval Questions Are Enough?](math/08b-eval-set-statistics.md) — the binomial confidence interval behind any recall@k or answer-quality score, and the sample size actually needed to trust a model comparison.
 - [Math Deep Dive 09 — Online Softmax and the FlashAttention Tiling Trick](math/09-online-softmax.md) — the exact running-max, running-sum merge rule that lets softmax be computed block by block, with a worked 4-key example verified two ways.
+- [Math Deep Dive 10 — The Arithmetic of Paged Memory](math/10-paged-memory-arithmetic.md) — closed-form expected waste for naive vs. paged allocation, and the asymptotic ceiling on prefix-sharing savings as request count grows.
 
 ## What you will be able to do
 

@@ -185,4 +185,4 @@ We finally opened the profiler's `aten::scaled_dot_product_attention` line. Naiv
 
 ---
 
-[← Previous: Lecture 08b — Build the Eval Harness](08b-build-the-eval-harness.md) · [Course Home](../index.md)
+[← Previous: Lecture 08b — Build the Eval Harness](08b-build-the-eval-harness.md) · [Course Home](../index.md) · [Next: Lecture 10 — PagedAttention & the KV Cache Pool →](10-pagedattention-kv-cache-pool.md)
