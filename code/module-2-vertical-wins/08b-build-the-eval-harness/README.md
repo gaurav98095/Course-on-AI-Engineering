@@ -50,4 +50,4 @@ python eval.py --generate --checkpoint qwen3-vl-8b-gptq-4bit   # same eval, quan
 
 ---
 
-Previous: [`../08-quantization-ii-gptq-and-awq/`](../08-quantization-ii-gptq-and-awq/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../08-quantization-ii-gptq-and-awq/`](../08-quantization-ii-gptq-and-awq/) · Next: [`../09-flashattention/`](../09-flashattention/)

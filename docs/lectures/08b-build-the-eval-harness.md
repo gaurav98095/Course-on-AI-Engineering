@@ -228,4 +228,4 @@ We finally built the thing every quantization lecture has been promising: a real
 
 ---
 
-[← Previous: Lecture 08 — Quantization II: GPTQ & AWQ in Practice](08-quantization-ii-gptq-and-awq.md) · [Course Home](../index.md)
+[← Previous: Lecture 08 — Quantization II: GPTQ & AWQ in Practice](08-quantization-ii-gptq-and-awq.md) · [Course Home](../index.md) · [Next: Lecture 09 — FlashAttention →](09-flashattention.md)

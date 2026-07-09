@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 420" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .panel { fill:#F4F4F9; stroke:#E7E5DF; stroke-width:1.5; rx:16; }
+    .hbm   { fill:#EEF0FE; stroke:#4F46E5; stroke-width:1.5; rx:10; }
+    .sram  { fill:#FFFFFF; stroke:#4F46E5; stroke-width:1.5; rx:10; }
+    .t     { font-size:14px; font-weight:700; fill:#1C2321; text-anchor:middle; }
+    .s     { font-size:11px; fill:#5B6663; text-anchor:middle; }
+    .w     { font-size:10.5px; font-weight:600; fill:#4F46E5; text-anchor:middle; }
+    .arrow { stroke:#4F46E5; stroke-width:1.6; fill:none; marker-end:url(#arr); }
+    .arrowr{ stroke:#B45309; stroke-width:1.6; fill:none; marker-end:url(#arrr); }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B45309"/>
+    </marker>
+  </defs>
+
+  <!-- Left panel: naive -->
+  <rect class="panel" x="20" y="20" width="360" height="380"/>
+  <text class="t" x="200" y="46">Naive attention</text>
+
+  <rect class="hbm" x="50" y="64" width="300" height="36"/>
+  <text class="s" x="200" y="86">HBM: Q, K, V</text>
+
+  <path class="arrowr" d="M200,100 C160,120 160,150 200,168"/>
+  <path class="arrowr" d="M200,168 C240,150 240,120 200,100"/>
+  <rect class="hbm" x="50" y="168" width="300" height="36"/>
+  <text class="s" x="200" y="190">HBM: full N×N score matrix (write)</text>
+
+  <path class="arrowr" d="M200,204 C160,224 160,254 200,272"/>
+  <rect class="hbm" x="50" y="272" width="300" height="36"/>
+  <text class="s" x="200" y="294">HBM: N×N again, post-softmax (read + write)</text>
+
+  <path class="arrowr" d="M200,308 C240,328 240,346 200,362"/>
+  <rect class="hbm" x="50" y="362" width="300" height="30"/>
+  <text class="s" x="200" y="381">HBM: output</text>
+
+  <text class="w" x="200" y="132">every arrow is a trip across the belt</text>
+
+  <!-- Right panel: flash -->
+  <rect class="panel" x="400" y="20" width="360" height="380"/>
+  <text class="t" x="580" y="46">FlashAttention (tiled)</text>
+
+  <rect class="hbm" x="430" y="64" width="300" height="36"/>
+  <text class="s" x="580" y="86">HBM: Q, K, V (read once, in tiles)</text>
+
+  <path class="arrow" d="M580,100 L580,128"/>
+  <rect class="sram" x="450" y="128" width="260" height="180"/>
+  <text class="t" x="580" y="152">SRAM (on-chip)</text>
+  <text class="s" x="580" y="174">tile of scores, computed block by block</text>
+  <text class="s" x="580" y="192">running max / running sum</text>
+  <text class="s" x="580" y="210">(online softmax, Math Deep Dive 09)</text>
+  <text class="s" x="580" y="232">accumulated output —</text>
+  <text class="s" x="580" y="248">never leaves SRAM until the tile is done</text>
+  <text class="w" x="580" y="286">no N×N matrix is ever written to HBM</text>
+
+  <path class="arrow" d="M580,308 L580,336"/>
+  <rect class="hbm" x="450" y="336" width="260" height="34"/>
+  <text class="s" x="580" y="357">HBM: output only</text>
+
+  <text class="s" x="200" y="410">Same softmax(QKᵀ/√d)V result — different amount of HBM traffic.</text>
+</svg>

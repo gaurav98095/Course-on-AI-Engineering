@@ -128,12 +128,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/09-flashattention.html">
       <span class="num">09</span>
       <span>
         <span class="t">FlashAttention</span>
         <span class="d" style="display:block">The same math, tiled to never touch HBM twice — the kernel that made long context affordable.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -329,6 +330,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 07 — Why Quantized Speed Isn't Free the Way Quantized Memory Is](math/07-quantization-speed-gap.md) — the dequantization-overhead formula that explains why int8 often doesn't speed up decode while int4 usually does.
 - [Math Deep Dive 08 — The Compensation Formula Behind GPTQ](math/08-gptq-compensation.md) — deriving the layer-wise reconstruction-error objective and the closed-form update that lets later weights compensate for earlier rounding, with a full worked 2-weight example.
 - [Math Deep Dive 08b — How Many Eval Questions Are Enough?](math/08b-eval-set-statistics.md) — the binomial confidence interval behind any recall@k or answer-quality score, and the sample size actually needed to trust a model comparison.
+- [Math Deep Dive 09 — Online Softmax and the FlashAttention Tiling Trick](math/09-online-softmax.md) — the exact running-max, running-sum merge rule that lets softmax be computed block by block, with a worked 4-key example verified two ways.
 
 ## What you will be able to do
 
