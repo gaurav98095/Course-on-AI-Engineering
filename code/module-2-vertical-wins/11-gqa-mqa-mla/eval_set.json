@@ -1,0 +1,62 @@
+[
+  {
+    "question": "Why does an aircraft stall at the critical angle of attack?",
+    "expected_doc": "phak-ch4-aerodynamics",
+    "expected_page": null,
+    "required_terms": ["angle of attack", "separates"]
+  },
+  {
+    "question": "How does the attitude indicator work?",
+    "expected_doc": "phak-ch7-instruments",
+    "expected_page": null,
+    "required_terms": ["gyroscope", "horizon"]
+  },
+  {
+    "question": "What is the difference between induced drag and parasite drag?",
+    "expected_doc": "phak-ch4-aerodynamics",
+    "expected_page": null,
+    "required_terms": ["induced drag", "parasite drag"]
+  },
+  {
+    "question": "How does the pitot-static system feed the airspeed indicator?",
+    "expected_doc": "phak-ch7-instruments",
+    "expected_page": null,
+    "required_terms": ["pitot", "static", "pressure"]
+  },
+  {
+    "question": "What happens to lift when flaps are extended?",
+    "expected_doc": "phak-ch4-aerodynamics",
+    "expected_page": null,
+    "required_terms": ["flaps", "lift"]
+  },
+  {
+    "question": "What are the errors of the magnetic compass during turns?",
+    "expected_doc": "phak-ch7-instruments",
+    "expected_page": null,
+    "required_terms": ["compass", "turn"]
+  },
+  {
+    "question": "How does an altimeter measure altitude?",
+    "expected_doc": "phak-ch7-instruments",
+    "expected_page": null,
+    "required_terms": ["altimeter", "pressure"]
+  },
+  {
+    "question": "Why does frost on the wing matter for takeoff?",
+    "expected_doc": "phak-ch4-aerodynamics",
+    "expected_page": null,
+    "required_terms": ["frost", "lift"]
+  },
+  {
+    "question": "What forces act on an aircraft in straight and level flight?",
+    "expected_doc": "phak-ch4-aerodynamics",
+    "expected_page": null,
+    "required_terms": ["lift", "weight", "thrust", "drag"]
+  },
+  {
+    "question": "What is the difference between true airspeed and indicated airspeed?",
+    "expected_doc": "phak-ch7-instruments",
+    "expected_page": null,
+    "required_terms": ["true airspeed", "indicated airspeed"]
+  }
+]

@@ -43,4 +43,4 @@ python paged_kv_simulator.py    # no GPU, no ingest.py needed — just config.js
 
 ---
 
-Previous: [`../09-flashattention/`](../09-flashattention/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../09-flashattention/`](../09-flashattention/) · Next: [`../11-gqa-mqa-mla/`](../11-gqa-mqa-mla/)

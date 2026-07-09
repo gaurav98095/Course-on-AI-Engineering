@@ -148,12 +148,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/11-gqa-mqa-mla.html">
       <span class="num">11</span>
       <span>
         <span class="t">GQA, MQA, MLA — Cheaper Attention Heads</span>
         <span class="d" style="display:block">Share the keys and values, keep the quality: the head designs behind every modern model.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -333,6 +334,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 08b — How Many Eval Questions Are Enough?](math/08b-eval-set-statistics.md) — the binomial confidence interval behind any recall@k or answer-quality score, and the sample size actually needed to trust a model comparison.
 - [Math Deep Dive 09 — Online Softmax and the FlashAttention Tiling Trick](math/09-online-softmax.md) — the exact running-max, running-sum merge rule that lets softmax be computed block by block, with a worked 4-key example verified two ways.
 - [Math Deep Dive 10 — The Arithmetic of Paged Memory](math/10-paged-memory-arithmetic.md) — closed-form expected waste for naive vs. paged allocation, and the asymptotic ceiling on prefix-sharing savings as request count grows.
+- [Math Deep Dive 11 — Arithmetic Intensity of Grouped Attention](math/11-gqa-arithmetic-intensity.md) — deriving why decode attention's arithmetic intensity scales exactly with KV group size, and checking it against Lecture 04's real ridge point.
 
 ## What you will be able to do
 

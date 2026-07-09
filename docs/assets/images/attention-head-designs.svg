@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 470" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .panel  { fill:#F4F4F9; stroke:#E7E5DF; stroke-width:1.5; rx:14; }
+    .q      { fill:#FFFFFF; stroke:#4F46E5; stroke-width:1.3; rx:5; }
+    .kv     { fill:#EEF0FE; stroke:#4F46E5; stroke-width:1.5; rx:5; }
+    .latent { fill:#FEF3C7; stroke:#B45309; stroke-width:1.5; rx:5; }
+    .t      { font-size:13px; font-weight:700; fill:#1C2321; text-anchor:middle; }
+    .s      { font-size:10.5px; fill:#5B6663; text-anchor:middle; }
+    .line   { stroke:#B9C0BD; stroke-width:1; }
+  </style>
+
+  <!-- MHA -->
+  <rect class="panel" x="20" y="20" width="360" height="200"/>
+  <text class="t" x="200" y="42">MHA — every query head, its own KV head</text>
+  <g>
+    <!-- 8 query heads, 8 kv heads, 1:1 -->
+    <rect class="q" x="50" y="60" width="30" height="20"/><rect class="q" x="90" y="60" width="30" height="20"/>
+    <rect class="q" x="130" y="60" width="30" height="20"/><rect class="q" x="170" y="60" width="30" height="20"/>
+    <rect class="q" x="210" y="60" width="30" height="20"/><rect class="q" x="250" y="60" width="30" height="20"/>
+    <rect class="q" x="290" y="60" width="30" height="20"/><rect class="q" x="330" y="60" width="30" height="20"/>
+    <text class="s" x="200" y="95">8 query heads (of our model's real 32)</text>
+    <line class="line" x1="65" y1="80" x2="65" y2="120"/><line class="line" x1="105" y1="80" x2="105" y2="120"/>
+    <line class="line" x1="145" y1="80" x2="145" y2="120"/><line class="line" x1="185" y1="80" x2="185" y2="120"/>
+    <line class="line" x1="225" y1="80" x2="225" y2="120"/><line class="line" x1="265" y1="80" x2="265" y2="120"/>
+    <line class="line" x1="305" y1="80" x2="305" y2="120"/><line class="line" x1="345" y1="80" x2="345" y2="120"/>
+    <rect class="kv" x="50" y="120" width="30" height="20"/><rect class="kv" x="90" y="120" width="30" height="20"/>
+    <rect class="kv" x="130" y="120" width="30" height="20"/><rect class="kv" x="170" y="120" width="30" height="20"/>
+    <rect class="kv" x="210" y="120" width="30" height="20"/><rect class="kv" x="250" y="120" width="30" height="20"/>
+    <rect class="kv" x="290" y="120" width="30" height="20"/><rect class="kv" x="330" y="120" width="30" height="20"/>
+    <text class="s" x="200" y="158">8 KV heads — cached in full, none shared</text>
+    <text class="s" x="200" y="178">cache scales 1:1 with query heads</text>
+    <text class="s" x="200" y="198">576 KiB/token (hypothetical, our dims)</text>
+  </g>
+
+  <!-- GQA -->
+  <rect class="panel" x="400" y="20" width="360" height="200"/>
+  <text class="t" x="580" y="42">GQA — groups of 4 share one KV head</text>
+  <g>
+    <rect class="q" x="430" y="60" width="30" height="20"/><rect class="q" x="470" y="60" width="30" height="20"/>
+    <rect class="q" x="510" y="60" width="30" height="20"/><rect class="q" x="550" y="60" width="30" height="20"/>
+    <rect class="q" x="590" y="60" width="30" height="20"/><rect class="q" x="630" y="60" width="30" height="20"/>
+    <rect class="q" x="670" y="60" width="30" height="20"/><rect class="q" x="710" y="60" width="30" height="20"/>
+    <line class="line" x1="465" y1="80" x2="465" y2="120"/><line class="line" x1="485" y1="80" x2="465" y2="120"/>
+    <line class="line" x1="445" y1="80" x2="465" y2="120"/><line class="line" x1="505" y1="80" x2="465" y2="120"/>
+    <line class="line" x1="625" y1="80" x2="625" y2="120"/><line class="line" x1="645" y1="80" x2="625" y2="120"/>
+    <line class="line" x1="605" y1="80" x2="625" y2="120"/><line class="line" x1="665" y1="80" x2="625" y2="120"/>
+    <rect class="kv" x="450" y="120" width="30" height="20"/><rect class="kv" x="610" y="120" width="30" height="20"/>
+    <text class="s" x="580" y="158">2 KV heads shown (our real model: 8 groups of 4)</text>
+    <text class="s" x="580" y="178">cache scales with GROUPS, not query heads</text>
+    <text class="s" x="580" y="198">144 KiB/token — ACTUAL, our model's real config</text>
+  </g>
+
+  <!-- MQA -->
+  <rect class="panel" x="20" y="240" width="360" height="115"/>
+  <text class="t" x="200" y="262">MQA — every query head shares ONE KV head</text>
+  <g>
+    <rect class="q" x="50" y="280" width="30" height="20"/><rect class="q" x="90" y="280" width="30" height="20"/>
+    <rect class="q" x="130" y="280" width="30" height="20"/><rect class="q" x="170" y="280" width="30" height="20"/>
+    <rect class="q" x="210" y="280" width="30" height="20"/><rect class="q" x="250" y="280" width="30" height="20"/>
+    <rect class="q" x="290" y="280" width="30" height="20"/><rect class="q" x="330" y="280" width="30" height="20"/>
+    <line class="line" x1="65" y1="300" x2="200" y2="325"/><line class="line" x1="145" y1="300" x2="200" y2="325"/>
+    <line class="line" x1="225" y1="300" x2="200" y2="325"/><line class="line" x1="305" y1="300" x2="200" y2="325"/>
+    <line class="line" x1="345" y1="300" x2="200" y2="325"/><line class="line" x1="105" y1="300" x2="200" y2="325"/>
+    <rect class="kv" x="185" y="325" width="30" height="20"/>
+    <text class="s" x="200" y="360">1 KV head total. 18 KiB/token — smallest cache, weakest quality of the four.</text>
+  </g>
+
+  <!-- MLA -->
+  <rect class="panel" x="400" y="240" width="360" height="115"/>
+  <text class="t" x="580" y="262">MLA — a compressed latent, expanded per head</text>
+  <g>
+    <rect class="q" x="430" y="280" width="30" height="20"/><rect class="q" x="470" y="280" width="30" height="20"/>
+    <rect class="q" x="510" y="280" width="30" height="20"/><rect class="q" x="550" y="280" width="30" height="20"/>
+    <rect class="q" x="590" y="280" width="30" height="20"/><rect class="q" x="630" y="280" width="30" height="20"/>
+    <rect class="q" x="670" y="280" width="30" height="20"/><rect class="q" x="710" y="280" width="30" height="20"/>
+    <line class="line" x1="445" y1="300" x2="580" y2="325"/><line class="line" x1="525" y1="300" x2="580" y2="325"/>
+    <line class="line" x1="605" y1="300" x2="580" y2="325"/><line class="line" x1="685" y1="300" x2="580" y2="325"/>
+    <line class="line" x1="465" y1="300" x2="580" y2="325"/><line class="line" x1="725" y1="300" x2="580" y2="325"/>
+    <rect class="latent" x="555" y="325" width="50" height="20"/>
+    <text class="s" x="580" y="360">1 shared latent vector, up-projected per head at attention time —</text>
+  </g>
+
+  <text class="s" x="390" y="440">MHA caches every head in full. GQA and MQA cache fewer, coarser copies — cheaper, but literally throwing information away.</text>
+  <text class="s" x="390" y="458">MLA caches one compressed latent and reconstructs each head's view from it — cheap AND, DeepSeek's own results show, not lossy in the way GQA/MQA are.</text>
+</svg>

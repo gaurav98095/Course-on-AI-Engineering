@@ -192,4 +192,4 @@ Lecture 05 gave us the bytes-per-token formula; today gave us the allocation pol
 
 ---
 
-[← Previous: Lecture 09 — FlashAttention](09-flashattention.md) · [Course Home](../index.md)
+[← Previous: Lecture 09 — FlashAttention](09-flashattention.md) · [Course Home](../index.md) · [Next: Lecture 11 — GQA, MQA, MLA: Cheaper Attention Heads →](11-gqa-mqa-mla.md)
