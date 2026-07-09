@@ -55,6 +55,7 @@ class Retriever:
                 text=[question], padding="max_length", max_length=64, return_tensors="pt"
             ).to(DEVICE)
             qv = self.clip.get_text_features(**inputs)
+        qv = qv.pooler_output if hasattr(qv, "pooler_output") else qv
         qv = torch.nn.functional.normalize(qv, dim=-1).float().cpu().numpy()
         _, idx = self.image_index.search(qv, k_img)
         hits_i = [self.images[i] for i in idx[0]]

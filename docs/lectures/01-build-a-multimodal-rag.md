@@ -158,8 +158,11 @@ text_vecs = model.encode(chunks, normalize_embeddings=True)
 
 # figures -> SigLIP 2 image tower (768-dim), unit length
 f = clip.get_image_features(**processor(images=batch, return_tensors="pt").to("cuda"))
+f = f.pooler_output if hasattr(f, "pooler_output") else f   # see note below
 f = torch.nn.functional.normalize(f, dim=-1)
 ```
+
+That middle line is a real gotcha, not defensive boilerplate: on current `transformers` versions, SigLIP 2's `get_image_features()`/`get_text_features()` return the model's full output object (with attentions, hidden states, and a `.pooler_output` field) rather than a bare tensor — a change from how these convenience methods behave on older model families. Skip that line and `normalize()` fails immediately on the next one, because you can't normalize an output object. The `hasattr` check keeps the code working either way, in case a future library version changes it back.
 
 Both sets of vectors are **normalized to unit length**. That single line buys us something important:
 
@@ -187,6 +190,7 @@ _, idx = self.text_index.search(q, k_text)
 inputs = self.clip_processor(text=[question], padding="max_length",
                              max_length=64, return_tensors="pt")
 qv = self.clip.get_text_features(**inputs)
+qv = qv.pooler_output if hasattr(qv, "pooler_output") else qv   # Step 3's gotcha, again
 ```
 
 Notice `max_length=64`. SigLIP's text tower was trained on short captions — it literally cannot read more than 64 tokens. File that away; it returns in *Where It Breaks*.
