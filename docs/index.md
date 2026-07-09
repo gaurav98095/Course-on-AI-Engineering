@@ -119,6 +119,15 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
   </li>
   <li>
     <a class="soon">
+      <span class="num">08b</span>
+      <span>
+        <span class="t">Build the Eval Harness</span>
+        <span class="d" style="display:block">Turn "the answer looked right" into a real, reusable score — recall@k plus answer grading, re-run after every optimization from here on.</span>
+      </span>
+    </a>
+  </li>
+  <li>
+    <a class="soon">
       <span class="num">09</span>
       <span>
         <span class="t">FlashAttention</span>
@@ -131,7 +140,7 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
       <span class="num">10</span>
       <span>
         <span class="t">PagedAttention &amp; the KV Cache Pool</span>
-        <span class="d" style="display:block">Virtual memory for the KV cache: how vLLM stopped wasting 60% of your VRAM.</span>
+        <span class="d" style="display:block">Virtual memory for the KV cache: how vLLM stopped wasting 60% of your VRAM — plus quantizing the cache itself, the same lever from Lecture 07 applied to a different tensor.</span>
       </span>
     </a>
   </li>

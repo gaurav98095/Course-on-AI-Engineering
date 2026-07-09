@@ -36,19 +36,31 @@ def timed_answer(gen: Generator, retrieve: Retriever, question: str) -> dict:
     ).to(gen.model.device)
 
     streamer = TextIteratorStreamer(gen.processor.tokenizer, skip_prompt=True, skip_special_tokens=True)
-    thread = Thread(target=gen.model.generate,
-                    kwargs=dict(**inputs, max_new_tokens=300, streamer=streamer))
+
+    # The streamer's chunks are for TTFT only. TextIteratorStreamer can (and
+    # sometimes does) buffer more than one token into a single yielded chunk
+    # -- counting chunks as "tokens" silently undercounts. Capture the real
+    # output tensor from the background thread instead, and count its shape.
+    result = {}
+
+    def _generate():
+        result["out"] = gen.model.generate(
+            **inputs, max_new_tokens=300, streamer=streamer
+        )
+
+    thread = Thread(target=_generate)
 
     torch.cuda.synchronize()          # CUDA is async: without this, timers lie
     t0 = time.perf_counter()
     thread.start()
-    ttft, n_out = None, 0
+    ttft = None
     for _ in streamer:                # first yielded chunk = first token has arrived
         if ttft is None:
             ttft = time.perf_counter() - t0
-        n_out += 1
     thread.join()
     total = time.perf_counter() - t0
+
+    n_out = result["out"].shape[1] - inputs["input_ids"].shape[1]   # the real count
 
     return {
         "prompt_tokens": inputs["input_ids"].shape[1],

@@ -21,6 +21,8 @@ Full walkthrough: [Lecture 02 on the course site](https://gaurav98095.github.io/
 
 (`ingest.py`, `rag.py`, `measure.py`, `gpu_vitals.py`, `plot_vitals.py`, and `data/` are copied forward from Lecture 01b unchanged, so this folder still runs on its own.)
 
+**Why `/metrics` reads a log file instead of an object's attributes**: LitServe runs `predict` in a separate worker process from the one serving HTTP routes, so a Python object's attributes set inside `predict` are invisible to a route registered on `server.app`. `serve.py` has the worker append one JSON line per request to `metrics.jsonl` (gitignored, regenerated every run); the `/metrics` route reads that file back. GPU vitals don't need this — `pynvml` talks to the driver directly and works from either process. See the lecture's Step 6 for the full story.
+
 ## Step by step from zero
 
 ```bash
@@ -60,7 +62,8 @@ python client.py "How does the altimeter work?" --url https://<your-exposed-url>
 
 - **`/health` hangs**: the server is still loading the model — wait for "models loaded, serving".
 - **Requests time out**: `serve.py` sets `timeout=120`; long answers or a cold GPU can exceed it — see Lecture 03 for why.
-- **`AttributeError: 'LitServer' object has no attribute 'app'`**: your installed LitServe version doesn't expose the FastAPI instance the same way. Two options: (a) check `pip show litserve` and consult its docs for the current attribute name, or (b) run a second tiny script with its own `FastAPI()`/`uvicorn.run()` on a different port (e.g. 8001) that reads the same `RAGAPI` instance's counters — less elegant, always works.
+- **`AttributeError: 'LitServer' object has no attribute 'app'`**: your installed LitServe version doesn't expose the FastAPI instance the same way. Check `pip show litserve` and consult its docs for the current attribute name; alternatively, run a second tiny script with its own `FastAPI()`/`uvicorn.run()` on a different port (e.g. 8001) that reads `metrics.jsonl` the same way `metrics_route()` does — the file-based handoff still works regardless of which process reads the file.
+- **`/metrics` shows all zeros right after starting the server**: `metrics.jsonl` doesn't exist until the first request completes — that's expected, not a bug.
 - Everything from Lecture 01/01b's troubleshooting applies here too.
 
 ---

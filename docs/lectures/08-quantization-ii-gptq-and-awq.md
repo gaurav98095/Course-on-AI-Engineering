@@ -5,7 +5,7 @@ title: "Lecture 08 — Quantization II: GPTQ & AWQ in Practice"
 
 # Lecture 08 — Quantization II: GPTQ & AWQ in Practice
 
-> **In one sentence:** We quantize the course model again — this time with calibration data and purpose-built kernels instead of Lecture 07's blind rounding — and finally get the speedup the roofline model promised, while proving the answers are still correct.
+> **In one sentence:** We quantize the course model again — this time with calibration data and purpose-built kernels instead of Lecture 07's blind rounding — chasing the speedup the roofline model promised, and building the habit of checking whether the answers are still correct instead of assuming it.
 
 ## Learning Objectives
 
@@ -56,6 +56,8 @@ Both are still producing an INT4 (or INT8) tensor at the end — same format as 
 Same environment convention throughout — everything below is ⚡ Lightning Studio unless labeled otherwise. One addition worth naming up front: **GPTQModel** is the current, actively maintained library for this — `AutoGPTQ`, the older standalone package, is no longer the integration Hugging Face recommends. `GPTQModel` covers both GPTQ and AWQ behind one API, which is why today's two scripts barely differ from each other.
 
 ## The Build
+
+> **A note on confidence, in the spirit of this course's "measure, don't guess" rule.** Today's scripts follow `GPTQModel`'s own documented API precisely — but unlike most of this course's code, they haven't yet been run end-to-end against our specific vision-language model on real hardware. Weight-only quantization of a VLM's text layers is a documented, supported path, but the exact method names on the wrapper (`model.device`, `model.parameters()`, `model.tokenizer`) can shift between library versions, and this is worth knowing *before* you hit an `AttributeError` and wonder what you did wrong. If a call in `quantize_gptq_awq.py` or `benchmark_quantized.py` doesn't match your installed version, check `pip show gptqmodel` and its current README first — the *ideas* in this lecture (calibrated rounding, a unified GPTQ/AWQ API, real kernel speedup) are solid regardless of any one method name drifting.
 
 ⚡ This lecture's folder, `code/module-2-vertical-wins/08-quantization-ii-gptq-and-awq/`, is a copy-forward of Lecture 07's folder with two new files: `quantize_gptq_awq.py` and `benchmark_quantized.py`.
 
@@ -122,7 +124,7 @@ python benchmark_quantized.py --path qwen3-vl-8b-gptq-4bit
 python benchmark_quantized.py --path qwen3-vl-8b-awq-4bit
 ```
 
-What you should see (ballpark, L40S — compare directly against Lecture 07's bf16 and naive-int4 numbers):
+What you should see — the memory line is a reliable prediction; the speed and answer text below it are this lecture's least-verified numbers (unlike the rest of this course's outputs, not yet confirmed on real hardware — see the note at the top of this section), shown to illustrate the *shape* of a good result, not to be matched digit for digit:
 
 ```text
 loading quantized model from qwen3-vl-8b-gptq-4bit ...
@@ -137,17 +139,17 @@ airflow over the wing separates from the upper surface, causing a sudden
 loss of lift... [phak-ch4-aerodynamics p.5]
 ```
 
-Two things to check against Lecture 07, side by side.
+Two things to check against Lecture 07, side by side — your own real numbers.
 
 ## Measure It
 
 | Metric | bf16 (Lecture 07) | int4, naive (Lecture 07) | GPTQ 4-bit (today) | AWQ 4-bit (today) |
 | --- | --- | --- | --- | --- |
 | Weight memory | ~14.9 GiB | ~4.1 GiB | ~4.2 GiB | ~4.2 GiB |
-| Decode speed | baseline (~29.5 tok/s) | ~1.24× | **~2.2×** | **~2.1×** |
-| Same-question answer | correct, cited | *(not checked)* | correct, cited | correct, cited |
+| Decode speed | baseline (~29.5 tok/s) | ~1.24× | *expect noticeably faster than naive int4* | *expect a similar range to GPTQ* |
+| Same-question answer | correct, cited | *(not checked)* | *expect correct, cited — verify* | *expect correct, cited — verify* |
 
-> Memory is nearly identical to Lecture 07's naive int4 — same bit width, same math, a little overhead for `group_size=128`'s finer scales. **Speed is not.** A purpose-built kernel gets meaningfully closer to the roofline model's clean prediction than a naive dequantize-then-multiply ever could — this is Math Deep Dive 07's \\(c \approx 0\\) case, made real. And the answer is still correct: quantization changed *how* the model computes, not *what* it concludes, at least on this question.
+> Weight memory is arithmetic — expect it to land almost exactly where predicted, every time, on any hardware. **Speed and the specific "~2×"-class numbers above are this lecture's least-verified claims** — they follow directly from Math Deep Dive 07's math (a purpose-built kernel should get meaningfully closer to the roofline model's clean prediction than a naive dequantize-then-multiply ever could) but were not measured on real hardware before publishing. Run `benchmark_quantized.py` yourself and treat your own numbers as the real result, the same way every other ballpark in this course asks you to. If your ratio is notably different, that's genuinely interesting — file it under Exercise 4.
 
 ## The Math, One Level Deeper
 
@@ -188,7 +190,7 @@ where \\(X\\) is calibration data flowing through the layer. Expand this out for
 
 ## Summary
 
-We quantized the course model twice more, this time giving each method real information to work with. GPTQ walked the model layer by layer, compensating each weight's rounding error into the weights that hadn't been quantized yet. AWQ found the small number of channels that actually matter and protected them with a scale. Both landed at the same memory footprint as Lecture 07's naive int4 — but with purpose-built kernels behind them, both delivered real decode speedup, and — checked, not assumed — the model still answered our running example correctly.
+We quantized the course model twice more, this time giving each method real information to work with. GPTQ walked the model layer by layer, compensating each weight's rounding error into the weights that hadn't been quantized yet. AWQ found the small number of channels that actually matter and protected them with a scale. Both should land at the same memory footprint as Lecture 07's naive int4 — memory is arithmetic, not a guess — and with purpose-built kernels behind them, both should deliver real decode speedup this time. "Should" is doing real work in that sentence on purpose: this lecture built the habit of checking rather than assuming, on both speed and correctness, and running `benchmark_quantized.py` yourself is how you actually collect on that promise.
 
 > **What should you remember?**
 > - GPTQ and AWQ don't change the number format — they change *which* values get chosen inside that format, using real calibration data.

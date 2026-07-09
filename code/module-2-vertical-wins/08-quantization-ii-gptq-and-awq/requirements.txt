@@ -12,7 +12,7 @@ pymupdf
 pillow
 requests
 litserve
-pynvml        # /metrics + gpu_vitals.py, from Lecture 01b/02
+nvidia-ml-py  # (installs the pynvml module) — /metrics + gpu_vitals.py, from Lecture 01b/02
 matplotlib    # plot_vitals.py, from Lecture 01b
 httpx         # async load testing, from Lecture 03
 bitsandbytes  # int8/int4 weight-only quantization, from Lecture 07

@@ -12,7 +12,7 @@ title: "Lecture 02 — Deploy It on a GPU"
 - Wrap the multimodal RAG in a LitServe endpoint where the model loads once and answers forever.
 - Trace the anatomy of one request — network, queue, retrieve, prefill, decode — and know which part you're measuring.
 - Expose the endpoint to the internet from a Lightning Studio, call it like a user, and read your first request logs.
-- Add a real `/metrics` endpoint, and see why it exposes two genuinely different systems living in one process today.
+- Add a real `/metrics` endpoint — and hit a real bug doing it, one that exposes exactly how the API layer and GPU layer are already separated under the hood.
 
 ## Prerequisites
 
@@ -185,30 +185,41 @@ One line, four numbers, and the whole story of this course is already in them: r
 
 ### Step 6 — Expose real metrics, not just logs
 
-A log line is for a human, watching one line at a time. A **metrics endpoint** is for a machine — a dashboard, an autoscaler, an alert — to *scrape* on a schedule and aggregate. `serve.py` now tracks a few counters in `setup`, updates them in `predict`, and serves them at `/metrics`:
+A log line is for a human, watching one line at a time. A **metrics endpoint** is for a machine — a dashboard, an autoscaler, an alert — to *scrape* on a schedule and aggregate. The obvious first design: track a few counters as attributes on `RAGAPI`, set them up in `setup`, update them in `predict`, and read them straight out of the object in the route:
 
 ```python
 def setup(self, device):
-    self.retriever = Retriever()
-    self.generator = Generator()
     self.request_count = 0
-    self.error_count = 0
-    self.total_new_tokens = 0
-    self.latencies_s = []              # last 100, for a crude p50
-    pynvml.nvmlInit()                  # same call as Lecture 01b's gpu_vitals.py
-    self.gpu_handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+    ...
+
+def predict(self, inputs):
+    ...
+    self.request_count += 1     # looks fine. it is not fine.
 ```
 
-The route itself blends two kinds of numbers on purpose — watch closely, this is the setup for the next section:
+**This design is broken, and it's worth seeing exactly why**, because the reason is the whole point of this lecture. LitServe doesn't run `predict` in the same process that answers HTTP requests — it forks a separate **worker process** to run inference, so the GPU work never blocks the web server. `setup` and `predict` execute inside that worker. A route registered on `server.app`, like our `/metrics`, executes in the *original* process. They are not the same Python interpreter, do not share memory, and an attribute set on `self` inside the worker is invisible to code running anywhere else — the route would either crash reading `api.gpu_handle` (never set in this process) or silently read a `request_count` that never moves.
+
+We didn't get to choose whether our API layer and our GPU layer are separate systems. **LitServe already made that choice for us.** The fix has to cross a real process boundary, so it uses the simplest thing that can: the worker appends one JSON line per request to a small log file; the route reads that file back.
 
 ```python
-def metrics():
-    util = pynvml.nvmlDeviceGetUtilizationRates(api.gpu_handle)
-    mem = pynvml.nvmlDeviceGetMemoryInfo(api.gpu_handle)
+# in predict() -- runs in the WORKER process
+with open(METRICS_LOG, "a") as f:
+    f.write(json.dumps({"seconds": t_total, "new_tokens": n_out, "ok": ok}) + "\n")
+
+# in metrics_route() -- runs in the API process, reads what the worker wrote
+records = [json.loads(line) for line in METRICS_LOG.read_text().splitlines()]
+```
+
+GPU vitals don't have this problem at all — `pynvml` talks directly to the NVIDIA driver, not to a specific process's CUDA context, so `metrics_route()` can query utilization and memory itself, no file needed:
+
+```python
+def metrics_route():
+    records = [json.loads(l) for l in METRICS_LOG.read_text().splitlines()]
+    handle = gpu_handle()                          # this process's own pynvml call — always safe
+    util = pynvml.nvmlDeviceGetUtilizationRates(handle)
     return {
-        "requests_total": api.request_count, "errors_total": api.error_count,
-        "latency_p50_s": ...,                       # API-layer: a load balancer cares about this
-        "gpu_util_pct": util.gpu, "gpu_mem_used_mib": ...,   # GPU-layer: a fleet dashboard cares about this
+        "requests_total": len(records), "errors_total": sum(1 for r in records if not r["ok"]),
+        "gpu_util_pct": util.gpu, ...
     }
 ```
 
@@ -222,7 +233,7 @@ curl localhost:8000/metrics
  "gpu_util_pct": 12, "gpu_mem_used_mib": 17240}
 ```
 
-> If your installed LitServe version doesn't expose `server.app`, check the folder's README — the fallback is a second tiny FastAPI/Uvicorn process reading the same counters, which is uglier but always works.
+> If your installed LitServe version doesn't expose `server.app`, check the folder's README — the fallback is a second tiny FastAPI/Uvicorn process reading the same log file, which is uglier but always works.
 
 ## Measure It
 
@@ -245,7 +256,7 @@ Look again at the `/metrics` output from Step 6. It's answering two completely d
 >
 > **`gpu_util_pct`, `gpu_mem_used_mib`** — these describe the **model-serving layer**: is the *GPU* healthy? Is it about to OOM? This is expensive, hardware-bound state that has nothing to do with HTTP.
 
-Today, `serve.py` is **one Python process** doing both jobs — the same `predict` method that parses your JSON also runs 8 billion parameters of matrix multiplication. That was the right simplification for Lectures 01–02: one file, one mental model, nothing to configure. But it quietly hides a mismatch that gets expensive to ignore at scale.
+Step 6 already forced a small taste of this: LitServe itself splits `serve.py` into two OS processes (a web-facing one, a GPU-facing worker) just to keep HTTP responsive while the GPU is busy — that's *why* `/metrics` needed a log file instead of a shared Python object. But `serve.py` is still **one deployable unit** — one command, one machine, one GPU, both processes living and dying together. That was the right simplification for Lectures 01–02: one file, one mental model, nothing to configure. It quietly hides a mismatch that gets expensive to ignore at scale.
 
 | | API layer | Model-serving layer |
 | --- | --- | --- |
@@ -282,7 +293,9 @@ Today we measured: network ≈ 0.05 s, queue = 0 (one polite caller), retrieve �
 
 **Timeouts are policy.** We set `timeout=120`. Too low and long answers die mid-generation; too high and a stuck request holds the only operator hostage. There is no correct value — only a chosen one.
 
-A service's weakest points are rarely the model: they're the door (auth), the line (queue), and the clock (timeouts).
+**`metrics.jsonl` grows forever and isn't safe for concurrent writers.** One worker appending one line at a time is fine; Lecture 03's multiple simultaneous requests are still handled one at a time by our single worker, so writes never interleave — but this file-based approach is a teaching-scale stopgap, not what a real fleet does (Lecture 27's Prometheus setup replaces it properly, and neither approach would survive multiple GPU workers writing to the same file without real care).
+
+A service's weakest points are rarely the model: they're the door (auth), the line (queue), the clock (timeouts), and — as Step 6 just proved the hard way — the wall between one process and another.
 {: .remember}
 
 ## Exercises
@@ -296,7 +309,7 @@ A service's weakest points are rarely the model: they're the door (auth), the li
 
 ## Summary
 
-We put a phone number on the model: `setup` loads once, `decode_request` defines the schema, `predict` does timed work, `encode_response` answers in JSON. A health check says "alive", a public URL makes it real, a log line tells a human the truth, and a `/metrics` route tells a machine the same truth in a form it can scrape. Reading that route closely showed something we'd been hiding since Lecture 01: one process, quietly playing two roles — a cheap, stateless API layer and an expensive, stateful GPU layer — that production architectures deliberately keep apart.
+We put a phone number on the model: `setup` loads once, `decode_request` defines the schema, `predict` does timed work, `encode_response` answers in JSON. A health check says "alive", a public URL makes it real, a log line tells a human the truth, and a `/metrics` route tells a machine the same truth in a form it can scrape — and building that route the naive way actually broke, because LitServe already runs the GPU work in a separate process from the one answering HTTP. One deployment, two roles, and — it turns out — two processes underneath already, just not yet two independently-scaled, independently-costed *systems*, which is what production architectures deliberately build toward.
 
 > **What should you remember?**
 > - Load in `setup`, never in `predict` — cold start is paid once, not per request.

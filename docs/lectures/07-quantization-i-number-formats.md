@@ -80,11 +80,11 @@ pip install -r requirements.txt     # adds bitsandbytes
 
 ### Step 1 — Watch a number round
 
-No model needed yet. Take five real numbers, round-trip each one through fp16 and bf16, and watch where they land:
+No model needed yet. Take five real numbers, round-trip each one through fp16 and bf16, and watch where they land. This section's output is copied verbatim from a real run — CPU-only, no GPU needed, so there's no excuse not to run it yourself and check:
 
 ```python
-VALUES = [3.14159265, 0.0001234, 70000.0, -1.5, 1.0 / 3.0]
-for v in VALUES:
+RANGE_PRECISION_VALUES = [3.14159265, 0.0001234, 70000.0, -1.5, 1.0 / 3.0]
+for v in RANGE_PRECISION_VALUES:
     fp16 = torch.tensor([v], dtype=torch.float16).float().item()
     bf16 = torch.tensor([v], dtype=torch.bfloat16).float().item()
 ```
@@ -94,17 +94,43 @@ python bit_formats.py
 ```
 
 ```text
-        value    fp32 -> value    fp16 -> value    bf16 -> value   int8* -> value
-     3.141593         3.141593         3.140625         3.125000
-     0.000123         0.000123         0.000123         0.000000
- 70000.000000              inf         70000.000000               inf
-    -1.500000        -1.500000        -1.500000        -1.500000
-     0.333333         0.333333         0.333333         0.335938
+--- Part 1: fp16 vs bf16 -- range and precision ---
+
+         value    fp16 -> value    bf16 -> value
+    3.14159265       3.14062500       3.14062500
+    0.00012340       0.00012338       0.00012302
+70000.00000000              inf   70144.00000000
+   -1.50000000      -1.50000000      -1.50000000
+    0.33333333       0.33325195       0.33398438
 ```
 
-Read the third row first: **70000.0 becomes `inf` in fp16.** That's not rounding error — fp16's exponent tops out at 65,504, and 70,000 simply doesn't fit. bf16, with FP32's full exponent range, represents it exactly. This is the range/precision trade from the mental model, caught in the act.
+Read the third row first: **70000.0 becomes `inf` in fp16.** That's not rounding error — fp16's exponent tops out at 65,504, and 70,000 simply doesn't fit. bf16, with FP32's full exponent range, doesn't overflow — but don't over-read that as "exact": bf16 lands on **70144**, not 70000. bf16 buys you *range* (no overflow), never precision at that range; the nearest bf16 grid points near 70000 are simply far apart.
 
-Now look at `0.333333` — bf16 keeps only 3 decimal digits of it (`0.335938`), while fp16 keeps far more. That's the same trade, from the other side: bf16 spent its bits on range, fp16 spent them on precision.
+Now look at the last row — bf16 rounds \\(1/3\\) to `0.33398438`, fp16 to `0.33325195`; fp16's true value (`0.3333333...`) is the closer one. That's the same trade, from the other side: bf16 spent its bits on range, fp16 spent them on precision, and fp16 wins the precision contest whenever both formats stay safely within fp16's range.
+
+### Step 1b — A realistic int8 demo, not a rigged one
+
+A shared-scale quantizer needs one thing to make sense: values that are actually the *same kind* of number. Throwing `70000.0` into an int8 demo alongside small weights would force the scale so wide that every real weight rounds to zero — a broken demo, not a broken format. `bit_formats.py`'s second half uses five realistic weight-sized values instead:
+
+```python
+WEIGHT_LIKE_VALUES = [0.0421, -0.3180, 0.0037, 1.2040, -0.8120]
+scale = max(abs(v) for v in WEIGHT_LIKE_VALUES) / 127
+```
+
+```text
+--- Part 2: int8, one shared scale, realistic weight values ---
+
+shared scale = max(|values|) / 127 = 0.009480
+
+     value  int8 code    dequant      error
+    0.0421          4    0.03792   +0.00418
+   -0.3180        -34   -0.32233   +0.00433
+    0.0037          0    0.00000   +0.00370
+    1.2040        127    1.20400   +0.00000
+   -0.8120        -86   -0.81531   +0.00331
+```
+
+Two things worth catching. The largest value (`1.2040`) rounds with **zero error** — it defines the scale, so it always lands exactly on a grid point. And the smallest value (`0.0037`) rounds to **exactly 0** — it's simply too small relative to the scale to survive at all. That second row is int8's real failure mode: a single large outlier in a tensor forces the scale wide enough to erase every small value near it. Lecture 08's calibrated methods exist specifically to catch and protect values like this one.
 
 <figure class="portrait">
   <img src="../assets/images/slide-rule.jpg" alt="A vintage Faber-Castell slide rule">

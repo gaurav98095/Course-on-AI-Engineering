@@ -9,5 +9,5 @@ pymupdf
 pillow
 requests
 litserve
-pynvml        # /metrics reads GPU vitals, same as Lecture 01b
+nvidia-ml-py  # (installs the pynvml module) — /metrics reads GPU vitals, same as Lecture 01b
 matplotlib    # plot_vitals.py, carried forward from Lecture 01b

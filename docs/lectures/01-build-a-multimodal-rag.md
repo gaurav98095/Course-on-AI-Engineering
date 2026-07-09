@@ -105,7 +105,7 @@ You should see the L40S with ~48 GB of memory, nearly all free. Remember that nu
 
 <figure class="portrait">
   <img src="../assets/images/ga100-die.jpg" alt="Die shot of an NVIDIA GA100 GPU">
-  <figcaption>The silicon you just rented a slice of: a data-center GPU die — tens of billions of transistors. In Lecture 04 we tour it properly. <em>Photo: Wikimedia Commons, CC BY 3.0</em></figcaption>
+  <figcaption>A data-center GPU die, tens of billions of transistors — this one's an NVIDIA A100's, not your L40S's own (dies aren't photographed for every SKU), but the same idea: this is the physical silicon you just rented a slice of. In Lecture 04 we tour it properly. <em>Photo: Wikimedia Commons, CC BY 3.0</em></figcaption>
 </figure>
 
 ### Step 2 — Ingest the manual

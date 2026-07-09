@@ -59,7 +59,7 @@ It's worth walking the multiplication out loud once, because each factor corresp
 - \\(D\\): the size of one head's slice — how much of the representation one head "sees."
 - \\(t\\): grows by exactly one, once, every decode step — this is *the* variable that changes during a request.
 - \\(b\\): completely independent sequences stored side by side; no sharing across requests (barring prefix caching, Lecture 17).
-- \\(s\\): the only factor precision-reduction techniques (Lecture 07, KV cache quantization) touch directly.
+- \\(s\\): the only factor precision-reduction techniques touch directly — Lecture 07 quantizes *weights*; Lecture 10 (PagedAttention & the KV Cache Pool) covers quantizing the *cache* itself, the same lever applied to a different tensor.
 
 ### Part 4 — The two knobs that trade against each other
 
@@ -93,7 +93,7 @@ Course model: \\(L{=}36\\), \\(H{=}8\\), \\(D{=}128\\), bf16 \\(s{=}2\\).
 
 **Real allocators don't hit the formula exactly.** Naively allocating one contiguous block per sequence, sized for the maximum possible length, wastes enormous amounts of memory on sequences that end early — this is precisely the fragmentation problem PagedAttention (Lecture 10) solves. Our formula computes the *cache content's* size; it says nothing about how much memory a naive *allocator* reserves to hold it.
 
-**Precision changes \\(s\\), and \\(s\\) alone.** Quantizing the KV cache to fp8 halves every number in this page's worked example without changing \\(L\\), \\(H\\), \\(D\\), \\(t\\), or \\(b\\) at all — the cleanest possible lever, and one of the cheapest wins in the entire course (previewed properly in Lecture 07).
+**Precision changes \\(s\\), and \\(s\\) alone.** Quantizing the KV cache to fp8 halves every number in this page's worked example without changing \\(L\\), \\(H\\), \\(D\\), \\(t\\), or \\(b\\) at all — the cleanest possible lever, and one of the cheapest wins in the entire course. Lecture 07 builds the number-format vocabulary this depends on; Lecture 10 applies it to the cache specifically, alongside PagedAttention's separate fix for how the cache is *allocated*.
 
 **Multi-request batching only helps throughput if the cache fits.** Continuous batching (Lecture 13) wants \\(b\\) as large as possible to keep arithmetic intensity high (recall Lecture 04's Part 4: \\(\text{AI} = 2b/s\\) for a decode step batched across \\(b\\) requests). But this page's formula is the hard ceiling on how large \\(b\\) can go before the cache alone exhausts VRAM — the two lectures are two sides of the same coin.
 

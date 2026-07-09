@@ -48,7 +48,7 @@ Five numbers, five different questions:
 | Temperature | Is it thermal-throttling? | Comfortably under ~85°C on a data-center card |
 | SM clock | Is it running at full speed? | Near its boost clock when busy, lower when idle |
 
-Remember Lecture 03's lesson: `nvidia-smi`'s single utilization number already lied to us once ("100%" with <1% real compute). A vitals *trace* over time won't fix that lie by itself — but it's the difference between never noticing a problem and having the data to go looking for one.
+Keep this in mind for later: `nvidia-smi`'s single utilization number can be misleading — Lecture 03 will catch it claiming "100%" while the GPU does less than 1% of its real arithmetic. A vitals *trace* over time won't fix that kind of lie by itself — but it's the difference between never noticing a problem and having the data to go looking for one.
 {: .remember}
 
 ## The System
@@ -150,7 +150,7 @@ Ballpark vitals for one full RAG request, L40S, bf16 — save your own trace, it
 | Power draw | ~55–65 W | up to ~280–300 W |
 | SM clock | ~400–500 MHz | near boost clock, ~2,500 MHz |
 
-> Notice memory jumps by only a few GiB even though Lecture 05 computed a ~253 MiB KV cache for our real prompt — the rest of that jump is activation memory and PyTorch's own allocator overhead. The formula from Lecture 05 predicts the cache; it was never meant to predict *everything* the allocator touches. Profiling (Lecture 06) is how you'd separate the two precisely.
+> Notice memory jumps by a few GiB — far more than the KV cache alone accounts for (Lecture 05 derives its exact size later: a few hundred MiB for a prompt this size). The rest of the jump is activation memory and PyTorch's own allocator overhead. A cache-size formula was never going to predict *everything* the allocator touches; profiling (Lecture 06) is how you'd separate the two precisely.
 
 ## The Math, One Level Deeper
 

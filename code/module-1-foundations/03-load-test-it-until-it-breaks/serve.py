@@ -10,7 +10,9 @@ Test:  curl localhost:8000/health
 
 import base64
 import io
+import json
 import time
+from pathlib import Path
 
 import litserve as ls
 import pynvml
@@ -18,26 +20,24 @@ from PIL import Image
 
 from rag import Generator, Retriever
 
+# `predict` and this route are NOT the same OS process (see "One Process,
+# Two Systems" below) -- LitServe runs inference in a forked worker process,
+# separate from the FastAPI process our /metrics route lives in. Python
+# objects don't cross that boundary. A small append-only log file does.
+METRICS_LOG = Path("metrics.jsonl")
+
 
 class RAGAPI(ls.LitAPI):
     def setup(self, device):
-        """Runs exactly once, when the server starts — never per request.
+        """Runs exactly once, when the WORKER process starts.
 
-        This is the cold start: ~90 s of model loading on an L40S.
+        This is the cold start: ~90 s of model loading on an L40S. It runs
+        once per worker, in the worker's own process -- not in the process
+        that will answer /health or /metrics.
         """
         self.retriever = Retriever()
         self.generator = Generator()
-
-        # API-layer counters — this is the "state" our /metrics route reads
-        self.request_count = 0
-        self.error_count = 0
-        self.total_new_tokens = 0
-        self.latencies_s = []          # last 100 request times, for a crude p50
-
-        # GPU vitals — same pynvml calls as Lecture 01b's gpu_vitals.py
-        pynvml.nvmlInit()
-        self.gpu_handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-
+        METRICS_LOG.touch()
         print("models loaded, serving")
 
     def decode_request(self, request):
@@ -51,9 +51,11 @@ class RAGAPI(ls.LitAPI):
         return question, image, max_new
 
     def predict(self, inputs):
-        """The actual work: retrieve, generate, time it."""
+        """The actual work: retrieve, generate, time it. Runs in the worker."""
         question, image, max_new = inputs
         t0 = time.perf_counter()
+        ok = True
+        n_in = n_out = 0
         try:
             hits_t, hits_i = self.retriever(question, image)
             t_retrieve = time.perf_counter() - t0
@@ -63,14 +65,17 @@ class RAGAPI(ls.LitAPI):
             )
             t_total = time.perf_counter() - t0
         except Exception:
-            self.error_count += 1
+            ok = False
+            t_total = time.perf_counter() - t0
             raise
-
-        # API-layer bookkeeping: what /metrics will report
-        self.request_count += 1
-        self.total_new_tokens += n_out
-        self.latencies_s.append(t_total)
-        self.latencies_s = self.latencies_s[-100:]
+        finally:
+            # the ONLY thing that crosses the process boundary: one JSON
+            # line, appended by the worker, read later by the API process
+            with open(METRICS_LOG, "a") as f:
+                f.write(json.dumps({
+                    "t": time.time(), "seconds": round(t_total, 4),
+                    "new_tokens": n_out, "ok": ok,
+                }) + "\n")
 
         # one log line per request: still useful for a human watching live
         print(f"[req] retrieve={t_retrieve*1000:.0f}ms total={t_total:.2f}s "
@@ -90,27 +95,49 @@ class RAGAPI(ls.LitAPI):
         return output
 
 
-def make_metrics_route(api: RAGAPI):
-    """A closure so the route can read the live RAGAPI instance's state."""
-    def metrics():
-        lat = sorted(api.latencies_s)
-        p50 = lat[len(lat) // 2] if lat else 0.0
+_nvml_ready = False
 
-        util = pynvml.nvmlDeviceGetUtilizationRates(api.gpu_handle)
-        mem = pynvml.nvmlDeviceGetMemoryInfo(api.gpu_handle)
 
-        return {
-            # API-layer metrics: what a load balancer / autoscaler would read
-            "requests_total": api.request_count,
-            "errors_total": api.error_count,
-            "tokens_generated_total": api.total_new_tokens,
-            "latency_p50_s": round(p50, 2),
-            "in_flight_estimate": 0,          # honest today: one worker, no queue depth to report yet
-            # GPU-layer metrics: what a GPU fleet dashboard would read
-            "gpu_util_pct": util.gpu,
-            "gpu_mem_used_mib": round(mem.used / 2**20),
-        }
-    return metrics
+def gpu_handle():
+    """pynvml talks to the driver, not to a CUDA context -- unlike the
+    worker's counters, GPU vitals are readable from ANY process, no log
+    file needed for this half of /metrics.
+    """
+    global _nvml_ready
+    if not _nvml_ready:
+        pynvml.nvmlInit()
+        _nvml_ready = True
+    return pynvml.nvmlDeviceGetHandleByIndex(0)
+
+
+def metrics_route():
+    """Runs in the API/FastAPI process. Reads the worker's log file for
+    API-layer counters, queries the driver directly for GPU-layer vitals.
+    """
+    if METRICS_LOG.exists():
+        records = [json.loads(line) for line in METRICS_LOG.read_text().splitlines() if line]
+    else:
+        records = []
+    recent = records[-100:]   # bound the latency window; totals stay exact
+
+    latencies = sorted(r["seconds"] for r in recent if r["ok"])
+    p50 = latencies[len(latencies) // 2] if latencies else 0.0
+
+    handle = gpu_handle()
+    util = pynvml.nvmlDeviceGetUtilizationRates(handle)
+    mem = pynvml.nvmlDeviceGetMemoryInfo(handle)
+
+    return {
+        # API-layer metrics: what a load balancer / autoscaler would read
+        "requests_total": len(records),
+        "errors_total": sum(1 for r in records if not r["ok"]),
+        "tokens_generated_total": sum(r["new_tokens"] for r in records),
+        "latency_p50_s": round(p50, 2),
+        "in_flight_estimate": 0,          # honest today: one worker, no queue depth to report yet
+        # GPU-layer metrics: what a GPU fleet dashboard would read
+        "gpu_util_pct": util.gpu,
+        "gpu_mem_used_mib": round(mem.used / 2**20),
+    }
 
 
 if __name__ == "__main__":
@@ -121,6 +148,6 @@ if __name__ == "__main__":
     # LitServe is built on FastAPI; .app is the underlying FastAPI instance.
     # (If your installed LitServe version doesn't expose .app, see this
     # lecture's README troubleshooting section.)
-    server.app.get("/metrics")(make_metrics_route(api))
+    server.app.get("/metrics")(metrics_route)
 
     server.run(port=8000)

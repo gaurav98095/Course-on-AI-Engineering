@@ -130,7 +130,7 @@ nsys profile -o report python profile_request.py
 nsys stats report.nsys-rep
 ```
 
-`nsys stats` needs no GUI — it prints CLI tables directly, ideal for a remote Studio. What you should see, among several sections:
+`nsys stats` needs no GUI — it prints CLI tables directly, ideal for a remote Studio. What you should see, among several sections (the kernel name itself is illustrative — cuBLAS reuses tuned kernel templates across GPU generations, so don't be surprised if yours doesn't match your card's architecture name literally, or looks nothing like this one):
 
 ```text
 ** CUDA GPU Kernel Summary

@@ -21,3 +21,13 @@ Gemfile.lock
 
 # Generated RAG corpus (rebuild with ingest.py)
 code/**/corpus/
+
+# Generated at runtime by course scripts -- rebuild by re-running them
+code/**/metrics.jsonl
+code/**/vitals.csv
+code/**/vitals.png
+code/**/dashboard.csv
+code/**/trace.json
+code/**/*.nsys-rep
+code/**/decode_kernel_profile*
+code/**/qwen3-vl-8b-*/

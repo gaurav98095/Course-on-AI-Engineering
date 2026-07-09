@@ -8,5 +8,5 @@ faiss-cpu
 pymupdf
 pillow
 requests
-pynvml        # continuous GPU vitals polling
+nvidia-ml-py  # (installs the pynvml module) — continuous GPU vitals polling
 matplotlib    # plot_vitals.py
