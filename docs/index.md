@@ -178,12 +178,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/14-vllm-and-sglang.html">
       <span class="num">14</span>
       <span>
         <span class="t">vLLM &amp; SGLang</span>
         <span class="d" style="display:block">Serve the course model on real engines, benchmark them head-to-head, and read the flags that matter.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>

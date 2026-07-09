@@ -172,4 +172,4 @@ Static batching ties every request in a group to the pace of its slowest member 
 
 ---
 
-[← Previous: Lecture 12 — RoPE, ALiBi, YaRN: Positional Encodings](12-rope-alibi-yarn.md) · [Course Home](../index.md)
+[← Previous: Lecture 12 — RoPE, ALiBi, YaRN: Positional Encodings](12-rope-alibi-yarn.md) · [Course Home](../index.md) · [Next: Lecture 14 — vLLM & SGLang →](14-vllm-and-sglang.md)

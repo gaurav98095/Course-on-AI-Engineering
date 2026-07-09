@@ -42,4 +42,4 @@ python continuous_batching_simulator.py    # no GPU, no download, no package nee
 
 ---
 
-Previous: [`../12-rope-alibi-yarn/`](../12-rope-alibi-yarn/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../12-rope-alibi-yarn/`](../12-rope-alibi-yarn/) · Next: [`../14-vllm-and-sglang/`](../14-vllm-and-sglang/)
