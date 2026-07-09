@@ -42,7 +42,7 @@ Quantize weight \\(q\\) by rounding it to the nearest representable value, \\(\h
 This is a constrained minimization: minimize the quadratic form \\(\mathcal{L}\\) subject to weight \\(q\\)'s change being exactly \\(-e_q\\) (since it just got rounded by that much) and every weight in \\(F\\) free to move. Solving this with Lagrange multipliers (the standard tool for "minimize subject to one coordinate being pinned") yields a clean closed form — this is the same derivation underlying classical *Optimal Brain Surgeon* pruning, adapted here to quantization instead of removal:
 
 \\[
-\boxed{\delta_F = -\,e_q\,\frac{[H^{-1}]_{F,q}}{[H^{-1}]_{q,q}}}
+\boxed{\delta\_F = -\,e\_q\,\frac{[H^{-1}]\_{F,q}}{[H^{-1}]\_{q,q}}}
 \\]
 
 Read it as: take the error we just introduced, and distribute a share of it to every free weight, proportional to how strongly that weight is coupled to weight \\(q\\) *through the inverse Hessian* — which encodes both direct and indirect (via other correlated features) sensitivity, not just raw correlation.
@@ -80,7 +80,7 @@ H^{-1} = \frac{1}{9}\begin{pmatrix} 5 & -1 \\\\ -1 & 2 \end{pmatrix}
 **Compensate weight 2** using Part 2's formula, with \\(q=1\\), \\(F=\{2\}\\):
 
 \\[
-\delta_2 = -e_1 \cdot \frac{[H^{-1}]_{2,1}}{[H^{-1}]_{1,1}} = -(-0.2)\cdot\frac{-1/9}{5/9} = -(-0.2)\cdot\left(-\frac{1}{5}\right) = -0.04
+\delta\_2 = -e\_1 \cdot \frac{[H^{-1}]\_{2,1}}{[H^{-1}]\_{1,1}} = -(-0.2)\cdot\frac{-1/9}{5/9} = -(-0.2)\cdot\left(-\frac{1}{5}\right) = -0.04
 \\]
 
 The free weight moves from \\(-0.7\\) to \\(-0.7 + (-0.04) = -0.74\\) *before* it gets quantized. In this particular toy example both \\(-0.7\\) and \\(-0.74\\) happen to round to the same grid point (\\(-0.5\\)) — the compensation was real but too small to flip the outcome here. Notice the compensation moved weight 2 *further* from zero, not toward it: the direction follows the sign structure of \\(H^{-1}\\), not a simple "push opposite the error" rule. With a real row of 4,096 weights instead of 2, hundreds of small compensations like this one accumulate — and routinely *do* flip which grid point a weight lands on, in a direction naive per-weight rounding could never discover, because naive rounding never looks at \\(H\\) at all.

@@ -59,7 +59,7 @@ F = 2\, t\, d_{\text{in}}\, d_{\text{out}}
 Bytes moved, assuming the weight is read once from HBM per forward pass (true for decode; we address the multi-request case below) and \\(s\\) bytes per element (\\(s=2\\) for fp16):
 
 \\[
-B = \underbrace{s\, d_{\text{in}} d_{\text{out}}}_{\text{weight}} + \underbrace{s\, t\, d_{\text{in}}}_{\text{read }X} + \underbrace{s\, t\, d_{\text{out}}}_{\text{write }Y}
+B = \underbrace{s\, d\_{\text{in}} d\_{\text{out}}}\_{\text{weight}} + \underbrace{s\, t\, d\_{\text{in}}}\_{\text{read }X} + \underbrace{s\, t\, d\_{\text{out}}}\_{\text{write }Y}
 \\]
 
 For a square layer (\\(d_{\text{in}} = d_{\text{out}} = d\\)) and small \\(t\\), the weight term dominates completely (\\(d^2 \gg t d\\) whenever \\(t \ll d\\) — true for \\(t=1\\) and \\(d\\) in the thousands):

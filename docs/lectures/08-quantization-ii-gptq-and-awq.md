@@ -160,7 +160,7 @@ Here's the question Lecture 07 never asked: when we round a weight, what should 
 where \\(X\\) is calibration data flowing through the layer. Expand this out for one row of weights and the objective becomes a quadratic form in a matrix \\(H = XX^\top\\) — computed once per layer, straight from calibration data, and reused for every row. Quantize one weight, and the *optimal* way to adjust every weight not yet quantized falls out of that same \\(H\\):
 
 \\[
-\delta_F = -\,e_q \cdot \frac{[H^{-1}]_{F,q}}{[H^{-1}]_{q,q}}
+\delta\_F = -\,e\_q \cdot \frac{[H^{-1}]\_{F,q}}{[H^{-1}]\_{q,q}}
 \\]
 
 — the correction applied to the still-free weights \\(F\\), given rounding error \\(e_q\\) on the weight just quantized. This is the actual formula behind "compensate as you go" from this lecture's mental model, not just a metaphor.

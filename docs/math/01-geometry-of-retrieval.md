@@ -69,7 +69,7 @@ Take a batch of \\(N\\) matched pairs — for CLIP, images with their captions. 
 CLIP treats each row as an \\(N\\)-way classification problem — "which of these \\(N\\) captions is mine?" — with softmax cross-entropy:
 
 \\[
-\mathcal{L}_i = -\log \frac{e^{\,s_{ii}/\tau}}{\sum_{j=1}^{N} e^{\,s_{ij}/\tau}}
+\mathcal{L}\_i = -\log \frac{e^{\,s\_{ii}/\tau}}{\sum\_{j=1}^{N} e^{\,s\_{ij}/\tau}}
 \\]
 
 Read the fraction. To make the loss small, the numerator (\\(s_{ii}\\), the matched similarity) must rise, and the denominator (all the mismatched similarities) must fall. Gradient descent therefore **pulls matched image–caption arrows together and pushes everything else apart** — millions of batches later, "meaning = direction" is simply true, across modalities, because the loss only ever spoke about cross-modal dot products.
@@ -84,8 +84,8 @@ Same geometry, very different pressure on the gradients — \\(\tau\\) controls 
 **SigLIP's twist** — and why we used it — is replacing the batch-wide softmax with an independent sigmoid per pair:
 
 \\[
-\mathcal{L}_{ij} = \log\!\left(1 + e^{\,z_{ij}\,(-t\, s_{ij} + b)}\right),
-\qquad z_{ij} = \begin{cases} +1 & i = j\\\\ -1 & i \neq j\end{cases}
+\mathcal{L}\_{ij} = \log\!\left(1 + e^{\,z\_{ij}\,(-t\, s\_{ij} + b)}\right),
+\qquad z\_{ij} = \begin{cases} +1 & i = j\\\\ -1 & i \neq j\end{cases}
 \\]
 
 Each pair is now a standalone yes/no question — "do these two belong together?" — so the loss no longer needs every other example in the batch to normalize against. That makes training scale gracefully, and it is why the SigLIP family gives such strong open checkpoints for us to build on.

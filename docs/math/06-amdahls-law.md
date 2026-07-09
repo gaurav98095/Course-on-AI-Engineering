@@ -28,7 +28,7 @@ A request is a sum of parts. Speeding up one part by any amount — even making 
 Take total time \\(T\\) and split it into the part you're about to optimize and everything else:
 
 \\[
-T = \underbrace{(1-p)T}_{\text{unchanged}} + \underbrace{pT}_{\text{about to speed up}}
+T = \underbrace{(1-p)T}\_{\text{unchanged}} + \underbrace{pT}\_{\text{about to speed up}}
 \\]
 
 Speed up only the second piece by a factor of \\(s\\) — it now takes \\(pT/s\\) instead of \\(pT\\). The new total time is:

@@ -31,7 +31,7 @@ Lecture 04's Part 2 derived bytes moved for a weight-dominant linear layer as \\
 Model the unpacking's cost honestly, as extra full-tensor passes at the *higher* precision:
 
 \\[
-B_{\text{quant}} = \underbrace{s_{\text{low}}\, d^2}_{\text{read the packed weight}} \;+\; \underbrace{c \cdot s_{\text{high}}\, d^2}_{\text{dequantize: }c\text{ extra passes}}
+B\_{\text{quant}} = \underbrace{s\_{\text{low}}\, d^2}\_{\text{read the packed weight}} \;+\; \underbrace{c \cdot s\_{\text{high}}\, d^2}\_{\text{dequantize: }c\text{ extra passes}}
 \\]
 
 \\(c=0\\) means the GEMM kernel dequantizes on the fly, in registers or shared memory, never touching HBM again — the ideal case, and the entire point of a *purpose-built* quantized kernel (Lecture 08's subject). \\(c=1\\) means the dequantized weight gets written to HBM once and read back once more before the matmul can use it — a very plausible cost for a naive, unfused implementation.

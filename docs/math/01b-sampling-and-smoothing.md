@@ -67,13 +67,13 @@ This is a plain-language version of the Nyquist sampling principle from signal p
 Real dashboards face the opposite problem too: sampling *fast* produces a noisy, jittery signal that's hard to read, and storing every raw sample forever is wasteful. The standard fix is the exponential moving average — a running estimate updated one sample at a time, with no history required:
 
 \\[
-\\hat{x}_n = \\alpha\\, x_n + (1-\\alpha)\\, \\hat{x}_{n-1}
+\\hat{x}\_n = \\alpha\\, x\_n + (1-\\alpha)\\, \\hat{x}\_{n-1}
 \\]
 
 Each new estimate is a blend: mostly the previous estimate, nudged toward the newest raw sample by \\(\alpha\\). Unroll the recursion one step to see why this counts as "moving average" at all:
 
 \\[
-\\hat{x}_n = \\alpha x_n + \\alpha(1-\\alpha) x_{n-1} + \\alpha(1-\\alpha)^2 x_{n-2} + \\cdots
+\\hat{x}\_n = \\alpha x\_n + \\alpha(1-\\alpha) x\_{n-1} + \\alpha(1-\\alpha)^2 x\_{n-2} + \\cdots
 \\]
 
 Every past sample contributes forever, but its weight shrinks geometrically — recent samples dominate, old ones fade, and you never need to store more than one running number (\\(\hat{x}_{n-1}\\)) to compute the next.
