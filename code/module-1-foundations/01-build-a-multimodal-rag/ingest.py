@@ -98,6 +98,7 @@ def embed_images(images: list[dict]) -> torch.Tensor:
         batch = [Image.open(CORPUS / "images" / m["file"]) for m in images[i : i + 32]]
         inputs = processor(images=batch, return_tensors="pt").to(DEVICE)
         f = model.get_image_features(**inputs)
+        f = f.pooler_output if hasattr(f, "pooler_output") else f
         feats.append(torch.nn.functional.normalize(f, dim=-1).float().cpu())
     return torch.cat(feats).numpy()
 
