@@ -203,4 +203,4 @@ We quantized the course model twice more, this time giving each method real info
 
 ---
 
-[← Previous: Lecture 07 — Quantization I: Number Formats](07-quantization-i-number-formats.md) · [Course Home](../index.md)
+[← Previous: Lecture 07 — Quantization I: Number Formats](07-quantization-i-number-formats.md) · [Course Home](../index.md) · [Next: Lecture 08b — Build the Eval Harness →](08b-build-the-eval-harness.md)

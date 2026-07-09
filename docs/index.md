@@ -118,12 +118,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/08b-build-the-eval-harness.html">
       <span class="num">08b</span>
       <span>
         <span class="t">Build the Eval Harness</span>
         <span class="d" style="display:block">Turn "the answer looked right" into a real, reusable score — recall@k plus answer grading, re-run after every optimization from here on.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -327,6 +328,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 06 — Amdahl's Law and Where to Spend an Hour](math/06-amdahls-law.md) — the exact formula behind "optimize the biggest bar in the profile, not your favorite line of code."
 - [Math Deep Dive 07 — Why Quantized Speed Isn't Free the Way Quantized Memory Is](math/07-quantization-speed-gap.md) — the dequantization-overhead formula that explains why int8 often doesn't speed up decode while int4 usually does.
 - [Math Deep Dive 08 — The Compensation Formula Behind GPTQ](math/08-gptq-compensation.md) — deriving the layer-wise reconstruction-error objective and the closed-form update that lets later weights compensate for earlier rounding, with a full worked 2-weight example.
+- [Math Deep Dive 08b — How Many Eval Questions Are Enough?](math/08b-eval-set-statistics.md) — the binomial confidence interval behind any recall@k or answer-quality score, and the sample size actually needed to trust a model comparison.
 
 ## What you will be able to do
 

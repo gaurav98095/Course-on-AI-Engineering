@@ -1,0 +1,18 @@
+# Lecture 08b — Build the Eval Harness
+# Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
+# No new dependency vs Lecture 08 — eval.py and build_eval_set.py reuse
+# everything already installed (rag.py, gptqmodel for quantized checkpoints).
+torch>=2.4
+transformers>=4.57
+accelerate
+sentence-transformers>=3.0
+faiss-cpu
+pymupdf
+pillow
+requests
+litserve
+nvidia-ml-py  # (installs the pynvml module) — /metrics + gpu_vitals.py, from Lecture 01b/02
+matplotlib    # plot_vitals.py, from Lecture 01b
+httpx         # async load testing, from Lecture 03
+bitsandbytes  # int8/int4 weight-only quantization, from Lecture 07
+gptqmodel     # calibrated GPTQ/AWQ quantization with real kernels

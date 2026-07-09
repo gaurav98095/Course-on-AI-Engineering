@@ -49,4 +49,4 @@ python benchmark_quantized.py --path qwen3-vl-8b-awq-4bit
 
 ---
 
-Previous: [`../07-quantization-i-number-formats/`](../07-quantization-i-number-formats/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../07-quantization-i-number-formats/`](../07-quantization-i-number-formats/) · Next: [`../08b-build-the-eval-harness/`](../08b-build-the-eval-harness/)
