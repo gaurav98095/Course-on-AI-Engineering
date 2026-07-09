@@ -14,6 +14,7 @@ from pathlib import Path
 
 import faiss
 import fitz  # PyMuPDF
+import numpy as np
 import requests
 import torch
 from PIL import Image
@@ -54,7 +55,8 @@ def extract(doc_name: str, pdf_path: Path) -> tuple[list[dict], list[dict]]:
     img_dir.mkdir(exist_ok=True)
 
     doc = fitz.open(pdf_path)
-    for page in doc:
+    for page_num, page in enumerate(doc):
+        page_no = page_num + 1
         # --- text: paragraph blocks, greedily packed into ~CHUNK_CHARS chunks
         buf = ""
         for block in page.get_text("blocks"):
@@ -62,11 +64,11 @@ def extract(doc_name: str, pdf_path: Path) -> tuple[list[dict], list[dict]]:
             if len(paragraph) < 40:                      # headers, page numbers
                 continue
             if len(buf) + len(paragraph) > CHUNK_CHARS and buf:
-                texts.append({"doc": doc_name, "page": page.number + 1, "text": buf})
+                texts.append({"doc": doc_name, "page": page_no, "text": buf})
                 buf = ""
             buf = (buf + "\n" + paragraph).strip()
         if buf:
-            texts.append({"doc": doc_name, "page": page.number + 1, "text": buf})
+            texts.append({"doc": doc_name, "page": page_no, "text": buf})
 
         # --- images: every embedded figure big enough to be a real diagram
         for xref, *_ in page.get_images(full=True):
@@ -74,14 +76,14 @@ def extract(doc_name: str, pdf_path: Path) -> tuple[list[dict], list[dict]]:
             img = Image.open(io.BytesIO(raw["image"])).convert("RGB")
             if min(img.size) < MIN_IMAGE_SIDE:
                 continue
-            fname = f"{doc_name}-p{page.number + 1}-x{xref}.png"
+            fname = f"{doc_name}-p{page_no}-x{xref}.png"
             img.save(img_dir / fname)
-            images.append({"doc": doc_name, "page": page.number + 1, "file": fname})
+            images.append({"doc": doc_name, "page": page_no, "file": fname})
     return texts, images
 
 
 @torch.inference_mode()
-def embed_texts(texts: list[dict]) -> torch.Tensor:
+def embed_texts(texts: list[dict]) -> np.ndarray:
     model = SentenceTransformer(TEXT_EMBEDDER, device=DEVICE)
     return model.encode(
         [t["text"] for t in texts],
@@ -90,7 +92,7 @@ def embed_texts(texts: list[dict]) -> torch.Tensor:
 
 
 @torch.inference_mode()
-def embed_images(images: list[dict]) -> torch.Tensor:
+def embed_images(images: list[dict]) -> np.ndarray:
     model = AutoModel.from_pretrained(CLIP_EMBEDDER, torch_dtype=torch.float16).to(DEVICE)
     processor = AutoProcessor.from_pretrained(CLIP_EMBEDDER)
     feats = []
@@ -98,6 +100,7 @@ def embed_images(images: list[dict]) -> torch.Tensor:
         batch = [Image.open(CORPUS / "images" / m["file"]) for m in images[i : i + 32]]
         inputs = processor(images=batch, return_tensors="pt").to(DEVICE)
         f = model.get_image_features(**inputs)
+        f = f.pooler_output if hasattr(f, "pooler_output") else f
         feats.append(torch.nn.functional.normalize(f, dim=-1).float().cpu())
     return torch.cat(feats).numpy()
 
