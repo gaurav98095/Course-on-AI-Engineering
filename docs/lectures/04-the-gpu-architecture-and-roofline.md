@@ -27,14 +27,14 @@ Lecture 03 ended on an uncomfortable number: `nvidia-smi` said **100%**, but our
 
 That is not a contradiction. It's a clue we haven't followed yet.
 
-Picture a cannery in 1950. World-class canners stand at the line, fast, skilled, ready. But the corn arrives on a single narrow conveyor belt — one ear at a time. The canners are **never idle** in the sense that they're always reaching for the next ear the moment it arrives. But they are also never limited by their own speed. They are limited by the belt.
+Picture a kitchen with world-class chefs — fast, skilled, ready. But ingredients arrive on a single narrow conveyor belt, one at a time. The chefs are **never idle** in the sense that they're always reaching for the next ingredient the moment it arrives. But they are also never limited by their own speed. They are limited by the belt.
 
 <figure>
   <img src="../assets/images/conveyor-belt-cannery.jpg" alt="Workers on a corn canning assembly line, 1950">
-  <figcaption>Cornwall Canning, 1950: busy hands, idle capacity. The workers are never waiting for permission — they're waiting for corn. <em>Photo: Wikimedia Commons, public domain</em></figcaption>
+  <figcaption>Cornwall Canning, 1950: busy hands, idle capacity — the chefs of this story, on their belt. Workers are never waiting for permission; they're waiting for corn. <em>Photo: Wikimedia Commons, public domain</em></figcaption>
 </figure>
 
-A GPU running decode is this cannery. `nvidia-smi`'s "100%" means *a kernel was always running* — the canners were always reaching. It says nothing about whether they ever got to work at full speed.
+A GPU running decode is this kitchen. `nvidia-smi`'s "100%" means *a kernel was always running* — the chefs were always reaching. It says nothing about whether they ever got to cook at full speed.
 
 Today we build the tool that tells the difference: the **roofline model**. One plot, one number per workload, and you will never again be fooled by a utilization percentage.
 
@@ -63,7 +63,7 @@ Open the box. Every GPU used in this course has the same three-layer shape:
   <figcaption>HBM holds everything; L2 is a small fast staging area; each SM does the actual arithmetic. The belt is HBM → L2 → SM. The chefs are the Tensor Cores.</figcaption>
 </figure>
 
-Read it bottom to top, the way a number actually travels: a weight sits in **HBM** (24–141 GB depending on the card — your Studio's L40S has 48). To multiply it against an activation, it must first cross into the small, fast **L2 cache** (tens of MB), then into an **SM**'s registers, where the **Tensor Core** finally does the multiply-add.
+Read it bottom to top, the way a number actually travels: a weight sits in **HBM** (24–141 GB depending on the card — your Studio's L40S has 48). To multiply it against an activation, it must first cross into the small, fast **L2 cache** (tens of MB), then into a **streaming multiprocessor (SM)** — the chip's actual compute unit, dozens to over a hundred per GPU — and into that SM's registers, where the **Tensor Core** finally does the multiply-add.
 
 That crossing has a price, and the price is what the roofline model measures.
 
@@ -183,7 +183,13 @@ The core loop tries `tokens = 1, 2, 8, ... 2048` — batch 1 is pure decode, 204
    2048     1024.0     0.222     310.0      303 compute-bound
 ```
 
-(Ballpark, L40S, `d`≈4096, using Step 1's own achieved ceilings — 310 TFLOP/s, 780 GB/s.) Two things to notice, and both are the roofline model made visible in one table. First, **GB/s is pinned at ~780 for every memory-bound row** — the belt runs at exactly one speed regardless of how much work is queued behind it. Second, once `tokens` crosses the ridge, **TFLOP/s pins at 310 instead** — the chefs are now the limit, and no amount of extra data waiting in the belt speeds them up. Watch **AI** climb with `tokens` — almost exactly linearly while `tokens` is small (\\(t \ll d\\), the approximation from the math page), visibly bending below that line once `tokens` approaches `d` (512, 2048) as the correction term stops being negligible. And watch the **regime** column flip right around your measured ridge point.
+(Ballpark, L40S, `d`≈4096, using Step 1's own achieved ceilings — 310 TFLOP/s, 780 GB/s.) Three things to notice in that table, each one the roofline model made visible:
+
+**GB/s is pinned at ~780 for every memory-bound row.** The belt runs at exactly one speed, regardless of how much work is queued behind it.
+
+**Once `tokens` crosses the ridge, TFLOP/s pins at 310 instead.** The chefs are now the limit, and no amount of extra data waiting in the belt speeds them up.
+
+**AI climbs with `tokens`** — almost exactly linearly while `tokens` is small (\\(t \ll d\\), the approximation from the math page), visibly bending below that line once `tokens` approaches `d` (512, 2048) as the correction term stops being negligible. Watch the **regime** column flip right around your measured ridge point.
 
 ## Measure It
 

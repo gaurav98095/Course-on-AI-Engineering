@@ -53,7 +53,7 @@ Keep this in mind for later: `nvidia-smi`'s single utilization number can be mis
 
 ## The System
 
-We're not building anything new today — we're pointing instruments at what Lecture 01 already built. Same environment convention as always:
+We're pointing instruments at what Lecture 01 already built. Same environment convention as always:
 
 | Environment | Role in this lecture |
 | --- | --- |
@@ -111,10 +111,10 @@ def sample(handle) -> dict:
     power = pynvml.nvmlDeviceGetPowerUsage(handle) / 1000.0     # mW -> W
     temp = pynvml.nvmlDeviceGetTemperature(handle, pynvml.NVML_TEMPERATURE_GPU)
     clock = pynvml.nvmlDeviceGetClockInfo(handle, pynvml.NVML_CLOCK_SM)
-    return {"util_gpu_pct": util.gpu, "mem_used_mib": mem.used / 2**20, ...}
+    return {"util_gpu_pct": util.gpu, "mem_used_mib": mem.used / 2**20}  # trimmed — power/temp/clock follow the same pattern
 ```
 
-Every field here is the same data `dmon` prints — we're just capturing it ourselves so we can plot it and reuse it in later lectures.
+Every field here is the same data `dmon` prints — we're just capturing it ourselves so we can plot it and reuse it in later lectures. (The real function returns all five vitals; the snippet above is trimmed to the pattern. Full version in the repo.)
 
 ```bash
 python gpu_vitals.py --seconds 30

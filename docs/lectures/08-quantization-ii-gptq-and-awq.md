@@ -51,11 +51,9 @@ GPTQ and AWQ are the bespoke tailor. Both look at real data — a calibration se
 Both are still producing an INT4 (or INT8) tensor at the end — same format as Lecture 07, same memory math. The difference is entirely in *which* INT4 tensor they choose.
 {: .remember}
 
-## The System
+## The Build
 
 Same environment convention throughout — everything below is ⚡ Lightning Studio unless labeled otherwise. One addition worth naming up front: **GPTQModel** is the current, actively maintained library for this — `AutoGPTQ`, the older standalone package, is no longer the integration Hugging Face recommends. `GPTQModel` covers both GPTQ and AWQ behind one API, which is why today's two scripts barely differ from each other.
-
-## The Build
 
 > **A note on confidence, in the spirit of this course's "measure, don't guess" rule.** Today's scripts follow `GPTQModel`'s own documented API precisely — but unlike most of this course's code, they haven't yet been run end-to-end against our specific vision-language model on real hardware. Weight-only quantization of a VLM's text layers is a documented, supported path, but the exact method names on the wrapper (`model.device`, `model.parameters()`, `model.tokenizer`) can shift between library versions, and this is worth knowing *before* you hit an `AttributeError` and wonder what you did wrong. If a call in `quantize_gptq_awq.py` or `benchmark_quantized.py` doesn't match your installed version, check `pip show gptqmodel` and its current README first — the *ideas* in this lecture (calibrated rounding, a unified GPTQ/AWQ API, real kernel speedup) are solid regardless of any one method name drifting.
 
@@ -139,7 +137,7 @@ airflow over the wing separates from the upper surface, causing a sudden
 loss of lift... [phak-ch4-aerodynamics p.5]
 ```
 
-Two things to check against Lecture 07, side by side — your own real numbers.
+Check two things against Lecture 07, using your own real numbers: is decode meaningfully faster than naive int4's ~1.24×, and does the stall-question answer still cite the right page?
 
 ## Measure It
 

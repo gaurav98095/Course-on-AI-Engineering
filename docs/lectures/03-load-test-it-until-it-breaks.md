@@ -102,6 +102,8 @@ async def user(client, url, deadline, latencies, errors):
 
 ### Step 2 — Sanity at concurrency 1
 
+The output below reports **p50/p95/p99** — the latency under which 50%, 95%, and 99% of requests finish. At one user they're nearly identical; watch them spread apart as concurrency climbs.
+
 ```bash
 python load_test.py --concurrency 1
 ```
@@ -179,9 +181,11 @@ t=  3.0s  requests=   3  errors=  0  p50=   7.3s   ||   gpu_util= 92%  gpu_mem= 
 t= 16.0s  requests=  14  errors=  0  p50=  55.9s   ||   gpu_util= 90%  gpu_mem=  18012MiB
 ```
 
-(Ballpark — your own numbers are the real ones.) Read the two halves side by side: **`gpu_util` sits near 90% almost the whole time, at every concurrency level** — it barely moves between \\(C=2\\) and \\(C=16\\), while the API layer's `p50` climbs from 7 seconds to nearly a minute. The card *swears* it's consistently busy. But look at our own throughput numbers: aggregate tokens/sec at \\(C=16\\) is the same as at \\(C=1\\). Busy is not the same as productive.
+(Ballpark — your own numbers are the real ones.)
 
-Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly \\(2 \times 8\text{B} = 16\\) GFLOPs. At ~30 tokens/sec that's ~**0.5 TFLOP/s** of actual work — on a card rated for **362 TFLOP/s** of bf16 compute (Lecture 04's table — this is the same L40S, dense FP16, straight off NVIDIA's datasheet).
+**What those numbers mean.** Read the two halves side by side: `gpu_util` sits near 90% almost the whole time, at every concurrency level — it barely moves between \\(C=2\\) and \\(C=16\\), while the API layer's `p50` climbs from 7 seconds to nearly a minute. The card *swears* it's consistently busy. But look at our own throughput numbers: aggregate tokens/sec at \\(C=16\\) is the same as at \\(C=1\\). Busy is not the same as productive.
+
+Here's the arithmetic the whole of Module 2 hangs on. Generating one token costs roughly \\(2 \times 8\text{B} = 16\\) GFLOPs — a rule of thumb (2 FLOPs per parameter per output token) that Lecture 04 derives properly. At ~30 tokens/sec — Lecture 01's own baseline throughput, still true here since one request at a time is exactly what Lecture 01 measured — that's ~**0.5 TFLOP/s** of actual work — on a card rated for **362 TFLOP/s** of bf16 compute (Lecture 04's table — this is the same L40S, dense FP16, straight off NVIDIA's datasheet).
 
 **We are using well under 1% of the machine we're paying for.**
 
@@ -218,7 +222,7 @@ W \;=\; \frac{L}{\lambda} \;=\; C \times S
 
 — which is precisely the straight ramp in our table: \\(16 \times 7 \approx 110\\) s. One worked number, zero mystery left.
 
-The *open* world — real users arriving whenever they want, not waiting politely — is crueler: waits explode *before* you reach the ceiling, and p95 explodes fastest.
+The *open* world — real users arriving whenever they want, not waiting politely — is crueler. Our closed loop can never have more than \\(C\\) requests in flight, because each virtual user politely waits its turn; real traffic keeps arriving even while the server is behind, so the queue can grow past anything a fixed \\(C\\) would show you. And p95 explodes before the mean does, because one unlucky request stuck behind a burst of others pays for *everyone* ahead of it in line — a cost the median, sitting comfortably in the middle of the pack, never sees.
 
 > **Want the full derivation?** Utilization ρ, the M/M/1 waiting-time formula, why p95 ≈ 3× the mean near saturation, and the classic way load tests lie (coordinated omission):
 > [Math Deep Dive 03 — Queues, Percentiles, and Why p95 Explodes →](../math/03-queues-and-percentiles.md)

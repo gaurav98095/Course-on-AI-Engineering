@@ -197,7 +197,13 @@ def predict(self, inputs):
     self.request_count += 1     # looks fine. it is not fine.
 ```
 
-**This design is broken, and it's worth seeing exactly why**, because the reason is the whole point of this lecture. LitServe doesn't run `predict` in the same process that answers HTTP requests — it forks a separate **worker process** to run inference, so the GPU work never blocks the web server. `setup` and `predict` execute inside that worker. A route registered on `server.app`, like our `/metrics`, executes in the *original* process. They are not the same Python interpreter, do not share memory, and an attribute set on `self` inside the worker is invisible to code running anywhere else — the route would either crash reading `api.gpu_handle` (never set in this process) or silently read a `request_count` that never moves.
+**This design is broken, and it's worth seeing exactly why**, because the reason is the whole point of this lecture.
+
+LitServe doesn't run `predict` in the same process that answers HTTP requests. It forks a separate **worker process** to run inference, so GPU work never blocks the web server. `setup` and `predict` execute inside that worker; a route registered on `server.app`, like our `/metrics`, executes in the *original* process.
+
+Remember the switchboard: we called it "one operator." It turns out there are really two people there — the operator connecting your call (the worker process, running `predict`) and a receptionist out front who can tell a caller the office is open (the API process, running our route) without ever touching the call itself. They don't share a desk, a notepad, or a memory.
+
+They are not the same Python interpreter, do not share memory, and an attribute set on `self` inside the worker is invisible to code running anywhere else — the route would either crash reading `api.gpu_handle` (never set in this process) or silently read a `request_count` that never moves.
 
 We didn't get to choose whether our API layer and our GPU layer are separate systems. **LitServe already made that choice for us.** The fix has to cross a real process boundary, so it uses the simplest thing that can: the worker appends one JSON line per request to a small log file; the route reads that file back.
 
@@ -235,30 +241,17 @@ curl localhost:8000/metrics
 
 > If your installed LitServe version doesn't expose `server.app`, check the folder's README — the fallback is a second tiny FastAPI/Uvicorn process reading the same log file, which is uglier but always works.
 
-## Measure It
-
-The same baseline questions as Lecture 01, but now asked through HTTP instead of a direct script call. Ballpark on one L40S, bf16, batch 1:
-
-| Metric | Lecture 01 (direct) | Lecture 02 (HTTP) | What it says |
-| --- | --- | --- | --- |
-| Mean answer time | ~8–10 s | ~8–10 s + ~0.05 s | Network overhead is noise |
-| Retrieval share | ~40 ms | ~40 ms | Still not the problem |
-| Cold start | — | ~90 s | The cost of every restart |
-| Concurrent callers | 1 (by definition) | **still 1** | The switchboard has one operator |
-
-> Deploying changed *who can call* — it changed nothing about *how much can be served*. HTTP added ~0.5% overhead; the other 99.5% is still the model.
-
 ## One Process, Two Systems
 
 Look again at the `/metrics` output from Step 6. It's answering two completely different questions in one JSON blob:
 
 > **`requests_total`, `latency_p50_s`, `errors_total`** — these describe the **API layer**: is the *service* healthy? Would a load balancer route traffic here? This is CPU-cheap bookkeeping that has nothing to do with matrix multiplication.
 >
-> **`gpu_util_pct`, `gpu_mem_used_mib`** — these describe the **model-serving layer**: is the *GPU* healthy? Is it about to OOM? This is expensive, hardware-bound state that has nothing to do with HTTP.
+> **`gpu_util_pct`, `gpu_mem_used_mib`** — these describe the **GPU layer**: is the *GPU* healthy? Is it about to OOM? This is expensive, hardware-bound state that has nothing to do with HTTP.
 
 Step 6 already forced a small taste of this: LitServe itself splits `serve.py` into two OS processes (a web-facing one, a GPU-facing worker) just to keep HTTP responsive while the GPU is busy — that's *why* `/metrics` needed a log file instead of a shared Python object. But `serve.py` is still **one deployable unit** — one command, one machine, one GPU, both processes living and dying together. That was the right simplification for Lectures 01–02: one file, one mental model, nothing to configure. It quietly hides a mismatch that gets expensive to ignore at scale.
 
-| | API layer | Model-serving layer |
+| | API layer | GPU layer |
 | --- | --- | --- |
 | Bottleneck | Network, CPU, JSON parsing | GPU compute and memory (Lecture 04) |
 | Cost to run | Cents — any small CPU instance | Dollars/hour — a whole GPU, idle or not |
@@ -272,6 +265,19 @@ A production system almost never puts both in one process. A **gateway** (API la
 
 Conflating two systems with different bottlenecks, different costs, and different failure modes into one process is a fine way to learn. It's a poor way to run one at scale — remember this table; Module 3 is largely about correcting it.
 {: .remember}
+
+## Measure It
+
+The same baseline questions as Lecture 01, but now asked through HTTP instead of a direct script call. Ballpark on one L40S, bf16, batch 1:
+
+| Metric | Lecture 01 (direct) | Lecture 02 (HTTP) | What it says |
+| --- | --- | --- | --- |
+| Mean answer time | ~8–10 s | ~8–10 s + ~0.05 s | Network overhead is noise |
+| Retrieval share | ~40 ms | ~40 ms | Still not the problem |
+| Cold start | — | ~90 s | The cost of every restart |
+| Concurrent callers | 1 (by definition) | **still 1** | The switchboard has one operator |
+
+> Deploying changed *who can call* — it changed nothing about *how much can be served*. HTTP added ~0.5% overhead; the other 99.5% is still the model.
 
 ## The Math, One Level Deeper
 
@@ -293,7 +299,9 @@ Today we measured: network ≈ 0.05 s, queue = 0 (one polite caller), retrieve �
 
 **Timeouts are policy.** We set `timeout=120`. Too low and long answers die mid-generation; too high and a stuck request holds the only operator hostage. There is no correct value — only a chosen one.
 
-**`metrics.jsonl` grows forever and isn't safe for concurrent writers.** One worker appending one line at a time is fine; Lecture 03's multiple simultaneous requests are still handled one at a time by our single worker, so writes never interleave — but this file-based approach is a teaching-scale stopgap, not what a real fleet does (Lecture 27's Prometheus setup replaces it properly, and neither approach would survive multiple GPU workers writing to the same file without real care).
+**`metrics.jsonl` grows forever.** Nothing ever trims it, and it's a teaching-scale stopgap, not what a real fleet does — Lecture 27's Prometheus setup replaces it properly.
+
+**It also isn't safe for concurrent writers.** One worker appending one line at a time is fine, and Lecture 03's simultaneous requests are still handled one at a time by our single worker so writes never interleave — but this wouldn't survive multiple GPU workers writing to the same file without real care.
 
 A service's weakest points are rarely the model: they're the door (auth), the line (queue), the clock (timeouts), and — as Step 6 just proved the hard way — the wall between one process and another.
 {: .remember}

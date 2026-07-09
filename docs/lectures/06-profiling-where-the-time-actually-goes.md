@@ -7,20 +7,6 @@ title: "Lecture 06 — Profiling: Where the Time Actually Goes"
 
 > **In one sentence:** We stop reasoning about our own system from formulas and instead point a profiler at it — attaching a real name and a real millisecond count to every part of the request we've been theorizing about since Lecture 01.
 
-## Learning Objectives
-
-- Profile a real request with `torch.profiler` and read a kernel-level time breakdown.
-- Use `nsys` to see the request as a timeline — including the gaps a table of numbers can't show.
-- Use `ncu` to profile one kernel in isolation and check its measured compute/memory throughput against Lecture 04's roofline prediction.
-
-## Prerequisites
-
-| Concept | Needed? | Notes |
-| --- | --- | --- |
-| Lectures 01–05 | Yes | We're closing the loop this module opened — profiling the exact system we built and measured |
-| Command line | Yes | Nothing beyond running CLI tools and reading their output |
-| CUDA internals | No | The profiler explains itself; we interpret, not derive |
-
 ## Story
 
 Around 1910, a young manager named Frank Gilbreth walked onto a bricklaying site with a stopwatch and did something nobody had done before: he timed *every individual motion* a bricklayer made.
@@ -113,7 +99,7 @@ full timeline saved to trace.json
 open it at chrome://tracing (Chrome) or https://ui.perfetto.dev (any browser)
 ```
 
-Read the table like a detective, not a spectator. `aten::matmul` and `aten::linear` together are most of the request — exactly what Lecture 04's roofline predicted (every transformer layer is mostly matmuls). And `retrieval` sits at **0.4%** — Lecture 01 was right to call FAISS search "effectively free next to a token of an 8B model," and now we have the receipt.
+Read the table like a detective, not a spectator. (The `aten::` prefix is just PyTorch's internal operator namespace — every tensor op you call eventually becomes one of these; it's not a bug or a third-party library sneaking in.) `aten::matmul` and `aten::linear` together are most of the request — exactly what Lecture 04's roofline predicted (every transformer layer is mostly matmuls). And `retrieval` sits at **0.4%** — Lecture 01 was right to call FAISS search "effectively free next to a token of an 8B model," and now we have the receipt.
 
 ### Step 2 — `nsys`: the timeline, gaps included
 
@@ -173,7 +159,7 @@ What you should see for one decode-step matmul kernel (ballpark, illustrative �
     Achieved Occupancy               %          62.3
 ```
 
-**Memory throughput high, compute throughput low** — that is Lecture 04's "memory-bound" verdict, confirmed by NVIDIA's own counters, not our formula. Rerun the same command against a prefill-shaped call (a long-prompt `rag.py` question) and expect the two numbers to roughly swap: compute throughput climbs, memory throughput falls.
+**Memory throughput high, compute throughput low** — that is Lecture 04's "memory-bound" verdict, confirmed by NVIDIA's own counters, not our formula. (Achieved Occupancy is a separate question — roughly, how many threads are resident and ready to run on the chip at once — worth knowing exists, but not what today's roofline check is about; leave it alone for now.) Rerun the same command against a prefill-shaped call (a long-prompt `rag.py` question) and expect the two numbers to roughly swap: compute throughput climbs, memory throughput falls.
 
 > **If `ncu` refuses to run** with a permissions error (`ERR_NVGPUCTRPERM`), that's not a bug in your setup — many cloud providers lock GPU performance counters behind root/driver permissions for security. Note it, move on; Step 1's `torch.profiler` numbers already carry the lecture's main point.
 
@@ -231,6 +217,13 @@ We picked up the profiler where Gilbreth picked up the stopwatch — not to gues
 > - Reach for the cheapest tool that answers your question: `torch.profiler` first, `nsys` for timelines, `ncu` for one kernel's roofline position.
 > - Never trust an untested performance theory — profile it, the way we just did to five lectures' worth of formulas.
 > - Amdahl's Law: the biggest bar in the profile table is the only one worth optimizing first.
+
+## At a Glance
+
+What today's lecture covered, and what it assumed:
+
+- **You should now be able to:** profile a real request with `torch.profiler` and read a kernel-level time breakdown; use `nsys` to see the request as a timeline, gaps included; use `ncu` to profile one kernel and check its measured compute/memory throughput against Lecture 04's roofline prediction.
+- **What it assumed:** Lectures 01–05 (we're closing the loop this module opened — profiling the exact system we built and measured) and basic command-line comfort (running CLI tools, reading their output). No CUDA internals were required — the profilers surface real numbers, and today was about interpreting them, not deriving how the hardware counters themselves work.
 
 ## Resources
 

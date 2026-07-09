@@ -57,7 +57,7 @@ A format is a trade, not a downgrade: BF16 keeps FP32's range and gives up preci
 
 ## The System
 
-Below bf16 sit the formats this lecture is really about — ones nobody trains in, but everybody serves with:
+That range-vs-precision trade doesn't stop at 16 bits. Below bf16 sit the formats this lecture is really about — ones nobody trains in, but everybody serves with:
 
 | Format | Bits | Bytes/element (\\(s\\)) | Needs a scale factor? |
 | --- | --- | --- | --- |
@@ -87,6 +87,7 @@ RANGE_PRECISION_VALUES = [3.14159265, 0.0001234, 70000.0, -1.5, 1.0 / 3.0]
 for v in RANGE_PRECISION_VALUES:
     fp16 = torch.tensor([v], dtype=torch.float16).float().item()
     bf16 = torch.tensor([v], dtype=torch.bfloat16).float().item()
+    print(f"{v:>14.8f} {fp16:>16.8f} {bf16:>16.8f}")
 ```
 
 ```bash
@@ -137,7 +138,7 @@ Two things worth catching. The largest value (`1.2040`) rounds with **zero error
   <figcaption>Engineers designed bridges and aircraft with these for a century. A slide rule is only ever good for about three significant digits — a mechanical mantissa, with a trade identical to fp16's and bf16's. <em>Photo: Wikimedia Commons, CC BY 4.0</em></figcaption>
 </figure>
 
-### Step 2 — Load the model at int8 and int4, for free
+### Step 2 — Load the model at int8 and int4
 
 `bitsandbytes` turns quantization into a config flag — no calibration data, no algorithm to tune:
 

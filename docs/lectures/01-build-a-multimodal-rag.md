@@ -36,15 +36,17 @@ Before neural networks, institutions solved the finding problem with furniture.
   <figcaption>A library card catalog: thousands of documents, reduced to small searchable cards. Replace the cards with vectors and you have the core of RAG. <em>Photo: Dr. Marcus Gossler, Wikimedia Commons, CC BY-SA 3.0</em></figcaption>
 </figure>
 
-A librarian never memorizes the library. They master the **catalog** — and fetch the right document on demand.
+A librarian never memorizes the library. They master the **catalog** — fetch the right document on demand, then hand it to whoever actually answers the question.
 
-That is exactly what we build today. And to make it real, we use a real manual: the FAA's *Pilot's Handbook of Aeronautical Knowledge* — hundreds of public-domain pages, packed with technical diagrams. Swap in your company's manual later; nothing else changes.
+That hand-off is the whole system in one sentence: **find the right page, then read it.** To make it real, we use a real manual: the FAA's *Pilot's Handbook of Aeronautical Knowledge* — hundreds of public-domain pages, packed with technical diagrams. Swap in your company's manual later; nothing else changes.
 
 ## Mental Model
 
+Finding the page and answering the question are two different skills, done by two different systems. Put them together and you get the exam-room version of the same idea:
+
 > **RAG is an open-book exam.** The embedding model writes the index cards, retrieval opens the right page, and the language model writes the answer — with the page in front of it.
 
-Keep the three roles separate in your head, because we will optimize them separately:
+Three roles, and we will optimize each one separately:
 
 | Role | Who does it | Runs |
 | --- | --- | --- |
@@ -54,25 +56,20 @@ Keep the three roles separate in your head, because we will optimize them separa
 
 "Multimodal" changes one thing only: the book has pictures, so some index cards must describe **images** — and the exam-taker must be able to **look at them**.
 
-A RAG system is three jobs, not one: index, retrieve, generate. Every optimization in this course targets exactly one of the three.
-{: .remember}
-
-## The System
-
-Here is everything we build today, on one screen.
+Now put those three roles on one screen:
 
 <figure>
   <img src="../assets/images/rag-pipeline.svg" alt="Two-lane diagram: offline ingestion from PDF to FAISS indexes, online path from question to Qwen3-VL answer">
   <figcaption>The offline lane runs once per manual. The online lane runs on every request — and it is the lane whose speed we will obsess over for twelve weeks.</figcaption>
 </figure>
 
-Two details deserve a pause.
+Two details in that diagram deserve a pause.
 
 **There are two vector spaces, not one.** Text chunks are embedded by BGE, a text-only model, because it is very good at matching questions to paragraphs. Images are embedded by SigLIP 2, which was trained so that *an image and its caption land near each other* — one shared space for both modalities. That shared space is what makes "find me the diagram for this question" possible at all. The math page below shows exactly why.
 
 **Retrieved figures go into the prompt as real images.** We do not describe images with text and hope. Qwen3-VL is a vision-language model: it will look at the actual pixels of the retrieved diagrams while writing the answer.
 
-Questions find paragraphs in BGE's space; questions find figures in SigLIP's shared image–text space; the generator reads both.
+A RAG system is three jobs, not one — index, retrieve, generate, each optimized separately. Questions find paragraphs in BGE's space and figures in SigLIP's shared image–text space; the generator reads both.
 {: .remember}
 
 ## The Build
@@ -145,7 +142,7 @@ phak-ch4-aerodynamics: ~230 text chunks, ~60 figures
 phak-ch7-instruments:  ~260 text chunks, ~90 figures
 ```
 
-Why 700 characters? Small enough that a chunk means one thing — retrieval precision — but big enough to carry a full thought. We will revisit this number with evals in the embeddings module.
+Why 700 characters? Small enough that a chunk means one thing — retrieval precision — but big enough to carry a full thought. We will revisit this number with evals in the embeddings module. The other two thresholds in that snippet follow the same logic at smaller scale: 40 characters is short enough to catch only headers and page numbers, not real sentences; 220 pixels is small enough to catch only icons and decorative dividers, not real diagrams.
 
 ### Step 3 — Write the index cards
 
@@ -162,7 +159,7 @@ f = f.pooler_output if hasattr(f, "pooler_output") else f   # see note below
 f = torch.nn.functional.normalize(f, dim=-1)
 ```
 
-That middle line is a real gotcha, not defensive boilerplate: on current `transformers` versions, SigLIP 2's `get_image_features()`/`get_text_features()` return the model's full output object (with attentions, hidden states, and a `.pooler_output` field) rather than a bare tensor — a change from how these convenience methods behave on older model families. Skip that line and `normalize()` fails immediately on the next one, because you can't normalize an output object. The `hasattr` check keeps the code working either way, in case a future library version changes it back.
+**Gotcha:** on current `transformers` versions, SigLIP 2's `get_image_features()` returns the model's full output object, not a bare tensor — skip that `.pooler_output` line and `normalize()` crashes on the next one. The `hasattr` check keeps the code working either way.
 
 Both sets of vectors are **normalized to unit length**. That single line buys us something important:
 
@@ -171,7 +168,7 @@ index = faiss.IndexFlatIP(vecs.shape[1])   # inner product == cosine, because un
 index.add(vecs)
 ```
 
-> For unit vectors, the fastest similarity (a dot product) and the right similarity (cosine) are **the same number**. That is not a coincidence — it is the first equation of the course, and the math page proves it in three lines.
+> For unit vectors, the fastest similarity (a dot product) and the right similarity (cosine) are **the same number**. That is not a coincidence — it is the first equation of the course. We prove it in three lines further down, and the math page goes deeper still.
 
 This is exact, brute-force search. A few hundred vectors need nothing smarter — approximate indexes earn their complexity around a million vectors, and we will meet them at scale in Module 3.
 
@@ -294,13 +291,7 @@ The intuition: an embedding model maps meaning to **direction**. Texts about sta
 \cos\theta \;=\; \mathbf{a}\cdot\mathbf{b}
 \\]
 
-One worked number, small enough to check by hand. Take three unit vectors in 2-D: a question \\(q=(0.6,\,0.8)\\), chunk \\(c_1=(0.8,\,0.6)\\), chunk \\(c_2=(-0.6,\,0.8)\\).
-
-\\[
-q\cdot c_1 = 0.48+0.48 = 0.96 \qquad q\cdot c_2 = -0.36+0.64 = 0.28
-\\]
-
-\\(c_1\\) wins, 0.96 to 0.28 — two multiplications and an add per pair. FAISS just does this against every card in the catalog, very fast.
+One worked number, small enough to check by hand. Take three unit vectors in 2-D: a question \\(q=(0.6,\,0.8)\\), chunk \\(c_1=(0.8,\,0.6)\\), chunk \\(c_2=(-0.6,\,0.8)\\). Their dot products come out \\(q\cdot c_1 = 0.96\\) and \\(q\cdot c_2 = 0.28\\) — \\(c_1\\) wins by more than 3×, two multiplications and an add per pair. (Full component-by-component arithmetic, plus a Euclidean-distance cross-check, is on the math page below.) FAISS just does this against every card in the catalog, very fast.
 
 > **Want the full derivation?** Why normalization makes dot = cosine, how contrastive training *creates* these spaces, why images and captions can share one, and what recall@k really measures:
 > [Math Deep Dive 01 — The Geometry of Retrieval →](../math/01-geometry-of-retrieval.md)
@@ -323,7 +314,7 @@ A retrieval score is only meaningful inside its own index — never compare acro
 1. **Your own manual.** Point `PDF_URLS` at any illustrated PDF you own — a product datasheet, an appliance manual — re-ingest, and ask five questions. Where does retrieval fail first?
 2. **Tune k.** Sweep `k_text` from 1 to 12. Watch answer quality *and* prompt tokens *and* answer time. You are feeling the cost–quality trade-off that Module 2 attacks with hardware.
 3. **Break the 64-token ceiling on purpose.** Query the image index with one sentence, then with that sentence buried after 100 words of preamble. Compare the retrieved figures.
-4. **Build a tiny eval.** Write 10 question → correct-page pairs by hand. What fraction of the time is the right page in the top-4? Congratulations — you just invented recall@4, and you will use it in every retrieval lecture from now on.
+4. **Build a tiny eval.** Write 10 question → correct-page pairs by hand. What fraction of the time is the right page in the top-4? That fraction has a name — \\(\text{recall@4} = \frac{\text{questions where the right page is in the top-4}}{\text{total questions}}\\) — and you will use it in every retrieval lecture from now on.
 5. **Stress preview.** Open two terminals and run `rag.py` in both simultaneously. Watch `nvidia-smi`. What happened to answer time? Write the number down — Lecture 03 explains it.
 
 ## Summary

@@ -38,7 +38,7 @@ The running record has a name: the **KV cache**. Today we build it, measure its 
 
 ## Mental Model
 
-> **Prefill reads the whole letter at once. Decode writes the reply one word at a time — without ever re-reading what's already written.**
+> **Prefill is the court reporter catching up on everything said before she arrived, all at once. Decode is her taking down each new word as it's spoken — one entry at a time, never re-reading the transcript so far.**
 
 Two workloads, one model, radically different shapes:
 
@@ -64,7 +64,7 @@ Prefill and decode aren't two settings of the same workload — they're two diff
 
 Same environment as always — everything below runs ⚡ in the Lightning Studio terminal; this is a standalone GPU + model script, no server or corpus required.
 
-Watch what the KV cache actually holds: for every layer, for every token ever processed, one **key** vector and one **value** vector — sized by the model's *key/value* heads, which on our course model are fewer than its *query* heads (that head-sharing trick is GQA, and it already quietly shrinks our cache four-fold; the full mechanics are Lecture 11's topic).
+The stenograph's actual alphabet: for every layer, for every token ever processed, the KV cache holds one **key** vector and one **value** vector — sized by the model's *key/value* heads, which on our course model are fewer than its *query* heads (that head-sharing trick is GQA, and it already quietly shrinks our cache four-fold; the full mechanics are Lecture 11's topic).
 
 | Symbol | Course model's real value | Source |
 | --- | --- | --- |
