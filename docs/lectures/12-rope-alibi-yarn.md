@@ -199,4 +199,4 @@ Self-attention has no built-in sense of order — RoPE gives it one by rotating 
 
 ---
 
-[← Previous: Lecture 11 — GQA, MQA, MLA: Cheaper Attention Heads](11-gqa-mqa-mla.md) · [Course Home](../index.md)
+[← Previous: Lecture 11 — GQA, MQA, MLA: Cheaper Attention Heads](11-gqa-mqa-mla.md) · [Course Home](../index.md) · [Next: Lecture 13 — Continuous Batching →](13-continuous-batching.md)

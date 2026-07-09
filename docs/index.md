@@ -168,12 +168,13 @@ Where most of the 10× cost reduction comes from. Shrink the model, speed up att
     </a>
   </li>
   <li>
-    <a class="soon">
+    <a href="lectures/13-continuous-batching.html">
       <span class="num">13</span>
       <span>
         <span class="t">Continuous Batching</span>
         <span class="d" style="display:block">Seat every guest the moment a chair frees up: the scheduling trick worth more than any kernel.</span>
       </span>
+      <span class="go">→</span>
     </a>
   </li>
   <li>
@@ -337,6 +338,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 10 — The Arithmetic of Paged Memory](math/10-paged-memory-arithmetic.md) — closed-form expected waste for naive vs. paged allocation, and the asymptotic ceiling on prefix-sharing savings as request count grows.
 - [Math Deep Dive 11 — Arithmetic Intensity of Grouped Attention](math/11-gqa-arithmetic-intensity.md) — deriving why decode attention's arithmetic intensity scales exactly with KV group size, and checking it against Lecture 04's real ridge point.
 - [Math Deep Dive 12 — RoPE as Rotation: The Relative-Position Proof](math/12-rope-relative-position-proof.md) — the exact complex-number identity behind why a RoPE attention score depends only on relative position, with a worked example verified two ways.
+- [Math Deep Dive 13 — Batching, Arithmetic Intensity, and the Cost of Waiting for the Slowest](math/13-batching-arithmetic-intensity.md) — deriving batching's second, independent payoff on the roofline model, and why static batching's relative waste grows worse, not better, with batch size.
 
 ## What you will be able to do
 

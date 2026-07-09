@@ -44,4 +44,4 @@ python positional_encodings.py    # no GPU, no download needed at all
 
 ---
 
-Previous: [`../11-gqa-mqa-mla/`](../11-gqa-mqa-mla/) · This is the last lecture published in Module 2 so far — more lectures land here as the course continues.
+Previous: [`../11-gqa-mqa-mla/`](../11-gqa-mqa-mla/) · Next: [`../13-continuous-batching/`](../13-continuous-batching/)

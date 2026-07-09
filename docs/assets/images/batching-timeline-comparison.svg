@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 400" font-family="'Space Grotesk','Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .panel  { fill:#F4F4F9; stroke:#E7E5DF; stroke-width:1.5; rx:14; }
+    .busy   { fill:#4F46E5; }
+    .idle   { fill:#FFFFFF; stroke:#B9C0BD; stroke-width:1; stroke-dasharray:2,2; }
+    .newreq { fill:#B45309; }
+    .t      { font-size:14px; font-weight:700; fill:#1C2321; text-anchor:middle; }
+    .s      { font-size:11px; fill:#5B6663; text-anchor:middle; }
+    .w      { font-size:10.5px; font-weight:600; fill:#4F46E5; text-anchor:middle; }
+    .lbl    { font-size:10px; fill:#5B6663; text-anchor:end; }
+  </style>
+
+  <!-- Static batching -->
+  <rect class="panel" x="20" y="20" width="740" height="170"/>
+  <text class="t" x="390" y="42">Static batching — wait for the group's slowest member</text>
+
+  <text class="lbl" x="95" y="72">slot 1</text>
+  <rect class="busy" x="100" y="60" width="60" height="16"/><rect class="idle" x="160" y="60" width="560" height="16"/>
+  <text class="lbl" x="95" y="92">slot 2</text>
+  <rect class="busy" x="100" y="80" width="140" height="16"/><rect class="idle" x="240" y="80" width="480" height="16"/>
+  <text class="lbl" x="95" y="112">slot 3</text>
+  <rect class="busy" x="100" y="100" width="90" height="16"/><rect class="idle" x="190" y="100" width="530" height="16"/>
+  <text class="lbl" x="95" y="132">slot 4</text>
+  <rect class="busy" x="100" y="120" width="620" height="16"/>
+
+  <text class="s" x="390" y="155">3 of 4 slots finish early and sit idle — nothing new can start until ALL FOUR are done.</text>
+  <text class="w" x="390" y="172">wall time = the length of the single longest request in the group</text>
+
+  <!-- Continuous batching -->
+  <rect class="panel" x="20" y="210" width="740" height="170"/>
+  <text class="t" x="390" y="232">Continuous batching — evict and backfill every step</text>
+
+  <text class="lbl" x="95" y="262">slot 1</text>
+  <rect class="busy" x="100" y="250" width="60" height="16"/><rect class="newreq" x="160" y="250" width="90" height="16"/><rect class="newreq" x="250" y="250" width="70" height="16"/><rect class="newreq" x="320" y="250" width="140" height="16"/><rect class="newreq" x="460" y="250" width="80" height="16"/><rect class="idle" x="540" y="250" width="180" height="16"/>
+  <text class="lbl" x="95" y="282">slot 2</text>
+  <rect class="busy" x="100" y="270" width="140" height="16"/><rect class="newreq" x="240" y="270" width="50" height="16"/><rect class="newreq" x="290" y="270" width="110" height="16"/><rect class="newreq" x="400" y="270" width="90" height="16"/><rect class="idle" x="490" y="270" width="230" height="16"/>
+  <text class="lbl" x="95" y="302">slot 3</text>
+  <rect class="busy" x="100" y="290" width="90" height="16"/><rect class="newreq" x="190" y="290" width="120" height="16"/><rect class="newreq" x="310" y="290" width="60" height="16"/><rect class="newreq" x="370" y="290" width="100" height="16"/><rect class="idle" x="470" y="290" width="250" height="16"/>
+  <text class="lbl" x="95" y="322">slot 4</text>
+  <rect class="busy" x="100" y="310" width="620" height="16"/>
+
+  <text class="s" x="390" y="345">the moment a slot frees up, the next queued request fills it — no slot ever idles until the queue itself runs dry.</text>
+  <text class="w" x="390" y="362">wall time ≈ total work ÷ number of slots — close to the theoretical best possible</text>
+
+  <text class="s" x="390" y="390">Same total work, same 4 slots — continuous batching finishes in a fraction of the time, this course's own simulation: 2.68x faster.</text>
+</svg>
