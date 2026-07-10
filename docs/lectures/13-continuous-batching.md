@@ -9,6 +9,8 @@ title: "Lecture 13 — Continuous Batching"
 
 **Last time (and every lecture since Lecture 03):** our own server has processed exactly one request at a time — batch size 1, always, the "one operator" limit Lecture 03 found and every lecture since has quietly carried forward. **This time:** we simulate what happens when many requests genuinely share a batch, and discover that *how* they share it matters as much as whether they do.
 
+*[Lecture 00's map](00-the-system-we-are-building.md): this is box (C) — the serving engine — built by hand for the first time.*
+
 ## Prerequisites
 
 | Concept | Needed? | Notes |

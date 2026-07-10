@@ -59,4 +59,4 @@ python live_dashboard.py
 
 ---
 
-Previous: [`../02-deploy-it-on-a-gpu/`](../02-deploy-it-on-a-gpu/) · Next: [`../04-the-gpu-architecture-and-roofline/`](../04-the-gpu-architecture-and-roofline/) — explaining the <1% GPU utilization number this lecture just measured.
+Previous: [`../02-deploy-it-on-a-gpu/`](../02-deploy-it-on-a-gpu/) · Next: [`../03b-api-layer-concurrency/`](../03b-api-layer-concurrency/) — fixing the queue this lecture just measured, at the serving layer, before touching the model.

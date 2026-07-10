@@ -9,6 +9,8 @@ title: "Lecture 08 — Quantization II: GPTQ & AWQ in Practice"
 
 **Last time:** Lecture 07's quantization rounded every weight the same blind way, and memory dropped exactly as promised — but nothing checked whether the weights that mattered most survived. **This time:** GPTQ and AWQ round using real calibration data, and we check quality instead of assuming it.
 
+*[Lecture 00's map](00-the-system-we-are-building.md): this is box (D) — model weights — getting shrunk properly.*
+
 ## Learning Objectives
 
 - Explain what GPTQ and AWQ each look at before deciding how to round a weight, and why that beats round-to-nearest.

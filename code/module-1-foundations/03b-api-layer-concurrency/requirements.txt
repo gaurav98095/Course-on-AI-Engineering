@@ -1,0 +1,14 @@
+# Lecture 03 — Load-Test It Until It Breaks
+# Tested on a Lightning AI Studio with one L40S (48 GB), CUDA 12.x
+torch>=2.4
+transformers>=4.57
+accelerate
+sentence-transformers>=3.0
+faiss-cpu
+pymupdf
+pillow
+requests
+litserve
+nvidia-ml-py  # (installs the pynvml module) — /metrics reads GPU vitals, same as Lecture 01b
+matplotlib    # plot_vitals.py, carried forward from Lecture 01b
+httpx         # async load testing

@@ -9,6 +9,8 @@ title: "Lecture 14 — vLLM & SGLang"
 
 **Last time:** we simulated continuous batching on paper, random numbers standing in for tokens, no GPU involved. **This time:** we hand generation to a real engine that actually implements it — PagedAttention, continuous batching, and a fused attention kernel, all at once, running the real course model.
 
+*[Lecture 00's map](00-the-system-we-are-building.md): still box (C) — the serving engine — now handed to a real, production implementation.*
+
 ## Prerequisites
 
 | Concept | Needed? | Notes |

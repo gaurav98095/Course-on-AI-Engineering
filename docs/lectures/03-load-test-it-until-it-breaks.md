@@ -265,4 +265,4 @@ We built a swarm, calibrated it at C=1, and marched it up to C=32. Throughput ne
 
 ---
 
-[← Previous: Lecture 02 — Deploy It on a GPU](02-deploy-it-on-a-gpu.md) · [Course Home](../index.md) · [Next: Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model →](04-the-gpu-architecture-and-roofline.md)
+[← Previous: Lecture 02 — Deploy It on a GPU](02-deploy-it-on-a-gpu.md) · [Course Home](../index.md) · [Next: Lecture 03b — Fix It at the API Layer, First →](03b-api-layer-concurrency.md)

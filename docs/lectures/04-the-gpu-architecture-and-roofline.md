@@ -7,7 +7,7 @@ title: "Lecture 04 — The GPU: Architecture, HBM, and the Roofline Model"
 
 > **In one sentence:** We open the GPU up, name its parts, and derive one plot — the roofline — that predicts, from arithmetic alone, why decode was slow and prefill was fast in every measurement we've taken so far.
 
-**Last time:** Lecture 03 found the GPU pinned at "100% utilization" while our own math said it was doing under 1% of its real work — a contradiction we measured but never explained. **This time:** we open the GPU up and build the model that explains exactly why both numbers were true at once.
+**Last time:** Lecture 03b's second worker doubled throughput but still left every request using under 1% of the GPU's real compute — replication bought more tills, not a faster one, and the "100% utilization but <1% real work" contradiction from Lecture 03 still had no explanation. **This time:** we open the GPU up and build the model that explains exactly why both numbers were true at once.
 
 ## Learning Objectives
 
@@ -251,4 +251,4 @@ We opened the GPU: HBM feeding L2 feeding SMs, chefs and a conveyor belt. Arithm
 
 ---
 
-[← Previous: Lecture 03 — Load-Test It Until It Breaks](03-load-test-it-until-it-breaks.md) · [Course Home](../index.md) · [Next: Lecture 05 — Prefill, Decode, and the KV Cache →](05-prefill-decode-and-the-kv-cache.md)
+[← Previous: Lecture 03b — Fix It at the API Layer, First](03b-api-layer-concurrency.md) · [Course Home](../index.md) · [Next: Lecture 05 — Prefill, Decode, and the KV Cache →](05-prefill-decode-and-the-kv-cache.md)

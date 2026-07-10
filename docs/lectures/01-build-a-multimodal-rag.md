@@ -7,6 +7,8 @@ title: "Lecture 01 — Build a Multimodal RAG"
 
 > **In one sentence:** We build a working assistant that answers questions about a 500-page illustrated manual — retrieving both text and figures, and reading them with a vision-language model — because this exact system is what we will deploy, break, and then spend twelve weeks making 10× faster and cheaper.
 
+**Last time:** Lecture 00 showed the six-box target system from a distance and named box (E) — retrieval — as where this course actually starts. **This time:** we build box (E) for real, in stock Hugging Face code, and measure the first row of numbers everything else in the course is judged against.
+
 ## Learning Objectives
 
 - Build a complete multimodal RAG pipeline — ingest, embed, index, retrieve, generate — in stock Hugging Face code.
@@ -336,4 +338,4 @@ We built the whole thing: a PDF manual became text chunks and figures; BGE and S
 
 ---
 
-[Course Home](../index.md) · [Next: Lecture 01b — GPU Vitals: Watching What You Built →](01b-gpu-vitals.md)
+[← Previous: Lecture 00 — The System We're Building](00-the-system-we-are-building.md) · [Course Home](../index.md) · [Next: Lecture 01b — GPU Vitals: Watching What You Built →](01b-gpu-vitals.md)

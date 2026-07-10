@@ -109,7 +109,7 @@ One till cannot host this launch. The fixes, in the order this course teaches th
 
 **LLM service times aren't exponential — or even constant.** They're roughly linear in output length, so the distribution mirrors your answer-length mix, and long generations hog the single server (a form of head-of-line blocking). M/M/1's exact constants shift; its *shape* — the \\(1/(1-\rho)\\) blow-up — survives.
 
-**One server, for now.** With \\(k\\) servers (M/M/k, i.e., continuous batching slots or a GPU fleet), waits drop dramatically at equal \\(\rho\\) — pooling is powerful, and it's exactly what continuous batching (Lecture 13) exploits inside a single GPU.
+**One server, for now.** With \\(k\\) servers (M/M/k, i.e., continuous batching slots or a GPU fleet), waits drop dramatically at equal \\(\rho\\) — pooling is powerful, and it's exactly what continuous batching (Lecture 13) exploits inside a single GPU. Lecture 03b tries the cheaper version of this first — replicating the whole server \\(N\\) times instead of batching inside it — and [its math page](03b-replica-pooling.md) derives exactly where that cheaper version runs out.
 
 ## Common Mistakes
 

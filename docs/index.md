@@ -19,6 +19,16 @@ Ship a real multimodal RAG on stock code, deploy it, and load-test it until it b
 
 <ol class="lectures">
   <li>
+    <a href="lectures/00-the-system-we-are-building.html">
+      <span class="num">00</span>
+      <span>
+        <span class="t">The System We're Building</span>
+        <span class="d" style="display:block">One system, six boxes, three passes — the target architecture and the module map, before a single line of code, so every later lecture is a labeled change to a picture you already hold.</span>
+      </span>
+      <span class="go">→</span>
+    </a>
+  </li>
+  <li>
     <a href="lectures/01-build-a-multimodal-rag.html">
       <span class="num">01</span>
       <span>
@@ -54,6 +64,16 @@ Ship a real multimodal RAG on stock code, deploy it, and load-test it until it b
       <span>
         <span class="t">Load-Test It Until It Breaks</span>
         <span class="d" style="display:block">Concurrency 1 → 32: throughput pins at a ceiling, latency climbs Little's law, requests die at the timeout cliff — and the GPU turns out to be &lt;1% used.</span>
+      </span>
+      <span class="go">→</span>
+    </a>
+  </li>
+  <li>
+    <a href="lectures/03b-api-layer-concurrency.html">
+      <span class="num">03b</span>
+      <span>
+        <span class="t">Fix It at the API Layer, First</span>
+        <span class="d" style="display:block">Before touching the model: open a second worker on the same GPU, rerun Lecture 03's exact sweep, and measure the real ceiling — GPU memory, not compute — on "just add workers."</span>
       </span>
       <span class="go">→</span>
     </a>
@@ -329,6 +349,7 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 - [Math Deep Dive 01 — The Geometry of Retrieval](math/01-geometry-of-retrieval.md) — dot products, cosine similarity, contrastive training, and why one vector space can hold both images and text.
 - [Math Deep Dive 01b — Sampling Rate and Smoothing a Live Signal](math/01b-sampling-and-smoothing.md) — why a 1-second poll can miss a 30ms spike entirely, and the exponential moving average formula real dashboards use to smooth noisy signals.
 - [Math Deep Dive 03 — Queues, Percentiles, and Why p95 Explodes](math/03-queues-and-percentiles.md) — Little's law from scratch, M/M/1, the 1/(1−ρ) hockey stick, and how load tests lie.
+- [Math Deep Dive 03b — Pooling: Why One Queue Beats N, and Where the Backroom Runs Out](math/03b-replica-pooling.md) — Little's law with N parallel workers, the shared-queue-vs-split-queues proof, and the memory arithmetic that caps how many workers fit on one GPU.
 - [Math Deep Dive 04 — Deriving the Roofline Model](math/04-roofline-model.md) — the min(compute, AI×bandwidth) formula, arithmetic intensity of a GEMM, and why batching is the same lever as more tokens.
 - [Math Deep Dive 05 — Deriving the KV Cache Formula](math/05-kv-cache-math.md) — counting key/value vectors, why GQA shrinks the cache 4×, and the (tokens × batch) budget every serving system fights over.
 - [Math Deep Dive 06 — Amdahl's Law and Where to Spend an Hour](math/06-amdahls-law.md) — the exact formula behind "optimize the biggest bar in the profile, not your favorite line of code."
@@ -352,4 +373,4 @@ Each hands-on lecture links to a separate page with the full derivations — eve
 
 ---
 
-Start here: [Lecture 01 — Build a Multimodal RAG →](lectures/01-build-a-multimodal-rag.md)
+Start here: [Lecture 00 — The System We're Building →](lectures/00-the-system-we-are-building.md)

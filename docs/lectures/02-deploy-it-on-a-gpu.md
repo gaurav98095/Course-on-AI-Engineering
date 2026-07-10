@@ -9,6 +9,8 @@ title: "Lecture 02 — Deploy It on a GPU"
 
 **Last time:** Lecture 01's RAG only ran when you personally typed a command in a terminal — nobody else could reach it. **This time:** we put a phone number on it, so anyone with a URL can call it.
 
+*[Lecture 00's map](00-the-system-we-are-building.md): this is where box (B) — the API layer — is born.*
+
 ## Learning Objectives
 
 - Wrap the multimodal RAG in a LitServe endpoint where the model loads once and answers forever.
