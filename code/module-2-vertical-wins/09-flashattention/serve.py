@@ -2,12 +2,14 @@
 
 The model loads ONCE (in setup), then answers requests forever.
 
-Run:   python serve.py                 # -> http://localhost:8000
+Run:   python serve.py                   # -> http://localhost:8000, 1 worker (Lecture 03's ceiling)
+       python serve.py --workers 2       # a second till on the same GPU (Lecture 03b)
 Test:  curl localhost:8000/health
        curl localhost:8000/metrics
        python client.py "Why does an aircraft stall?"
 """
 
+import argparse
 import base64
 import io
 import json
@@ -133,7 +135,10 @@ def metrics_route():
         "errors_total": sum(1 for r in records if not r["ok"]),
         "tokens_generated_total": sum(r["new_tokens"] for r in records),
         "latency_p50_s": round(p50, 2),
-        "in_flight_estimate": 0,          # honest today: one worker, no queue depth to report yet
+        # real, not a placeholder: LitServe's own dispatch queue, summed
+        # across every worker process, via track_requests=True below
+        # (Lecture 03b)
+        "in_flight_estimate": server.active_requests or 0,
         # GPU-layer metrics: what a GPU fleet dashboard would read
         "gpu_util_pct": util.gpu,
         "gpu_mem_used_mib": round(mem.used / 2**20),
@@ -141,13 +146,22 @@ def metrics_route():
 
 
 if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--workers", type=int, default=1,
+                    help="worker processes on this one GPU (Lecture 03b)")
+    args = ap.parse_args()
+
     api = RAGAPI()
-    # one worker, one GPU, no batching — deliberately naive; Lecture 03 breaks it
-    server = ls.LitServer(api, accelerator="gpu", timeout=120)
+    # workers_per_device=1 was Lecture 03's deliberately naive default -- one
+    # till, one line. track_requests=True turns on LitServe's own in-flight
+    # counter, summed across however many workers we start below (Lecture 03b).
+    server = ls.LitServer(api, accelerator="gpu", timeout=120,
+                           workers_per_device=args.workers, track_requests=True)
 
     # LitServe is built on FastAPI; .app is the underlying FastAPI instance.
     # (If your installed LitServe version doesn't expose .app, see this
     # lecture's README troubleshooting section.)
     server.app.get("/metrics")(metrics_route)
 
+    print(f"serving with {args.workers} worker(s) on this GPU")
     server.run(port=8000)

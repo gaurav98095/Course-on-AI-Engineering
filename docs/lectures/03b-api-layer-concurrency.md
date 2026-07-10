@@ -9,7 +9,25 @@ title: "Lecture 03b — Fix It at the API Layer, First"
 
 **Last time:** the sweep proved the GPU sat under 1% utilized while p50 climbed a straight ramp — one till, one line, and Module 2 was the only fix on offer. **This time:** we open a second till on the very same GPU, prove it with the identical sweep, and find the honest ceiling on how far that trick goes.
 
-*[Lecture 00's map](00-the-system-we-are-building.md): still box (B) — the API layer — getting its first, cheapest fix.*
+Where this sits on [Lecture 00's map](00-the-system-we-are-building.md) — filled boxes are already built, the bold box is what changes today, dashed boxes don't exist yet:
+
+```mermaid
+flowchart LR
+    A["(A) Users"] --> F["(F) Fleet layer"]
+    F --> B["(B) API layer"]
+    B --> E["(E) Retrieval"]
+    B --> C["(C) Serving engine"]
+    E --> C
+    C --> D["(D) Model weights"]
+
+    classDef done fill:#EEF0FE,stroke:#4F46E5,stroke-width:1px,color:#111;
+    classDef current fill:#4F46E5,stroke:#4F46E5,stroke-width:2px,color:#fff;
+    classDef pending fill:#fff,stroke:#B9B6AC,stroke-width:1px,color:#999,stroke-dasharray:4 3;
+
+    class A,E done
+    class B current
+    class F,C,D pending
+```
 
 ## Learning Objectives
 
