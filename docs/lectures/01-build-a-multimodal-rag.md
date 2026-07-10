@@ -137,11 +137,11 @@ for page in doc:
             continue
 ```
 
-What you should see (counts vary slightly by PDF edition):
+What you should see (exact counts from the PDFs as shipped in this repo; a different edition of either chapter would shift these slightly):
 
 ```text
-phak-ch4-aerodynamics: ~230 text chunks, ~60 figures
-phak-ch7-instruments:  ~260 text chunks, ~90 figures
+phak-ch4-aerodynamics: 58 text chunks, 4 figures
+phak-ch7-instruments:  269 text chunks, 15 figures
 ```
 
 Why 700 characters? Small enough that a chunk means one thing — retrieval precision — but big enough to carry a full thought. We will revisit this number with evals in the embeddings module. The other two thresholds in that snippet follow the same logic at smaller scale: 40 characters is short enough to catch only headers and page numbers, not real sentences; 220 pixels is small enough to catch only icons and decorative dividers, not real diagrams.

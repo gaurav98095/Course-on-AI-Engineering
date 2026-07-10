@@ -175,7 +175,7 @@ Lecture 05's "GQA already bought this course a 4× smaller cache" finally has a 
 > **What should you remember?**
 > - GQA/MQA save memory by literal, unmodified head-sharing; MLA saves memory by compression and reconstruction — genuinely different mechanisms, not points on one line.
 > - Sharing doesn't reduce attention's FLOP count — every query head still computes its own output. It reduces bytes moved, which is exactly why it helps a memory-bound operation.
-> - Grouping multiplies decode attention's arithmetic intensity by the group size, exactly — an under-appreciated a second reason GQA helps, beyond the raw memory savings.
+> - Grouping multiplies decode attention's arithmetic intensity by the group size, exactly — an under-appreciated second reason GQA helps, beyond the raw memory savings.
 
 ## Resources
 

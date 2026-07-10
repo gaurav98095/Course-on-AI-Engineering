@@ -32,7 +32,7 @@ No construction crew pours a foundation before looking at the finished building.
 
 Your manager's ask, in full, was never just "build an assistant that reads our manual." It was three asks, in order: **build it, make it fast enough to afford, make it survive Monday morning.** Lecture 01 dramatizes the first one — a support team drowning in a 500-page manual — in exact, hands-on detail. Today we look at all three at once, from far enough away to see the shape of the whole thing.
 
-That distance matters. Up close, the next twenty-eight lectures are quantization formulas, attention kernels, and Kubernetes YAML. From here, they're six boxes and three passes over them.
+That distance matters. Up close, the rest of this course is quantization formulas, attention kernels, and Kubernetes YAML. From here, they're six boxes and three passes over them.
 
 ## Mental Model
 

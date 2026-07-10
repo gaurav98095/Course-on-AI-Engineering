@@ -9,6 +9,7 @@ Needs a confirmed answer key first -- run build_eval_set.py once.
 Run:  python eval.py                                              # recall@k only, fast
       python eval.py --generate                                   # + bf16 answer quality
       python eval.py --generate --checkpoint qwen3-vl-8b-gptq-4bit # same eval, quantized generator
+      python eval.py --generate --attn-impl eager                  # same eval, naive attention kernel
 """
 
 import argparse
@@ -68,6 +69,8 @@ def main() -> None:
                     help="also run full retrieve+generate and score answer quality")
     ap.add_argument("--checkpoint", default=None,
                     help="path to a GPTQModel-quantized checkpoint (default: stock bf16)")
+    ap.add_argument("--attn-impl", default="sdpa", choices=["sdpa", "eager"],
+                    help="attention kernel for the generator (default: sdpa, i.e. FlashAttention-class)")
     args = ap.parse_args()
 
     items = load_eval_set()
@@ -77,9 +80,9 @@ def main() -> None:
     print(f"retrieval recall@{args.k}: {r_at_k:.2f}  ({len(items)} questions)")
 
     if args.generate:
-        label = args.checkpoint or "bf16"
+        label = args.checkpoint or f"bf16, attn_implementation={args.attn_impl}"
         print(f"\ngenerating with: {label} ...")
-        generator = Generator(quantized_path=args.checkpoint)
+        generator = Generator(quantized_path=args.checkpoint, attn_implementation=args.attn_impl)
         scores = answer_quality(retriever, generator, items)
         print(f"required-term coverage: {scores['term_coverage']:.2f}")
         print(f"citation accuracy:      {scores['citation_accuracy']:.2f}")

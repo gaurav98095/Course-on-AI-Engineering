@@ -9,6 +9,21 @@ title: "Lecture 06 — Profiling: Where the Time Actually Goes"
 
 **Last time:** Every lecture since 01 reasoned about where time goes from formulas — roofline, cache math — but none of them actually watched the GPU do it, millisecond by millisecond. **This time:** we point a real profiler at our own system and check those formulas against a real timeline.
 
+## Learning Objectives
+
+- Use `torch.profiler` to name and time every operator in one real request, with zero extra installs.
+- Read an `nsys` timeline to spot gaps a table can't show — time the GPU spends waiting on the CPU.
+- Confirm one decode kernel's measured compute-vs-memory throughput with `ncu`, and check it against Lecture 04's roofline classification.
+- State Amdahl's Law from a real profile table, and use it to decide where an hour of optimization work is actually worth spending.
+
+## Prerequisites
+
+| Concept | Needed? | Notes |
+| --- | --- | --- |
+| Lecture 05 | Yes | We're profiling the exact prefill/decode split it named |
+| Lecture 04 | Yes | The roofline classification `ncu`'s counters get checked against |
+| Command line | Yes | Reading CLI tool output; no CUDA internals required |
+
 ## Story
 
 Around 1910, a young manager named Frank Gilbreth walked onto a bricklaying site with a stopwatch and did something nobody had done before: he timed *every individual motion* a bricklayer made.
@@ -219,13 +234,6 @@ We picked up the profiler where Gilbreth picked up the stopwatch — not to gues
 > - Reach for the cheapest tool that answers your question: `torch.profiler` first, `nsys` for timelines, `ncu` for one kernel's roofline position.
 > - Never trust an untested performance theory — profile it, the way we just did to five lectures' worth of formulas.
 > - Amdahl's Law: the biggest bar in the profile table is the only one worth optimizing first.
-
-## At a Glance
-
-What today's lecture covered, and what it assumed:
-
-- **You should now be able to:** profile a real request with `torch.profiler` and read a kernel-level time breakdown; use `nsys` to see the request as a timeline, gaps included; use `ncu` to profile one kernel and check its measured compute/memory throughput against Lecture 04's roofline prediction.
-- **What it assumed:** Lectures 01–05 (we're closing the loop this module opened — profiling the exact system we built and measured) and basic command-line comfort (running CLI tools, reading their output). No CUDA internals were required — the profilers surface real numbers, and today was about interpreting them, not deriving how the hardware counters themselves work.
 
 ## Resources
 

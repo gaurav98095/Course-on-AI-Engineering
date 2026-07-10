@@ -94,7 +94,7 @@ Here is the plot that table is quietly describing — the roofline itself, with 
 
 ## The Build
 
-⚡ This lecture's folder, `code/module-1-foundations/04-the-gpu-architecture-and-roofline/`, is a copy-forward of Lecture 03's folder with one new file: `roofline.py`. It needs no new dependencies.
+⚡ This lecture's folder, `code/module-1-foundations/04-the-gpu-architecture-and-roofline/`, is a copy-forward of Lecture 03b's folder with one new file: `roofline.py`. It needs no new dependencies.
 
 ```bash
 git clone https://github.com/gaurav98095/Course-on-AI-Engineering.git   # skip if already cloned

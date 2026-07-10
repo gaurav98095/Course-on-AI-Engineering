@@ -63,10 +63,11 @@ class Retriever:
 
 
 class Generator:
-    def __init__(self, quantized_path: str | None = None) -> None:
+    def __init__(self, quantized_path: str | None = None, attn_implementation: str = "sdpa") -> None:
         if quantized_path is None:
             self.model = AutoModelForImageTextToText.from_pretrained(
-                GENERATOR, torch_dtype="auto", device_map="auto"
+                GENERATOR, torch_dtype="auto", device_map="auto",
+                attn_implementation=attn_implementation,
             )
         else:
             # GPTQModel quantizes only the text layers (Lecture 08) -- the

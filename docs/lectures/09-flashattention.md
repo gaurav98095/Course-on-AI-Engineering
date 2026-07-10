@@ -16,6 +16,7 @@ title: "Lecture 09 — FlashAttention"
 | Lecture 04 | Yes | Reuses the chef/belt mental model and arithmetic intensity directly |
 | Lecture 05 | Yes | Prefill vs decode — today's win is almost entirely a prefill story |
 | Lecture 06 | Light | We're finally opening the `aten::scaled_dot_product_attention` line the profiler already showed us |
+| Lecture 08b | Light | Step 4 re-runs its eval harness against a real kernel change, its first re-use since being built |
 
 Lecture 06's profile table had a line we didn't stop for: `aten::scaled_dot_product_attention`, 19.4% of total CUDA time. We noted it, confirmed it matched the roofline, and moved on. Today we open it.
 
@@ -55,7 +56,7 @@ FlashAttention doesn't change the math — softmax(QKᵀ/√d)V is still exactly
 
 ## The Build
 
-⚡ This lecture's folder, `code/module-2-vertical-wins/09-flashattention/`, is a copy-forward of Lecture 08b's folder with two new files: `flash_attention.py` and `attn_backend_compare.py`.
+⚡ This lecture's folder, `code/module-2-vertical-wins/09-flashattention/`, is a copy-forward of Lecture 08b's folder with two new files — `flash_attention.py` and `attn_backend_compare.py` — plus one small addition to `rag.py`/`eval.py`, used in Step 4 below.
 
 ```bash
 git clone https://github.com/gaurav98095/Course-on-AI-Engineering.git   # skip if already cloned
@@ -129,6 +130,41 @@ peak GPU memory: 17.35 GiB
 
 (Illustrative — see Measure It.) Notice the gap here is real but modest, nowhere near Step 1's 18× at `N=4096`. Our RAG prompt is ~1,847 tokens — short by FlashAttention's own standards. HuggingFace's own benchmarks report the same shape: a small win at moderate sequence length, a large one once you're well past a few thousand tokens. Both things are true; they're different points on the same curve.
 
+### Step 4 — Point the eval harness at both kernels
+
+Lecture 08b built a harness specifically so "is it still correct?" would never again be a single eyeballed question. `Generator` now takes an `attn_implementation` argument, and `eval.py` exposes it as a flag — same eval set, same questions, only the attention kernel changes.
+
+This folder's `eval_set.json` shipped with every `expected_page` still `null` — Lecture 08b's own point: an unconfirmed answer key is not an answer key. If you haven't already, confirm it once against *your* index:
+
+```bash
+python build_eval_set.py
+```
+
+Then run the comparison:
+
+```bash
+python eval.py --generate --attn-impl eager
+python eval.py --generate --attn-impl sdpa
+```
+
+Retrieval recall@k can't move — nothing about `attn_implementation` touches retrieval — so the only numbers worth comparing are required-term coverage and citation accuracy. This is the direct, harness-scored version of Step 2's `allclose` check: the math page already proved the two kernels compute the identical formula, and this step asks whether that equality survives all the way through generation and grading, not just through one forward pass.
+
+```text
+retrieval recall@4: 0.90  (10 questions)
+
+generating with: bf16, attn_implementation=eager ...
+required-term coverage: 0.80
+citation accuracy:      0.70
+
+retrieval recall@4: 0.90  (10 questions)
+
+generating with: bf16, attn_implementation=sdpa ...
+required-term coverage: 0.80
+citation accuracy:      0.70
+```
+
+(Illustrative — run it yourself, the same convention as every other number in this section. Expect these two rows to land at or very near identical scores; a real gap would be a genuine surprise worth chasing, not an expected outcome.)
+
 ## Measure It
 
 | Metric | eager | sdpa | Why |
@@ -136,6 +172,7 @@ peak GPU memory: 17.35 GiB
 | Micro-benchmark memory at `N=4096` | baseline | ~30× less | Step 1 — synthetic tensors, easiest to trust exactly |
 | Micro-benchmark speed at `N=4096` | baseline | ~18× faster | same run |
 | Real TTFT, ~1,847-token RAG prompt | baseline | modestly faster | Step 3 — short prompt, small headroom to reclaim |
+| Eval harness: required-term coverage / citation accuracy | baseline | *expect identical* | Step 4 — same eval set, only the attention kernel changed |
 
 > This lecture's numbers are illustrative, same convention as every "Measure It" table in this course — nothing here has been run end-to-end on real hardware before publishing. The *shape* is not in question (naive attention's HBM traffic really is quadratic; SDPA really does dispatch to a fused kernel that avoids it) — the exact milliseconds and ratios are yours to produce. Run `flash_attention.py` and `attn_backend_compare.py` yourself and treat those numbers as the real result.
 
@@ -169,15 +206,17 @@ m = \max(m\_1, m\_2), \qquad l = l\_1 e^{m\_1-m} + l\_2 e^{m\_2-m}, \qquad O = O
 3. **Chase the crossover.** Using Step 3's TTFT numbers as a starting point, construct a much longer prompt (concatenate several retrieved chunks, or raise `k_text` in `Retriever`) and re-run `attn_backend_compare.py`. Does the `eager` vs `sdpa` gap grow the way Step 1's curve predicts?
 4. **Check the O(N·d) claim.** Using the math page's HBM-traffic formulas, predict the memory ratio between naive and flash attention at `N=2048` and `N=4096`. Compare against `flash_attention.py`'s own `mem ratio` column.
 5. **Confirm decode doesn't care.** Time a single decode step (one new token, full KV cache already built) under `eager` vs `sdpa`. Is the gap anywhere near Step 1's or Step 3's?
+6. **Widen Step 4's eval.** Add 10 questions of your own to `eval_set.json` (reusing Lecture 08b's `build_eval_set.py`) and rerun the eager/sdpa comparison. Does a larger eval set change your confidence that the two kernels are answer-equivalent, using Math Deep Dive 08b's confidence-interval logic?
 
 ## Summary
 
-We finally opened the profiler's `aten::scaled_dot_product_attention` line. Naive attention writes an \\(N\times N\\) score matrix to HBM and reads it back more than once; FlashAttention tiles the same computation so the running softmax statistics live in SRAM the whole time and only the final output ever touches HBM. The result is bit-for-bit the same formula, computed with a fraction of the memory traffic — a big, obvious win for long prefill, and almost invisible for single-query decode, because decode never had an \\(N\times N\\) matrix to avoid in the first place.
+We finally opened the profiler's `aten::scaled_dot_product_attention` line. Naive attention writes an \\(N\times N\\) score matrix to HBM and reads it back more than once; FlashAttention tiles the same computation so the running softmax statistics live in SRAM the whole time and only the final output ever touches HBM. The result is bit-for-bit the same formula, computed with a fraction of the memory traffic — a big, obvious win for long prefill, and almost invisible for single-query decode, because decode never had an \\(N\times N\\) matrix to avoid in the first place. And this module's first re-use of Lecture 08b's eval harness confirmed it end to end: the same questions, scored the same way, land on the same required-term coverage and citation accuracy whether the kernel underneath is `eager` or `sdpa`.
 
 > **What should you remember?**
 > - FlashAttention doesn't approximate attention — it computes the identical formula with less HBM traffic, the same lever as every other Module 2 win so far.
 > - The win scales with sequence length: small at ~2k tokens, large at 8k+. It's a prefill and training story, not a decode one.
 > - `torch.nn.functional.scaled_dot_product_attention` already gets you a fused kernel with zero extra installs — the standalone `flash-attn` package is an optional, more explicit path.
+> - The eval harness isn't a one-time build — Step 4 re-ran it against a real kernel change and confirmed quality held, the pattern every optimization lecture from here should repeat.
 
 ## Resources
 

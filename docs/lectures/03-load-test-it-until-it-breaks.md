@@ -176,11 +176,11 @@ python live_dashboard.py
 polling http://localhost:8000/metrics every 1.0s -> dashboard.csv (Ctrl-C to stop)
 
       t  API layer                         ||  GPU layer
-t=  1.0s  requests=   2  errors=  0  p50=   7.1s   ||   gpu_util= 91%  gpu_mem=  17820MiB
-t=  2.0s  requests=   2  errors=  0  p50=   7.1s   ||   gpu_util= 88%  gpu_mem=  17820MiB
-t=  3.0s  requests=   3  errors=  0  p50=   7.3s   ||   gpu_util= 92%  gpu_mem=  17904MiB
+t=  1.0s  requests=   2  errors=  0  p50=   7.1s   ||   gpu_util= 99%  gpu_mem=  17820MiB
+t=  2.0s  requests=   2  errors=  0  p50=   7.1s   ||   gpu_util= 97%  gpu_mem=  17820MiB
+t=  3.0s  requests=   3  errors=  0  p50=   7.3s   ||   gpu_util=100%  gpu_mem=  17904MiB
 ...
-t= 16.0s  requests=  14  errors=  0  p50=  55.9s   ||   gpu_util= 90%  gpu_mem=  18012MiB
+t= 16.0s  requests=  14  errors=  0  p50=  55.9s   ||   gpu_util= 98%  gpu_mem=  18012MiB
 ```
 
 (Ballpark — your own numbers are the real ones.)

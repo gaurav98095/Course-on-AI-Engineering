@@ -1,6 +1,6 @@
 # Lecture 09 — FlashAttention
 
-Self-contained: this folder is a **copy-forward** of `08b-build-the-eval-harness/` plus two new files. Clone the repo, `cd` here, and everything runs.
+Self-contained: this folder is a **copy-forward** of `08b-build-the-eval-harness/` plus two new files and one small edit to `rag.py`/`eval.py` (see below). Clone the repo, `cd` here, and everything runs.
 
 Full walkthrough: [Lecture 09 on the course site](https://gaurav98095.github.io/Course-on-AI-Engineering/lectures/09-flashattention.html)
 
@@ -21,7 +21,7 @@ Full walkthrough: [Lecture 09 on the course site](https://gaurav98095.github.io/
 
 Neither script needs a new package for `eager`/`sdpa` — PyTorch's own fused kernels ship inside `torch`. Only `attn_backend_compare.py --impl flash_attention_2` needs the standalone `flash-attn` package (commented out in `requirements.txt` — see Troubleshooting).
 
-(Everything from Lectures 01–08b is copied forward unchanged, so this folder still runs the full system, eval harness included, on its own.)
+One small change to a carried-forward file: `rag.py`'s `Generator` now takes an `attn_implementation` argument, and `eval.py` exposes it as `--attn-impl {sdpa,eager}` — so Lecture 08b's eval harness can score answer quality under either attention kernel, not just re-run its Lecture 08 checkpoints. (Everything else from Lectures 01–08b is copied forward unchanged, so this folder still runs the full system, eval harness included, on its own.)
 
 ## Step by step from zero
 
@@ -36,6 +36,9 @@ python ingest.py                    # build corpus/ if you don't have it yet
 python flash_attention.py                             # no model download needed — pure attention micro-benchmark
 python attn_backend_compare.py --impl eager
 python attn_backend_compare.py --impl sdpa
+python build_eval_set.py                               # confirm eval_set.json once, if not done already in this folder
+python eval.py --generate --attn-impl eager
+python eval.py --generate --attn-impl sdpa
 ```
 
 Optional, needs the standalone package (see Troubleshooting first):
@@ -47,6 +50,7 @@ python attn_backend_compare.py --impl flash_attention_2
 
 ## Troubleshooting
 
+- **`eval.py` exits immediately with "N question(s) still have no confirmed answer"**: run `build_eval_set.py` first — same requirement as Lecture 08b, and it's per-folder, since each copy-forward folder ships its own unconfirmed `eval_set.json`.
 - **`flash_attention.py` prints `OOM` for naive attention at long sequence lengths**: that's the point, not a bug — a 8192-token, 32-head, fp16 score matrix is several GiB on its own. Flash/SDPA never materializes it and keeps running. Note the sequence length where naive first breaks; that's a real number, not a ballpark.
 - **`pip install flash-attn` takes 10-20+ minutes or fails**: it compiles CUDA kernels from source against your exact torch/CUDA version — this is normal, not a sign anything is wrong. If it fails, `--impl sdpa` already gets you a fused, flash-attention-style kernel on most modern GPUs without this package at all; treat `flash_attention_2` as an optional, more explicit path, not a requirement for this lecture's core lesson.
 - **`RuntimeError: No available kernel` from SDPA**: usually an old PyTorch build with limited backend coverage for your GPU/dtype combination — try `pip install -U torch` first.
