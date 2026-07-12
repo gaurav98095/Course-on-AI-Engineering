@@ -5,7 +5,7 @@ title: "Lecture 01 — Build a Multimodal RAG"
 
 # Lecture 01 — Build a Multimodal RAG
 
-> **In one sentence:** We build a working assistant that answers questions about a 500-page illustrated manual — retrieving both text and figures, and reading them with a vision-language model — because this exact system is what we will deploy, break, and then spend twelve weeks making 10× faster and cheaper.
+> **In one sentence:** We build a working assistant that answers questions about a 500-page illustrated manual — retrieving both text and figures, and reading them with a vision-language model — because this exact system is what we will deploy, break, and then spend the rest of this course making 10× faster and cheaper.
 
 **Last time:** Lecture 00 showed the six-box target system from a distance and named box (E) — retrieval — as where this course actually starts. **This time:** we build box (E) for real, in stock Hugging Face code, and measure the first row of numbers everything else in the course is judged against.
 
@@ -62,7 +62,7 @@ Now put those three roles on one screen:
 
 <figure>
   <img src="../assets/images/rag-pipeline.svg" alt="Two-lane diagram: offline ingestion from PDF to FAISS indexes, online path from question to Qwen3-VL answer">
-  <figcaption>The offline lane runs once per manual. The online lane runs on every request — and it is the lane whose speed we will obsess over for twelve weeks.</figcaption>
+  <figcaption>The offline lane runs once per manual. The online lane runs on every request — and it is the lane whose speed we will obsess over for the rest of this course.</figcaption>
 </figure>
 
 Two details in that diagram deserve a pause.
@@ -272,7 +272,7 @@ Ballpark results — one L40S, bf16, batch size 1, ~1.8k-token multimodal prompt
 | Answer time | ~8–10 s | What the support agent actually waits |
 | Peak VRAM | ~22 GiB | On a 48 GB card — for **one** concurrent request |
 
-Now the sentence that launches the next eleven weeks.
+Now the sentence that launches the rest of this course.
 
 **This serves exactly one user at a time.**
 

@@ -2,7 +2,7 @@
 
 **[Read the course →](https://gaurav98095.github.io/Course-on-AI-Engineering/)**
 
-An advanced, hands-on course on shipping AI systems the way a real engineering team does. Week one, you build a real multimodal RAG. Then you deploy it, load-test it until it breaks, and spend the rest of the course making it 10× cheaper and faster, then scaling it to a lakh (100,000+) concurrent users.
+An advanced, hands-on course on shipping AI systems the way a real engineering team does. In Lecture 01, you build a real multimodal RAG. Then you deploy it, load-test it until it breaks, and spend the rest of the course making it 10× cheaper and faster, then scaling it to a lakh (100,000+) concurrent users.
 
 This is not a slide-deck course. Every lecture is a **build log with numbers** — real code, run on a real GPU, with a real benchmark table that later lectures are judged against. If a lecture claims a speedup, that claim comes with the hardware, precision, and batch size it was measured under, or it's explicitly labeled a ballpark and you're told to go measure your own.
 

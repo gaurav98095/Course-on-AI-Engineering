@@ -5,11 +5,11 @@ title: "Course on AI Engineering"
 
 # Course on AI Engineering
 
-An advanced, hands-on course on shipping AI systems the way a real engineering team does. We build a multimodal RAG in week one, deploy it on a GPU, and load-test it until it breaks — then spend the rest of the course making it 10× cheaper and 10× faster, and scaling it to a lakh concurrent users. Quantization, FlashAttention, PagedAttention, vLLM, SGLang, TensorRT-LLM, Triton kernels, speculative decoding, Kubernetes, SLOs, and the capacity math behind $/million tokens — every claim measured, every number explained.
+An advanced, hands-on course on shipping AI systems the way a real engineering team does. We build a multimodal RAG in Lecture 01, deploy it on a GPU, and load-test it until it breaks — then spend the rest of the course making it 10× cheaper and 10× faster, and scaling it to a lakh concurrent users. Quantization, FlashAttention, PagedAttention, vLLM, SGLang, TensorRT-LLM, Triton kernels, speculative decoding, Kubernetes, SLOs, and the capacity math behind $/million tokens — every claim measured, every number explained.
 
 ## How to use this course
 
-Read each lecture in order and run the code — every hands-on lecture has a `code/` folder that runs standalone. Weeks 1–8 run on a single Lightning AI GPU Studio; the scale module moves to AWS. Heavy derivations live in separate math deep-dive pages, linked from each lecture, so the build never stalls.
+Read each lecture in order and run the code — every hands-on lecture has a `code/` folder that runs standalone. Lectures 00–19 run on a single Lightning AI GPU Studio; the scale module (Lectures 20–28) moves to AWS. Heavy derivations live in separate math deep-dive pages, linked from each lecture, so the build never stalls.
 
 You should be comfortable with Python and the deep-learning basics (backprop, CNNs/RNNs, self-attention). Everything past that, we build from scratch.
 

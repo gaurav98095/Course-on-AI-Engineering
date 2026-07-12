@@ -105,7 +105,7 @@ Lecture 01 will hand you the first row of real numbers in about twenty minutes. 
 
 ## The Math, One Level Deeper
 
-Here's the argument this whole course is a twelve-week answer to, and it only takes multiplication to see it.
+Here's the argument this whole course is an answer to, and it only takes multiplication to see it.
 
 Lecture 01's system — one GPU, one request at a time — will measure roughly \\(400\\) answers per hour, renting that one GPU at about $1/hr. Lecture 03 goes further: it shows that simply *adding concurrent users* to that same system doesn't add throughput — one user at a time is a ceiling, not a starting point, until something changes.
 
@@ -137,7 +137,7 @@ So take the naive plan literally: "a lakh concurrent users" at "one GPU per user
 
 ## Summary
 
-We haven't run a line of code, and we already know the shape of the next twelve weeks: one system, six boxes — users, an API layer, a serving engine, model weights, retrieval, and eventually a fleet layer — built once in Module 1, made ruthlessly efficient box by box in Module 2, and finally made to survive real scale in Module 3. Every hands-on lecture from here on will tell you, in one line, which of these six boxes it just changed.
+We haven't run a line of code, and we already know the shape of the whole course ahead: one system, six boxes — users, an API layer, a serving engine, model weights, retrieval, and eventually a fleet layer — built once in Module 1, made ruthlessly efficient box by box in Module 2, and finally made to survive real scale in Module 3. Every hands-on lecture from here on will tell you, in one line, which of these six boxes it just changed.
 
 > **What should you remember?**
 > - One system, three passes: make it work, make it 10× cheaper, make it survive a lakh users — in that order, on purpose.

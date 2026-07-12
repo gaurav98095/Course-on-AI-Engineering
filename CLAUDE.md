@@ -8,11 +8,11 @@ Look and feel: clean, text-first pages with a narrow reading column, each lectur
 
 ## Course arc (fixed — do not re-plan without being asked)
 
-1. **Weeks 1–2 · Foundations — build it & measure it.** Multimodal RAG on stock Hugging Face code, deployed on **Lightning AI**, load-tested until it breaks; then the GPU and transformer fundamentals that explain every benchmark number (GPU architecture & HBM, roofline, prefill vs decode, KV cache math, TTFT/TPOT, profiling).
-2. **Weeks 3–8 · Vertical wins — make it 10× faster.** Quantization (GPTQ/AWQ, FP8/INT8/INT4), FlashAttention, PagedAttention, GQA/MQA/MLA, RoPE/ALiBi/YaRN, continuous batching, vLLM & SGLang, TensorRT-LLM, speculative decoding, prefix & chunked prefill, Triton kernels, torch.compile & CUDA graphs — each win proven with a before/after benchmark and a quality eval. Still on Lightning AI.
-3. **Weeks 9–12 · Modalities & scale — ship for 1L+ users.** Multimodal serving, embedding & reranker models, MoE, contrastive finetuning, Matryoshka embeddings, prefill/decode disaggregation, multi-LoRA; then the production move to **AWS**: Docker for GPUs, Kubernetes (EKS), autoscaling (HPA/KEDA), p95/p99 SLOs, $/Mtok and capacity math.
+1. **Lectures 00–06 · Foundations — build it & measure it.** Multimodal RAG on stock Hugging Face code, deployed on **Lightning AI**, load-tested until it breaks; then the GPU and transformer fundamentals that explain every benchmark number (GPU architecture & HBM, roofline, prefill vs decode, KV cache math, TTFT/TPOT, profiling).
+2. **Lectures 07–19 · Vertical wins — make it 10× faster.** Quantization (GPTQ/AWQ, FP8/INT8/INT4), FlashAttention, PagedAttention, GQA/MQA/MLA, RoPE/ALiBi/YaRN, continuous batching, vLLM & SGLang, TensorRT-LLM, speculative decoding, prefix & chunked prefill, Triton kernels, torch.compile & CUDA graphs — each win proven with a before/after benchmark and a quality eval. Still on Lightning AI.
+3. **Lectures 20–28 · Modalities & scale — ship for 1L+ users.** Multimodal serving, embedding & reranker models, MoE, contrastive finetuning, Matryoshka embeddings, prefill/decode disaggregation, multi-LoRA; then the production move to **AWS**: Docker for GPUs, Kubernetes (EKS), autoscaling (HPA/KEDA), p95/p99 SLOs, $/Mtok and capacity math.
 
-Platform arc: Lightning AI Studios for weeks 1–8 (fast iteration), AWS/EKS for the scale module — the same corporate progression a real team follows.
+Platform arc: Lightning AI Studios for Lectures 00–19 (fast iteration), AWS/EKS for Lectures 20–28, the scale module — the same corporate progression a real team follows.
 
 Course model registry (keep consistent across lectures): generation `Qwen/Qwen3-VL-8B-Instruct`; text embeddings `BAAI/bge-small-en-v1.5`; image–text embeddings `google/siglip2-base-patch16-224`; vector store FAISS. If a lecture swaps a model, it says so explicitly and explains why.
 
