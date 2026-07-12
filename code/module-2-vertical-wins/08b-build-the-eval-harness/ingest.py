@@ -73,7 +73,11 @@ def extract(doc_name: str, pdf_path: Path) -> tuple[list[dict], list[dict]]:
         # --- images: every embedded figure big enough to be a real diagram
         for xref, *_ in page.get_images(full=True):
             raw = doc.extract_image(xref)
-            img = Image.open(io.BytesIO(raw["image"])).convert("RGB")
+            try:
+                img = Image.open(io.BytesIO(raw["image"])).convert("RGB")
+            except OSError:
+                print(f"  skipping unreadable image: {doc_name} p{page_no} xref{xref}")
+                continue
             if min(img.size) < MIN_IMAGE_SIDE:
                 continue
             fname = f"{doc_name}-p{page_no}-x{xref}.png"
